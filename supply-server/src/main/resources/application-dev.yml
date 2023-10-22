@@ -1,0 +1,10 @@
+yitai:
+  datasource:
+    url: jdbc:mysql://rm-0jlecmy5dzw5m5lveyo.mysql.rds.aliyuncs.com:3306/supply_chain_test?characterEncoding=utf-8
+    username: yitai
+    password: Yitai@888
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 172.31.12.101
+    port: 6379
+    database: 1

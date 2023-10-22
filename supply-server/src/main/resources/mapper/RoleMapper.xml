@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.RoleMapper">
+    <update id="update" parameterType="com.yitai.entity.Role">
+        update order_role
+        <set>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="roleType != null">role_type = #{roleType},</if>
+            <if test="roleDesc != null">role_desc = #{roleDesc},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="pageQuery" resultType="com.yitai.entity.Role">
+        select *
+        from supply_chain_test.order_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name like concat('%', #{roleName}, '%')
+            </if>
+            <if test="roleType != null and roleType != ''">
+                and role_type like concat('%', #{roleType}, '%')
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+</mapper>

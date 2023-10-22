@@ -1,0 +1,91 @@
+server:
+  port: 8855
+#数据库配置源
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: ${yitai.datasource.driver-class-name}
+    url: ${yitai.datasource.url}
+    username: ${yitai.datasource.username}
+    password: ${yitai.datasource.password}
+    druid:
+      initial-size: 10
+      min-idle: 10
+      maxActive: 200
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      connectionErrorRetryAttempts: 3
+      breakAfterAcquireFailure: true
+      timeBetweenConnectErrorMillis: 300000
+      asyncInit: true
+      remove-abandoned: true
+      remove-abandoned-timeout: 1800
+      transaction-query-timeout: 6000
+      filters: stat,wall,log4j2
+      connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      stat-view-servlet:
+        url-pattern: "/druid/*"
+        allow:
+        deny:
+        reset-enable: false
+        login-username: admin
+        login-password: admin
+  data:
+    redis:
+      host: ${yitai.redis.host}
+      port: ${yitai.redis.port}
+      database: ${yitai.redis.database}
+  #spring boot admin
+  boot:
+    admin:
+      client:
+        url: http://localhost:9001
+# 自定义配置源
+yitai:
+  jwt:
+    user-secret-key: yitai
+    user-ttl: 72000000
+    user-token-name: token
+
+# mybatis配置源
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.yitai.entity
+  configuration:
+    # 开启驼峰命名
+    map-underscore-to-camel-case: true
+
+#springdoc相关配置
+# 在线文档配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  packages-to-scan: com.yitai.controller,
+  show-actuator: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+
