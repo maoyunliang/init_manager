@@ -49,11 +49,19 @@ spring:
       host: ${yitai.redis.host}
       port: ${yitai.redis.port}
       database: ${yitai.redis.database}
-  #spring boot admin
+#spring boot admin
   boot:
     admin:
       client:
-        url: http://localhost:9001
+        url: http://8.130.8.127:9001
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 # 自定义配置源
 yitai:
   jwt:
@@ -87,5 +95,9 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+logging:
+  level:
+    root: info
 
 

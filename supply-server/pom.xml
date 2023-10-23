@@ -10,6 +10,7 @@
     <artifactId>supply-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>supply-server</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -102,6 +103,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.yitai.SupplyServerApplication</mainClass>
+                </configuration>
+
             </plugin>
         </plugins>
     </build>
