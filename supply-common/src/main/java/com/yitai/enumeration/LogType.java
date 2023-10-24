@@ -14,6 +14,7 @@ public enum LogType {
     UPDATE("修改"),
     DELETE("删除"),
     LOGIN("登录"),
+    ASSIGN("分配权限"),
     REGISTER("注册");
 
     private final String value;

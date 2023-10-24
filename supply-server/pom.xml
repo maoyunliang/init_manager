@@ -106,7 +106,6 @@
                 <configuration>
                     <mainClass>com.yitai.SupplyServerApplication</mainClass>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>
