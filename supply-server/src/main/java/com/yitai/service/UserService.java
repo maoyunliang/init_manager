@@ -1,8 +1,9 @@
 package com.yitai.service;
 
-import com.yitai.dto.UserDTO;
-import com.yitai.dto.UserLoginDTO;
-import com.yitai.dto.UserPageQueryDTO;
+import com.yitai.dto.sys.UserDTO;
+import com.yitai.dto.sys.UserLoginDTO;
+import com.yitai.dto.sys.UserPageQueryDTO;
+import com.yitai.dto.sys.UserRoleDTO;
 import com.yitai.entity.User;
 import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
@@ -36,4 +37,6 @@ public interface UserService {
     ArrayList<MenuVO> getRouter(Long id);
 
     void logOut();
+
+    void assRole(UserRoleDTO userRoleDTO);
 }

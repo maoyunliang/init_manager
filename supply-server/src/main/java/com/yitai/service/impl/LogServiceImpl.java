@@ -2,7 +2,7 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.LogPageQueryDTO;
+import com.yitai.dto.sys.LogPageQueryDTO;
 import com.yitai.entity.Logs;
 import com.yitai.mapper.LogMapper;
 import com.yitai.result.PageResult;

@@ -1,6 +1,6 @@
 package com.yitai.controller;
 
-import com.yitai.dto.LogPageQueryDTO;
+import com.yitai.dto.sys.LogPageQueryDTO;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.LogService;

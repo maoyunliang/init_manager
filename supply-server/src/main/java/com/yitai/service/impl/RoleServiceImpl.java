@@ -2,9 +2,13 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.RoleDTO;
-import com.yitai.dto.RolePageQueryDTO;
+import com.yitai.dto.sys.RoleDTO;
+import com.yitai.dto.sys.RoleMenuDTO;
+import com.yitai.dto.sys.RolePageQueryDTO;
+import com.yitai.entity.Menu;
+import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
+import com.yitai.entity.UserRole;
 import com.yitai.mapper.RoleMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.RoleService;
@@ -12,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,5 +58,16 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         BeanUtils.copyProperties(updateRoleDTO, role);
         roleMapper.update(role);
+    }
+
+    @Override
+    public void assMenu(RoleMenuDTO roleMenuDTO) {
+        List<MenuRole> menuRoles = new ArrayList<>();
+        Long roleId = roleMenuDTO.getRoleId();
+        for (Long menuId : roleMenuDTO.getMenuIds()) {
+//            MenuRole menuRole = new MenuRole();
+            menuRoles.add(MenuRole.builder().menuId(menuId).roleId(roleId).build());
+        }
+        roleMapper.assMenu(menuRoles);
     }
 }

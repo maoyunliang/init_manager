@@ -2,8 +2,8 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.MenuDTO;
-import com.yitai.dto.MenuPageQueryDTO;
+import com.yitai.dto.sys.MenuDTO;
+import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
 import com.yitai.entity.MenuRole;
 import com.yitai.mapper.MenuMapper;
@@ -37,14 +37,16 @@ public class MenuServiceImpl implements MenuService {
         return new PageResult(total,records);
     }
 
+    /**
+     * 每次新建菜单的同时赋予ROOT管理员权限
+     */
     @Override
     public void save(MenuDTO menuDTO) {
         Menu menu = new Menu();
         BeanUtils.copyProperties(menuDTO, menu);
         //创建菜单
         menuMapper.save(menu);
-        MenuRole menuRole = MenuRole.builder().roleId(888L).MenuId(menu.getId()).build();
-        //赋予管理员权限
+        MenuRole menuRole = MenuRole.builder().roleId(888L).menuId(menu.getId()).build();
         menuMapper.givePermit(menuRole);
     }
 

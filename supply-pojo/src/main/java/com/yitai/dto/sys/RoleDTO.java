@@ -1,20 +1,20 @@
-package com.yitai.dto;
+package com.yitai.dto.sys;
 
 import lombok.Data;
 
 /**
- * ClassName: RolePageQueryDTO
+ * ClassName: AddRoleDTO
  * Package: com.yitai.dto
  * Description:
  *
  * @Author: 毛云亮
- * @Create: 2023/10/19 10:38
+ * @Create: 2023/10/19 11:27
  * @Version: 1.0
  */
 @Data
-public class RolePageQueryDTO {
+public class RoleDTO {
+    private Long id;
     private String roleName;
     private String roleType;
-    private int page =1 ;
-    private int pageSize =10;
+    private String roleDesc;
 }

@@ -8,7 +8,7 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import com.yitai.annotation.AutoLog;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.UserLoginDTO;
+import com.yitai.dto.sys.UserLoginDTO;
 import com.yitai.entity.Logs;
 import com.yitai.entity.User;
 import com.yitai.exception.ServiceException;

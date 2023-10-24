@@ -8,10 +8,12 @@ import com.yitai.constant.MessageConstant;
 import com.yitai.constant.PasswordConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.UserDTO;
-import com.yitai.dto.UserLoginDTO;
-import com.yitai.dto.UserPageQueryDTO;
+import com.yitai.dto.sys.UserDTO;
+import com.yitai.dto.sys.UserLoginDTO;
+import com.yitai.dto.sys.UserPageQueryDTO;
+import com.yitai.dto.sys.UserRoleDTO;
 import com.yitai.entity.User;
+import com.yitai.entity.UserRole;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
 import com.yitai.result.PageResult;
@@ -137,20 +139,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ArrayList<MenuVO> getRouter(Long id){
-//        User user = BaseContext.getCurrentUser();
-//        if (ObjectUtil.isNull(user)){
-//            throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
-//        }
         List<MenuVO> menuList = userMapper.pageMenu(id);
         List<String> permessionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
         redisTemplate.opsForValue().set(id.toString(), permessionList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
-        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
+//        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
+        return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
     }
 
     @Override
     public void logOut() {
         User user = BaseContext.getCurrentUser();
         redisTemplate.delete(user.getId().toString());
+    }
+
+    @Override
+    public void assRole(UserRoleDTO userRoleDTO) {
+//        UserRole userRole = new UserRole();
+        //1、for 循环批量插入
+//        for (Long roleId : userRoleDTO.getRoleIds()) {
+//            userRole.setUserId(userRoleDTO.getUserId());
+//            userRole.setRoleId(roleId);
+//            userMapper.assRole(userRole);
+//        }
+        //2、 mybatis批量擦入
+        List<UserRole> userRoles = new ArrayList<>();
+        Long userId = userRoleDTO.getUserId();
+        for (Long roleId : userRoleDTO.getRoleIds()) {
+            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
+        }
+//        //Lambda 表达式写法
+//        userRoleDTO.getRoleIds().forEach(roleId ->{
+//            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
+//        });
+        userMapper.assRole(userRoles);
+        //2、原生批量插入分片实现（解决sql拼接造成语句过大）
     }
 }

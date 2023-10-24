@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 /**
  * 自定义切面类，实现公共字段自动填充处理逻辑
@@ -60,10 +61,19 @@ public class AutoFillAspect {
             return;
         }
         Object entity = args[0];
+        if(entity instanceof Collection<?> collection){
+            // 强制转换为 Collection 类型
+            for(Object item : collection){
+                startFill(item, operationType);
+            }
+        }else {
+            startFill(entity,operationType);
+        }
+
+    }
+    void startFill(Object entity, OperationType operationType){
         //准备赋值的数据
         LocalDateTime now = LocalDateTime.now();
-//        Long currentId = BaseContext.getCurrentId();
-
         User user = BaseContext.getCurrentUser();
         if (ObjectUtil.isNull(user)){
             throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);
@@ -83,6 +93,7 @@ public class AutoFillAspect {
                 setUpdateTime.invoke(entity, now);
                 setUpdateUser.invoke(entity, user.getUsername());
                 setIsDel.invoke(entity, 0);
+                log.info("插入公共字段自动填充完成..");
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,7 +1,7 @@
 package com.yitai.service;
 
-import com.yitai.dto.MenuDTO;
-import com.yitai.dto.MenuPageQueryDTO;
+import com.yitai.dto.sys.MenuDTO;
+import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.result.PageResult;
 
 /**

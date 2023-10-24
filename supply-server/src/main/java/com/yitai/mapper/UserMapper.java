@@ -2,8 +2,9 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
-import com.yitai.dto.UserPageQueryDTO;
+import com.yitai.dto.sys.UserPageQueryDTO;
 import com.yitai.entity.User;
+import com.yitai.entity.UserRole;
 import com.yitai.enumeration.OperationType;
 import com.yitai.vo.MenuVO;
 import org.apache.ibatis.annotations.Insert;
@@ -51,4 +52,7 @@ public interface UserMapper {
     User getById(Long id);
 
     List<MenuVO> pageMenu(Long id);
+
+    @AutoFill(value = OperationType.INSERT)
+    void assRole(List<UserRole> userRoles);
 }

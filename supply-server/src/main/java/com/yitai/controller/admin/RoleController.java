@@ -2,8 +2,9 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.RoleDTO;
-import com.yitai.dto.RolePageQueryDTO;
+import com.yitai.dto.sys.RoleDTO;
+import com.yitai.dto.sys.RoleMenuDTO;
+import com.yitai.dto.sys.RolePageQueryDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
@@ -65,6 +66,16 @@ public class RoleController {
     public Result<?> delete(@PathVariable Integer roleId){
         log.info("删除角色");
         roleService.delete(roleId);
+        return Result.success();
+    }
+
+    @Operation(summary = "分配菜单")
+    @PostMapping("/assMenu")
+//    @HasPermit(permission = "sys:role:delete")
+    @AutoLog(operation = "给角色分配菜单", type = LogType.ASSIGN)
+    public Result<?> assMenu(@RequestBody RoleMenuDTO roleMenuDTO){
+        log.info("分配菜单：{}", roleMenuDTO);
+        roleService.assMenu(roleMenuDTO);
         return Result.success();
     }
 }

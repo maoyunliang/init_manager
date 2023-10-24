@@ -3,12 +3,16 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
-import com.yitai.dto.RolePageQueryDTO;
+import com.yitai.dto.sys.RolePageQueryDTO;
+import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
 import com.yitai.enumeration.OperationType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 /**
  * ClassName: RoleMapper
@@ -37,4 +41,7 @@ public interface RoleMapper {
 
     @AutoFill(value = OperationType.UPDATE)
     void update(Role role);
+
+    @AutoFill(value = OperationType.INSERT)
+    void assMenu(@Param("list") List<MenuRole> menuRoles);
 }

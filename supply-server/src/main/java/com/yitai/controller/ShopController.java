@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @Create: 2023/9/27 14:09
  * @Version: 1.0
  */
-@Tag(name = "用户端相关接口")
+@Tag(name = "客户端相关接口")
 @RequestMapping("/shop")
 @RestController
 @Slf4j

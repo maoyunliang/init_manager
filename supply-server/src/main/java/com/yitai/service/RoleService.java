@@ -1,7 +1,8 @@
 package com.yitai.service;
 
-import com.yitai.dto.RoleDTO;
-import com.yitai.dto.RolePageQueryDTO;
+import com.yitai.dto.sys.RoleDTO;
+import com.yitai.dto.sys.RoleMenuDTO;
+import com.yitai.dto.sys.RolePageQueryDTO;
 import com.yitai.result.PageResult;
 
 /**
@@ -21,4 +22,6 @@ public interface RoleService {
     void delete(Integer roleId);
 
     void update(RoleDTO updateRoleDTO);
+
+    void assMenu(RoleMenuDTO roleMenuDTO);
 }

@@ -2,7 +2,7 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
-import com.yitai.dto.MenuPageQueryDTO;
+import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
 import com.yitai.entity.MenuRole;
 import com.yitai.enumeration.OperationType;

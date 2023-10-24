@@ -53,7 +53,10 @@ spring:
   boot:
     admin:
       client:
-        url: http://8.130.8.127:9001
+#        url: http://www.yitaitech.cn:9001
+        url: http://localhost:9001
+#        instance:
+#          service-url: http://8.130.8.127:8855
 management:
   endpoint:
     health:

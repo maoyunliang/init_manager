@@ -2,6 +2,15 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.UserMapper">
+    <insert id="assRole">
+        insert into order_user_role(id, user_id, role_id, create_time,
+                                                              update_time, create_user, update_user, is_del)
+        values
+        <foreach collection="list" separator="," item="item">
+            (#{item.id},#{item.userId},#{item.roleId},#{item.createTime},
+             #{item.updateTime}, #{item.createUser}, #{item.updateUser}, #{item.isDel})
+        </foreach>
+    </insert>
     <update id="update" parameterType="User">
         update order_user
         <set>

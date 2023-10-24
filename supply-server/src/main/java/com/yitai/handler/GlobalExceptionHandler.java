@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result<?> exceptionHandler(Exception ex, HttpServletRequest request){
         String requestURI = request.getRequestURI();
-        log.error("请求地址:'{}', 发生系统异常：'{}'",requestURI, ex.getMessage());
+        log.error("请求地址:'{}', 发生系统异常：",requestURI, ex);
         return Result.error(ex.getMessage(), HttpStatusConstant.SYS_ERROR);
     }
 }

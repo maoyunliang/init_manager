@@ -1,10 +1,9 @@
 package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
-import com.yitai.dto.LogPageQueryDTO;
+import com.yitai.dto.sys.LogPageQueryDTO;
 import com.yitai.entity.Logs;
 import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

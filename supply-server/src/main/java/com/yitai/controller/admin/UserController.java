@@ -3,9 +3,10 @@ package com.yitai.controller.admin;
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.constant.JwtClaimsConstant;
-import com.yitai.dto.UserDTO;
-import com.yitai.dto.UserLoginDTO;
-import com.yitai.dto.UserPageQueryDTO;
+import com.yitai.dto.sys.UserDTO;
+import com.yitai.dto.sys.UserLoginDTO;
+import com.yitai.dto.sys.UserPageQueryDTO;
+import com.yitai.dto.sys.UserRoleDTO;
 import com.yitai.entity.User;
 import com.yitai.enumeration.LogType;
 import com.yitai.properties.JwtProperties;
@@ -40,7 +41,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/sys/user")
 @Slf4j
-public class UserController {
+public class UserController<userId> {
     @Autowired
     private UserService userService;
     @Autowired
@@ -59,6 +60,7 @@ public class UserController {
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
         // 获取路由时，将菜单存在缓存中
         ArrayList<MenuVO> menuVOS = userService.getRouter(user.getId());
+        System.out.println(menuVOS);
         //TODO 单点登录用redis实现（redis中的哈希map数据类型隔离生产测试环境） 相同情况下，商家营业状态通过redis存储效率更高！
         UserLoginVO userLoginVO = UserLoginVO.builder().id(user.getId())
                 .username(user.getUsername())
@@ -126,5 +128,13 @@ public class UserController {
         log.info("获取用户信息：" );
         User user = userService.getInfo();
         return Result.success(user);
+    }
+
+    @Operation(summary = "分配角色")
+    @PostMapping ("/assRole")
+    public Result<?> assRole(@RequestBody UserRoleDTO userRoleDTO){
+        log.info("分配角色：{}", userRoleDTO);
+        userService.assRole(userRoleDTO);
+        return Result.success();
     }
 }

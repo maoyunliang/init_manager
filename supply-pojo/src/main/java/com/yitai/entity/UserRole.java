@@ -8,22 +8,23 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * ClassName: MenuRoleDTO
- * Package: com.yitai.dto
+ * ClassName: UserRole
+ * Package: com.yitai.entity
  * Description:
  *
  * @Author: 毛云亮
- * @Create: 2023/10/20 18:28
+ * @Create: 2023/10/24 11:24
  * @Version: 1.0
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class MenuRole {
+public class UserRole {
     private Long id;
+    private Long userId;
     private Long roleId;
-    private Long menuId;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;
