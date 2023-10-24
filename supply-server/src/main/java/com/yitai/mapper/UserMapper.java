@@ -9,6 +9,7 @@ import com.yitai.enumeration.OperationType;
 import com.yitai.vo.MenuVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public interface UserMapper {
     @Select("select * from order_user where id = #{id} and is_del = 0")
     User getById(Long id);
 
-    List<MenuVO> pageMenu(Long id);
+    List<MenuVO> pageMenu(@Param("id") Long id, @Param("typeList") List<String> typeList);
 
     @AutoFill(value = OperationType.INSERT)
     void assRole(List<UserRole> userRoles);

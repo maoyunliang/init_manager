@@ -33,6 +33,8 @@ public class UserLoginVO {
     private String realname;
     @Schema(name = "jwt令牌")
     private String token;
-    @Schema(name = "菜单权限")
+    @Schema(name = "路由")
     private List<MenuVO> menuVOS;
+    @Schema(name = "权限列表")
+    private List<String> permiList;
 }

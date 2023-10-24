@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -139,9 +141,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ArrayList<MenuVO> getRouter(Long id){
-        List<MenuVO> menuList = userMapper.pageMenu(id);
-        List<String> permessionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
-        redisTemplate.opsForValue().set(id.toString(), permessionList);
+        List<String> typeList = new ArrayList<>();
+        typeList.add("M");
+        typeList.add("C");
+        List<MenuVO> menuList = userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
@@ -174,5 +177,13 @@ public class UserServiceImpl implements UserService {
 //        });
         userMapper.assRole(userRoles);
         //2、原生批量插入分片实现（解决sql拼接造成语句过大）
+    }
+
+    @Override
+    public List<String> getPermiList(Long id) {
+        List<MenuVO> menuList = userMapper.pageMenu(id, Collections.singletonList("B"));
+        List<String> permessionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
+        redisTemplate.opsForValue().set(id.toString(), permessionList);
+        return permessionList;
     }
 }

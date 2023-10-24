@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,12 +61,13 @@ public class UserController<userId> {
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
         // 获取路由时，将菜单存在缓存中
         ArrayList<MenuVO> menuVOS = userService.getRouter(user.getId());
-        System.out.println(menuVOS);
+        List<String> permiList = userService.getPermiList(user.getId());
         //TODO 单点登录用redis实现（redis中的哈希map数据类型隔离生产测试环境） 相同情况下，商家营业状态通过redis存储效率更高！
         UserLoginVO userLoginVO = UserLoginVO.builder().id(user.getId())
                 .username(user.getUsername())
                 .realname(user.getRealname())
                 .token(token).menuVOS(menuVOS)
+                .permiList(permiList)
                 .build();
         return Result.success(userLoginVO);
     }

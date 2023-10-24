@@ -9,6 +9,7 @@ import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ClassName: EmployeeService
@@ -39,4 +40,6 @@ public interface UserService {
     void logOut();
 
     void assRole(UserRoleDTO userRoleDTO);
+
+    List<String> getPermiList(Long id);
 }
