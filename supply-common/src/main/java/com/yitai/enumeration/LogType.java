@@ -1,7 +1,5 @@
 package com.yitai.enumeration;
 
-import org.springframework.expression.spel.ast.Assign;
-
 /**
  * ClassName: LogType
  * Package: com.yitai.enumeration
@@ -16,8 +14,7 @@ public enum LogType {
     UPDATE("修改"),
     DELETE("删除"),
     LOGIN("登录"),
-    REGISTER("注册"),
-    ASSIGN("分配权限");
+    REGISTER("注册");
 
     private final String value;
 
