@@ -42,7 +42,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("admin/sys/user")
 @Slf4j
-public class UserController<userId> {
+public class UserController {
     @Autowired
     private UserService userService;
     @Autowired
@@ -133,6 +133,7 @@ public class UserController<userId> {
     }
 
     @Operation(summary = "分配角色")
+    @HasPermit(permission = "sys:user:ass")
     @PostMapping ("/assRole")
     public Result<?> assRole(@RequestBody UserRoleDTO userRoleDTO){
         log.info("分配角色：{}", userRoleDTO);

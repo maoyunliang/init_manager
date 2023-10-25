@@ -6,7 +6,6 @@ import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
 import com.yitai.entity.MenuRole;
 import com.yitai.enumeration.OperationType;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 
@@ -23,13 +22,8 @@ import org.apache.ibatis.annotations.Update;
 public interface MenuMapper {
     Page<Menu> pageQuery(MenuPageQueryDTO pageQueryDTO);
 
-    @Insert("insert into order_menu(id, menu_name, menu_path, menu_type, menu_pid, sort_no," +
-            "create_time, update_time, create_user, update_user, is_del) values (#{id}," +
-            "#{menuName},#{menuPath}, #{menuType}, #{menuPid}, #{sortNo},#{createTime}, #{updateTime}," +
-            " #{createUser}, #{updateUser}, #{isDel})")
     @AutoFill(value = OperationType.INSERT)
-    void save(Menu menu);
-
+    int save(Menu menu);
 
     @Update("UPDATE order_menu set is_del = 1 where id = #{menuId}")
     void deleteById(Integer menuId);

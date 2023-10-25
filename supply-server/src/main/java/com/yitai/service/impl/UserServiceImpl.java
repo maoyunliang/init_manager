@@ -29,7 +29,6 @@ import org.springframework.util.DigestUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 /**
@@ -144,6 +143,7 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = new ArrayList<>();
         typeList.add("M");
         typeList.add("C");
+
         List<MenuVO> menuList = userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);

@@ -71,7 +71,7 @@ public class RoleController {
 
     @Operation(summary = "分配菜单")
     @PostMapping("/assMenu")
-//    @HasPermit(permission = "sys:role:delete")
+    @HasPermit(permission = "sys:role:ass")
     @AutoLog(operation = "给角色分配菜单", type = LogType.ASSIGN)
     public Result<?> assMenu(@RequestBody RoleMenuDTO roleMenuDTO){
         log.info("分配菜单：{}", roleMenuDTO);

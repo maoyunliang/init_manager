@@ -16,7 +16,7 @@ import com.yitai.result.PageResult;
 public interface MenuService {
     PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO);
 
-    void save(MenuDTO menuDTO);
+    void save(MenuDTO menuDTOList);
 
     void delete(Integer roleId);
 

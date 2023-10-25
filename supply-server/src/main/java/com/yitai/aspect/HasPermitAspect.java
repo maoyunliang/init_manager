@@ -74,6 +74,6 @@ public class HasPermitAspect {
         // 这里可以编写逻辑将权限字符串映射为权限名称，例如将"sys/user/add"映射为"system:user:add"
         // 实际逻辑根据你的需求和数据结构来实现
         // 这里简单地将"/"替换为":"，然后在前面加上"system:user:add"
-        return "/admin/" +permission.replace(":", "/");
+        return "/"+permission.replace(":", "/");
     }
 }

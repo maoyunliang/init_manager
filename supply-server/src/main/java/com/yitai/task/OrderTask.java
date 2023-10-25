@@ -1,6 +1,5 @@
 package com.yitai.task;
 
-import io.lettuce.core.dynamic.annotation.CommandNaming;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

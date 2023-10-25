@@ -15,7 +15,6 @@ import java.io.IOException;
  * @Version: 1.0
  */
 public class WebUtil {
-    //没有权限返回
     public static void renderString(HttpServletResponse response, String string) {
         try {
             response.setStatus(HttpStatusConstant.SUCCESS);

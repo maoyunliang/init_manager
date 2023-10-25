@@ -44,9 +44,10 @@ public class MenuServiceImpl implements MenuService {
     public void save(MenuDTO menuDTO) {
         Menu menu = new Menu();
         BeanUtils.copyProperties(menuDTO, menu);
-        //创建菜单
-        menuMapper.save(menu);
+        //返回记录行数
+        int records = menuMapper.save(menu);
         MenuRole menuRole = MenuRole.builder().roleId(888L).menuId(menu.getId()).build();
+        // 插入到系统管理员
         menuMapper.givePermit(menuRole);
     }
 
