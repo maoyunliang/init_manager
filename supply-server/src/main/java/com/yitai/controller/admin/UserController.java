@@ -93,7 +93,7 @@ public class UserController {
 
     @Operation(summary = "用户分页查询")
     @PostMapping("/page")
-    public Result<PageResult> page(@ModelAttribute UserPageQueryDTO userPageQueryDTO){
+    public Result<PageResult> page(@RequestBody UserPageQueryDTO userPageQueryDTO){
         log.info("分页查询:{}", userPageQueryDTO);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
         return Result.success(pageResult);
