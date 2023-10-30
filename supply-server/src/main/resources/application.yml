@@ -49,7 +49,8 @@ spring:
       host: ${yitai.redis.host}
       port: ${yitai.redis.port}
       database: ${yitai.redis.database}
-#spring boot admin
+      password: ${yitai.redis.password}
+  #spring boot admin
   boot:
     admin:
       client:
@@ -79,7 +80,6 @@ mybatis:
   configuration:
     # 开启驼峰命名
     map-underscore-to-camel-case: true
-
 #springdoc相关配置
 # 在线文档配置
 springdoc:
