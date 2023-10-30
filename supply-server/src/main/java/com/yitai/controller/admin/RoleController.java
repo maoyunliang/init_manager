@@ -32,8 +32,8 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
     @Operation(summary = "角色分页查询")
-    @GetMapping("/page")
-    public Result<PageResult> page(@ModelAttribute RolePageQueryDTO pageQueryDTO){
+    @PostMapping ("/page")
+    public Result<PageResult> page(@RequestBody RolePageQueryDTO pageQueryDTO){
         log.info("分页查询:{}", pageQueryDTO);
         PageResult pageResult = roleService.pageQuery(pageQueryDTO);
         return Result.success(pageResult);
