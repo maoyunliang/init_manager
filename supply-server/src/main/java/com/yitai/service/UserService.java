@@ -1,9 +1,6 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.UserDTO;
-import com.yitai.dto.sys.UserLoginDTO;
-import com.yitai.dto.sys.UserPageQueryDTO;
-import com.yitai.dto.sys.UserRoleDTO;
+import com.yitai.dto.sys.*;
 import com.yitai.entity.User;
 import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
@@ -22,6 +19,8 @@ import java.util.List;
  */
 public interface UserService {
     User login(UserLoginDTO userLoginDTO);
+
+    User login(LoginMessageDTO loginMessageDTO);
 
     void save(UserDTO userDTO);
 
@@ -42,4 +41,6 @@ public interface UserService {
     void assRole(UserRoleDTO userRoleDTO);
 
     List<String> getPermiList(Long id);
+
+    void sendMsg(String phoneNumber);
 }

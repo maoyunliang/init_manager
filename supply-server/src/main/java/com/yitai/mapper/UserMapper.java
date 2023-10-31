@@ -56,4 +56,7 @@ public interface UserMapper {
 
     @AutoFill(value = OperationType.INSERT)
     void assRole(List<UserRole> userRoles);
+
+    @Select("select * from order_user where phone = #{phoneNumber} and is_del = 0")
+    User getByPhone(String phoneNumber);
 }
