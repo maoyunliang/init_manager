@@ -1,6 +1,8 @@
 package com.yitai.dto.sys;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * ClassName: EmployeePageQueryDTO
@@ -12,6 +14,8 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserPageQueryDTO {
     private String username;
     private int page =1 ;

@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "菜单管理相关接口")
 @RestController
-@RequestMapping("admin/sys/menu")
+@RequestMapping("admin/menu")
 @Slf4j
 public class MenuController {
     @Autowired

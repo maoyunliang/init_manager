@@ -70,7 +70,7 @@ management:
 yitai:
   jwt:
     user-secret-key: yitai
-    user-ttl: 72000000
+    user-ttl: 604800000
     user-token-name: token
 
 # mybatis配置源
@@ -102,5 +102,3 @@ knife4j:
 logging:
   level:
     root: info
-
-

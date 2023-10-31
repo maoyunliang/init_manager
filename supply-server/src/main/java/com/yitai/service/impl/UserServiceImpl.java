@@ -8,17 +8,16 @@ import com.yitai.constant.MessageConstant;
 import com.yitai.constant.PasswordConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.sys.UserDTO;
-import com.yitai.dto.sys.UserLoginDTO;
-import com.yitai.dto.sys.UserPageQueryDTO;
-import com.yitai.dto.sys.UserRoleDTO;
+import com.yitai.dto.sys.*;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.UserService;
+import com.yitai.utils.SendMsgUtil;
 import com.yitai.utils.TreeUtil;
+import com.yitai.utils.VerifyCodeUtil;
 import com.yitai.vo.MenuVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import org.springframework.util.DigestUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private RedisTemplate<String, List<String>> redisTemplate;
+    private RedisTemplate redisTemplate;
     @Autowired
     UserMapper userMapper;
     @Override
@@ -70,6 +70,36 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Override
+    public User login(LoginMessageDTO loginMessageDTO) {
+        String phoneNumber = loginMessageDTO.getPhoneNumber();
+        //查询数据库是否有手机号
+        User user = userMapper.getByPhone(phoneNumber);
+        if (ObjectUtil.isNull(user)){
+            throw new ServiceException("该手机号不存在，请确认!");
+        }
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(phoneNumber + "-MSG"))){
+            throw new ServiceException("短信验证码失效，请重新获取!");
+        }
+        String real_verifyCode = (String) redisTemplate.opsForValue().get(phoneNumber+"-MSG");
+        String verifyCode = loginMessageDTO.getVerifyCode();
+        if(!verifyCode.equals(real_verifyCode)){
+            throw new ServiceException("短信验证码错误!");
+        }
+        return user;
+    }
+
+    @Override
+    public void sendMsg(String phoneNumber) {
+        User user = userMapper.getByPhone(phoneNumber);
+        if (ObjectUtil.isNull(user)){
+            throw new ServiceException("该手机号不存在，请确认!");
+        }
+        String verifyCode = VerifyCodeUtil.generateCode();
+        // 发送短信
+        SendMsgUtil.sendMsg(phoneNumber, verifyCode);
+        redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
+    }
     @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
@@ -186,4 +216,6 @@ public class UserServiceImpl implements UserService {
         redisTemplate.opsForValue().set(id.toString(), permessionList);
         return permessionList;
     }
+
+
 }

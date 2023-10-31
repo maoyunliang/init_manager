@@ -56,7 +56,7 @@
     <springProfile name="dev,test">
         <logger name="com.yitai" level="INFO">
             <appender-ref ref="CONSOLE" />
-            <appender-ref ref="ROLLING_FILE" />
+<!--            <appender-ref ref="ROLLING_FILE" />-->
         </logger>
     </springProfile>
     <!-- 生产环境 -->

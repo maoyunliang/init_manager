@@ -7,5 +7,5 @@ yitai:
   redis:
     host: 8.130.8.127
     port: 6379
-    database: 1
+    database: 0
     password: yitai
