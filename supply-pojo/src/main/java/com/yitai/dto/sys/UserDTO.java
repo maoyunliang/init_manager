@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 public class UserDTO {
     private Long id;
+    private Long tenantId;
     private String realname;
     private String username;
     private String idNumber;

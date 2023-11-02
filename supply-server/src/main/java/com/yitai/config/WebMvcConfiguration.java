@@ -1,6 +1,7 @@
 package com.yitai.config;
 
 import com.yitai.interceptor.JwtTokenAdminInterceptor;
+import com.yitai.interceptor.MybatisStatementInterceptor;
 import com.yitai.json.JacksonObjectMapper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -36,13 +37,14 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
-
+    @Autowired
+    private MybatisStatementInterceptor mybatisStatementInterceptor;
     /**
      * 注册自定义拦截器
      *
      */
     protected void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
+        log.info("=======开始注册自定义jwt拦截器=======");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/user/login", "/admin/user/sendMsg/*", "/admin/user/loginMessage");

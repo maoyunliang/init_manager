@@ -1,6 +1,7 @@
 package com.yitai.service;
 
 import com.yitai.dto.sys.*;
+import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
@@ -43,4 +44,6 @@ public interface UserService {
     List<String> getPermiList(Long id);
 
     void sendMsg(String phoneNumber);
+
+    List<Tenant> getTenant();
 }

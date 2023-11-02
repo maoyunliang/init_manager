@@ -4,6 +4,7 @@ import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.dto.sys.*;
+import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.enumeration.LogType;
 import com.yitai.properties.JwtProperties;
@@ -12,10 +13,13 @@ import com.yitai.result.Result;
 import com.yitai.service.UserService;
 import com.yitai.utils.JwtUtil;
 import com.yitai.vo.MenuVO;
+import com.yitai.vo.TenantVO;
 import com.yitai.vo.UserLoginVO;
+import com.yitai.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * ClassName: EmployeeController
@@ -116,9 +121,11 @@ public class UserController {
 
     @Operation(summary = "根据id查询用户信息")
     @GetMapping("/{id}")
-    public Result<User> getById(@PathVariable Long id){
+    public Result<UserVO> getById(@PathVariable Long id){
         User user = userService.getById(id);
-        return Result.success(user);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return Result.success(userVO);
     }
 
     @Operation(summary = "编辑用户信息")
@@ -133,10 +140,12 @@ public class UserController {
 
     @Operation(summary = "获取用户信息")
     @GetMapping("/getInfo")
-    public Result<User> getInfo(){
+    public Result<UserVO> getInfo(){
         log.info("获取用户信息：" );
         User user = userService.getInfo();
-        return Result.success(user);
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return Result.success(userVO);
     }
 
     @Operation(summary = "分配角色")
@@ -146,6 +155,19 @@ public class UserController {
         log.info("分配角色：{}", userRoleDTO);
         userService.assRole(userRoleDTO);
         return Result.success();
+    }
+
+    @Operation(summary = "获取关联租户")
+    @PostMapping ("/getTenant")
+    public Result<?> getTenant(){
+        log.info("获取关联租户");
+        List<Tenant> tenantList = userService.getTenant();
+        List<TenantVO> list = tenantList.stream().map(tenant -> {
+            TenantVO tenantVO = new TenantVO();
+            BeanUtils.copyProperties(tenant, tenantVO);
+            return tenantVO;
+        }).collect(Collectors.toList());
+        return Result.success(list);
     }
 
     public UserLoginVO loginSuccess(User user){

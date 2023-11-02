@@ -62,7 +62,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         try {
             log.info("jwt开始校验:{}", token);
             claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
-            log.info(String.valueOf(claims.getExpiration()));
+            log.info("token有效期至：{}",String.valueOf(claims.getExpiration()));
         } catch (Exception ex) {
             //4、不通过，响应401状态码
             throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);

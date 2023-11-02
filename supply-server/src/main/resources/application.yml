@@ -72,6 +72,9 @@ yitai:
     user-secret-key: yitai
     user-ttl: 604800000
     user-token-name: token
+  manger:
+    user-id: 888
+    role: root账号
 
 # mybatis配置源
 mybatis:

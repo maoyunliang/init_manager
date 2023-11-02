@@ -5,10 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.yitai.dto.sys.RoleDTO;
 import com.yitai.dto.sys.RoleMenuDTO;
 import com.yitai.dto.sys.RolePageQueryDTO;
-import com.yitai.entity.Menu;
 import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
-import com.yitai.entity.UserRole;
 import com.yitai.mapper.RoleMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.RoleService;
@@ -60,6 +58,9 @@ public class RoleServiceImpl implements RoleService {
         roleMapper.update(role);
     }
 
+    /**
+     * 给角色分配菜单
+     */
     @Override
     public void assMenu(RoleMenuDTO roleMenuDTO) {
         List<MenuRole> menuRoles = new ArrayList<>();

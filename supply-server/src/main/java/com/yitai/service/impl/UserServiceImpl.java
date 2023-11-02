@@ -1,5 +1,6 @@
 package com.yitai.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
@@ -9,10 +10,13 @@ import com.yitai.constant.PasswordConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.dto.sys.*;
+import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
+import com.yitai.entity.UserTenant;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
+import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.UserService;
 import com.yitai.utils.SendMsgUtil;
@@ -47,6 +51,8 @@ public class UserServiceImpl implements UserService {
     private RedisTemplate redisTemplate;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    MangerProperties mangerProperties;
     @Override
     public User login(UserLoginDTO userLoginDTO) {
         String username = userLoginDTO.getUsername();
@@ -100,6 +106,18 @@ public class UserServiceImpl implements UserService {
         SendMsgUtil.sendMsg(phoneNumber, verifyCode);
         redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
     }
+
+    @Override
+    public List<Tenant> getTenant() {
+        User user = BaseContext.getCurrentUser();
+        List<Tenant> list = user.getId() == mangerProperties.getUserId() ? userMapper.
+                getAllTenant() : userMapper.getTenant(user.getId());
+        if(CollUtil.isEmpty(list)){
+            throw new ServiceException("没有找到关联租户");
+        }
+        return list;
+    }
+
     @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
@@ -108,14 +126,16 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         //对象属性拷贝
         BeanUtils.copyProperties(userDTO, user);
-
         //设置账号的状态
         user.setStatus(StatusConstant.ENABLE);
-
         //设置默认密码
         user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-
-        userMapper.insert(user);
+        int records = userMapper.insert(user);
+        System.out.println(user.getId());
+        //关联相关租户
+        userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
+                tenantId(userDTO.getTenantId()).build());
+        //TODO 关联相关角色
     }
 
     @Override
@@ -145,7 +165,7 @@ public class UserServiceImpl implements UserService {
         if(ObjectUtil.isEmpty(user)){
             throw new ServiceException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-        user.setPassword("******");
+//        user.setPassword("******");
         return user;
     }
 
@@ -164,7 +184,7 @@ public class UserServiceImpl implements UserService {
         if (ObjectUtil.isNull(user)){
             throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
         }
-        user.setPassword("******");
+//        user.setPassword("******");
         return user;
     }
 
@@ -173,11 +193,20 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = new ArrayList<>();
         typeList.add("M");
         typeList.add("C");
-
-        List<MenuVO> menuList = userMapper.pageMenu(id, typeList);
+        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
+    }
+
+    @Override
+    public List<String> getPermiList(Long id) {
+        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+                pageAllMenu(Collections.singletonList("B")) : userMapper.pageMenu(id, Collections.singletonList("B"));
+        List<String> permissionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
+        redisTemplate.opsForValue().set(id.toString()+ "-permission", permissionList);
+        return permissionList;
     }
 
     @Override
@@ -209,13 +238,6 @@ public class UserServiceImpl implements UserService {
         //2、原生批量插入分片实现（解决sql拼接造成语句过大）
     }
 
-    @Override
-    public List<String> getPermiList(Long id) {
-        List<MenuVO> menuList = userMapper.pageMenu(id, Collections.singletonList("B"));
-        List<String> permessionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
-        redisTemplate.opsForValue().set(id.toString(), permessionList);
-        return permessionList;
-    }
 
 
 }
