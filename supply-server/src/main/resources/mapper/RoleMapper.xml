@@ -24,7 +24,21 @@
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
-        from role_1
+        from role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name like concat('%', #{roleName}, '%')
+            </if>
+            <if test="roleType != null and roleType != ''">
+                and role_type like concat('%', #{roleType}, '%')
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="Query" resultType="com.yitai.entity.Role">
+        select *
+        from role
         <where>
             <if test="roleName != null and roleName != ''">
                 and role_name like concat('%', #{roleName}, '%')

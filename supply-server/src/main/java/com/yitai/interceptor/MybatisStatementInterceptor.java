@@ -12,8 +12,10 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -44,20 +46,32 @@ public class MybatisStatementInterceptor implements Interceptor {
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
         MetaObject metaObject = MetaObject.forObject(statementHandler,
                 new DefaultObjectFactory(), new DefaultObjectWrapperFactory(), new DefaultReflectorFactory());
+//        MappedStatement mappedStatement = (MappedStatement)invocation.getArgs()[0];
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
         TableShard tableShard = getTableShard(mappedStatement);
         // 获取执行的参数
         Object parameterObject = boundSql.getParameterObject();
+        log.info("=======执行sql语句=======\n{}", boundSql.getSql());
         if(tableShard != null){
+            Long tenantId;
             //改装sql进行分表，直接传递给下一个拦截器处理
             //TODO 反射判断
-            Method getTenantId = parameterObject.getClass().getDeclaredMethod("getTenantId");
-            Long tenantId = (Long) getTenantId.invoke(parameterObject);
-            String newSql = boundSql.getSql().replace(tableShard.tableName(), tableShard.tableName() + "_" + tenantId);
+            if (parameterObject instanceof HashMap<?,?>){
+                tenantId = (Long) ((HashMap<?, ?>) parameterObject).get("tenantId");
+            }else {
+                Method getTenantId = parameterObject.getClass().getDeclaredMethod("getTenantId");
+                tenantId = (Long) getTenantId.invoke(parameterObject);
+            }
+            String newSql = boundSql.getSql().replace(tableShard.tableName(),
+                    tableShard.tableName() + "_" + tenantId);
+            log.info("=======sql检测到更新=======\n{}", newSql);
+            // 8. 对 BoundSql 对象通过反射修改 SQL 语句。
+            Field field = boundSql.getClass().getDeclaredField("sql");
+            field.setAccessible(true);
+            field.set(boundSql, newSql);
         }
-
         //组装sql
 
         return invocation.proceed();
@@ -73,7 +87,7 @@ public class MybatisStatementInterceptor implements Interceptor {
         // 分表注解
         TableShard tableShard = null;
         for (Method me : method) {
-            if (me.getName().equals(methodName) && me.isAnnotationPresent(TableShard.class)) {
+            if ((me.getName().equals(methodName) || me.getName().equals(methodName.split("_")[0]))  && me.isAnnotationPresent(TableShard.class)) {
                 tableShard = me.getAnnotation(TableShard.class);
             }
         }
@@ -90,4 +104,6 @@ public class MybatisStatementInterceptor implements Interceptor {
     }
 
 }
+
+
 

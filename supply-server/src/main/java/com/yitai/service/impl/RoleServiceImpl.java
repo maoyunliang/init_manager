@@ -7,6 +7,7 @@ import com.yitai.dto.sys.RoleMenuDTO;
 import com.yitai.dto.sys.RolePageQueryDTO;
 import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.RoleMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.RoleService;
@@ -32,11 +33,17 @@ public class RoleServiceImpl implements RoleService {
     private RoleMapper roleMapper;
     @Override
     public PageResult pageQuery(RolePageQueryDTO pageQueryDTO) {
-        PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
-        Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
-        long total = page.getTotal();
-        List<Role> records = page.getResult();
-        return new PageResult(total,records);
+        try {
+            PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
+            Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
+            long total = page.getTotal();
+            List<Role> records = page.getResult();
+            return new PageResult(total,records);
+        }catch (Exception e){
+            throw new ServiceException("请携带正确的租户id参数");
+        }
+//        List<Role> roles= roleMapper.Query(pageQueryDTO);
+//        return new PageResult(1,roles);
     }
 
     @Override

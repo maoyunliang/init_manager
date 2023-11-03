@@ -1,7 +1,6 @@
 package com.yitai.config;
 
 import com.yitai.interceptor.JwtTokenAdminInterceptor;
-import com.yitai.interceptor.MybatisStatementInterceptor;
 import com.yitai.json.JacksonObjectMapper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -37,8 +36,6 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
-    @Autowired
-    private MybatisStatementInterceptor mybatisStatementInterceptor;
     /**
      * 注册自定义拦截器
      *

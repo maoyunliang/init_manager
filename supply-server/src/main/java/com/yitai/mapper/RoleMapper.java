@@ -31,6 +31,9 @@ public interface RoleMapper {
     @TableShard(tableName = "role", type = ShardType.TENANT_ID)
     Page<Role> pageQuery(RolePageQueryDTO pageQueryDTO);
 
+//    @TableShard(tableName = "role", type = ShardType.TENANT_ID)
+    List<Role> Query(RolePageQueryDTO pageQueryDTO);
+
     @Insert("insert into role_1(id, role_name, role_type, role_desc," +
             "create_time, update_time, create_user, update_user, is_del) values (#{id}," +
             "#{roleName},#{roleType}, #{roleDesc}, #{createTime}, #{updateTime}," +

@@ -59,10 +59,6 @@
         </dependency>
         <dependency>
             <groupId>com.aliyun</groupId>
-            <artifactId>tea-openapi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
             <artifactId>dysmsapi20170525</artifactId>
         </dependency>
 
