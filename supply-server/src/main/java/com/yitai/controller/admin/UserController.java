@@ -80,8 +80,12 @@ public class UserController {
     @PostMapping ("/sendMsg/{phoneNumber}")
     public Result<?> sendMsg(@PathVariable String phoneNumber){
         log.info("发送短信验证码：{}", phoneNumber);
-        userService.sendMsg(phoneNumber);
-        return Result.success();
+        if(userService.sendMsg(phoneNumber)){
+            return Result.success();
+        }else{
+            return Result.error("发送失败");
+        }
+
     }
 
 

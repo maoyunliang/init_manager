@@ -47,10 +47,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void save(RoleDTO addRoleDTO) {
+    public void save(RoleDTO roleDTO) {
         Role role = new Role();
-        BeanUtils.copyProperties(addRoleDTO, role);
-        roleMapper.save(role);
+        BeanUtils.copyProperties(roleDTO, role);
+        roleMapper.save(role, roleDTO.getTenantId());
     }
 
     @Override

@@ -26,7 +26,7 @@ public class RedisConfiguration {
     @Bean
     @SuppressWarnings("all")
     public <T> RedisTemplate<String, T> redisTemplate(RedisConnectionFactory redisConnectionFactory){
-        log.info("开始创建redis模板类");
+        log.info("=======开始创建redis模板类=======");
         RedisTemplate<String, T> redisTemplate = new RedisTemplate<>();
         //设置redis的连接工厂对象
         redisTemplate.setConnectionFactory(redisConnectionFactory);

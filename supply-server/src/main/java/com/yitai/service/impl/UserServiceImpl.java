@@ -96,15 +96,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendMsg(String phoneNumber) {
+    public boolean sendMsg(String phoneNumber) {
         User user = userMapper.getByPhone(phoneNumber);
         if (ObjectUtil.isNull(user)){
             throw new ServiceException("该手机号不存在，请确认!");
         }
         String verifyCode = VerifyCodeUtil.generateCode();
         // 发送短信
-        SendMsgUtil.sendMsg(phoneNumber, verifyCode);
-        redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
+        if(SendMsgUtil.sendMsg(phoneNumber, verifyCode)){
+            redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -131,7 +134,6 @@ public class UserServiceImpl implements UserService {
         //设置默认密码
         user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         int records = userMapper.insert(user);
-        System.out.println(user.getId());
         //关联相关租户
         userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
                 tenantId(userDTO.getTenantId()).build());
@@ -212,7 +214,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void logOut() {
         User user = BaseContext.getCurrentUser();
-        redisTemplate.delete(user.getId().toString());
+        redisTemplate.delete(user.getId().toString()+"-token");
+        redisTemplate.delete(user.getId().toString()+"-permission");
     }
 
     @Override
@@ -234,7 +237,7 @@ public class UserServiceImpl implements UserService {
 //        userRoleDTO.getRoleIds().forEach(roleId ->{
 //            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
 //        });
-        userMapper.assRole(userRoles);
+        userMapper.assRole(userRoles, userRoleDTO.getTenantId());
         //2、原生批量插入分片实现（解决sql拼接造成语句过大）
     }
 

@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserPageQueryDTO {
     private String username;
+    private Long tenantId;
     private int page =1 ;
     private int pageSize =10;
 }

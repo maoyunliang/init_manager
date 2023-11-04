@@ -28,18 +28,19 @@ import java.util.List;
 @Mapper
 public interface RoleMapper {
 
-    @TableShard(tableName = "role", type = ShardType.TENANT_ID)
+    @TableShard(tableName = "role_*", type = ShardType.TABLE)
     Page<Role> pageQuery(RolePageQueryDTO pageQueryDTO);
 
 //    @TableShard(tableName = "role", type = ShardType.TENANT_ID)
     List<Role> Query(RolePageQueryDTO pageQueryDTO);
 
-    @Insert("insert into role_1(id, role_name, role_type, role_desc," +
-            "create_time, update_time, create_user, update_user, is_del) values (#{id}," +
-            "#{roleName},#{roleType}, #{roleDesc}, #{createTime}, #{updateTime}," +
-            " #{createUser}, #{updateUser}, #{isDel})")
+    @Insert("insert into role_*(id, role_name, role_type, role_desc," +
+            "create_time, update_time, create_user, update_user, is_del) values (#{role.id}," +
+            "#{role.roleName},#{role.roleType}, #{role.roleDesc}, #{role.createTime}, #{role.updateTime}," +
+            " #{role.createUser}, #{role.updateUser}, #{role.isDel})")
     @AutoFill(value = OperationType.INSERT)
-    void save(Role role);
+    @TableShard(tableName = "role_*", type = ShardType.TABLE)
+    void save(@Param("role") Role role, @Param("tenantId") Long tenantId);
 
 
     @Update("UPDATE role_1 set is_del = 1 where id = #{roleId}")

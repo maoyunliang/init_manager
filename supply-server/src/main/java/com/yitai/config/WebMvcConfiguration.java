@@ -44,11 +44,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("=======开始注册自定义jwt拦截器=======");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/user/login", "/admin/user/sendMsg/*", "/admin/user/loginMessage");
+                .excludePathPatterns("/admin/user/login", "/admin/user/sendMsg/*",
+                        "/admin/user/loginMessage");
     }
     @Bean
     public OpenAPI springShopOpenAPI() {
-        log.info("开始生成静态文档");
+        log.info("=======开始生成静态文档=======");
         return new OpenAPI()
                 .info(new Info().title("供应链系统项目接口文档")
                         //描叙
@@ -63,7 +64,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
 //    设置静态资源映射
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        log.info("开始设置静态资源映射");
+        log.info("=======开始设置静态资源映射=======");
         registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("swagger-ui/**")
@@ -77,7 +78,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      *
      */
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters){
-        log.info("开始扩展消息转换器");
+        log.info("=======开始扩展消息转换器=======");
         //创建一个消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         //设置对象转换器,将java对象序列化为json数据

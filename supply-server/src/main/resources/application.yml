@@ -51,21 +51,21 @@ spring:
       database: ${yitai.redis.database}
       password: ${yitai.redis.password}
   #spring boot admin
-  boot:
-    admin:
-      client:
-#        url: http://www.yitaitech.cn:9001
-        url: http://localhost:9001
+#  boot:
+#    admin:
+#      client:
+##        url: http://www.yitaitech.cn:9001
+#        url: http://localhost:9001
 #        instance:
 #          service-url: http://8.130.8.127:8855
-management:
-  endpoint:
-    health:
-      show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+#management:
+#  endpoint:
+#    health:
+#      show-details: always
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"
 # 自定义配置源
 yitai:
   jwt:

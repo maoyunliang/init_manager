@@ -2,12 +2,14 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
+import com.yitai.annotation.TableShard;
 import com.yitai.dto.sys.UserPageQueryDTO;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
 import com.yitai.entity.UserTenant;
 import com.yitai.enumeration.OperationType;
+import com.yitai.enumeration.ShardType;
 import com.yitai.vo.MenuVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -39,6 +41,7 @@ public interface UserMapper {
     分页查询
      */
 
+    //@TableShard(tableName = "role", type = ShardType.ID)
     Page<User> pageQuery(UserPageQueryDTO userPageQueryDTO);
 
 
@@ -56,7 +59,8 @@ public interface UserMapper {
     List<MenuVO> pageAllMenu(List<String> typeList);
 
     @AutoFill(value = OperationType.INSERT)
-    void assRole(List<UserRole> userRoles);
+    @TableShard(tableName = "user_role_*", type = ShardType.TABLE)
+    void assRole(@Param("list") List<UserRole> userRoleList, @Param("tenantId") Long tenantId);
 
     @Select("select * from public_user where phone = #{phoneNumber} and is_del = 0")
     User getByPhone(String phoneNumber);
@@ -65,6 +69,4 @@ public interface UserMapper {
 
     @Select("select * from public_tenant where is_del = 0")
     List<Tenant> getAllTenant();
-
-
 }

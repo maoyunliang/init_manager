@@ -43,7 +43,7 @@ public interface UserService {
 
     List<String> getPermiList(Long id);
 
-    void sendMsg(String phoneNumber);
+    boolean sendMsg(String phoneNumber);
 
     List<Tenant> getTenant();
 }

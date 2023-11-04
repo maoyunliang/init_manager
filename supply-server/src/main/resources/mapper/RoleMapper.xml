@@ -24,7 +24,7 @@
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
-        from role
+        from role_*
         <where>
             <if test="roleName != null and roleName != ''">
                 and role_name like concat('%', #{roleName}, '%')

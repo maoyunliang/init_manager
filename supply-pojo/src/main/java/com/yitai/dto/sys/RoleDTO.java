@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 public class RoleDTO {
     private Long id;
+    private Long tenantId;
     private String roleName;
     private String roleType;
     private String roleDesc;
