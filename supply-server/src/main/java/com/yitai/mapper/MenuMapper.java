@@ -25,7 +25,7 @@ public interface MenuMapper {
     @AutoFill(value = OperationType.INSERT)
     int save(Menu menu);
 
-    @Update("UPDATE order_menu set is_del = 1 where id = #{menuId}")
+    @Update("UPDATE public_menu set is_del = 1 where id = #{menuId}")
     void deleteById(Integer menuId);
 
     @AutoFill(value = OperationType.UPDATE)

@@ -20,7 +20,7 @@ import java.util.List;
 @Mapper
 public interface LogMapper {
     Page<Logs> pageQuery(LogPageQueryDTO logPageQueryDTO);
-    @Delete("delete from order_logs where id = #{id}")
+    @Delete("delete from public_logs where id = #{id}")
     void removeById(Integer id);
     void removeBatchIds(List<Integer> ids);
     void save(Logs logs);

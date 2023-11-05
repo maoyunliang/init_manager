@@ -5,7 +5,7 @@
     <select id="pageQuery" parameterType="com.yitai.dto.sys.LogPageQueryDTO"
             resultType="com.yitai.entity.Logs">
         select *
-        from order_logs
+        from public_logs
         <where>
             <if test="operation !=null and operation != ''">
                 and operation like concat('%',#{operation},'%')
@@ -14,14 +14,14 @@
         order by id desc
     </select>
     <delete id="removeBatchIds" parameterType="list">
-        delete from order_logs
+        delete from public_logs
         where id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
     <insert id="save" parameterType="logs">
-        insert into order_logs (operation, type, ip, user, time)
+        insert into public_logs (operation, type, ip, user, time)
         values (#{operation}, #{type}, #{ip}, #{user}, #{time} )
     </insert>
 </mapper>

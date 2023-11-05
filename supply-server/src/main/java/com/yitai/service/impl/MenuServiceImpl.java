@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.yitai.dto.sys.MenuDTO;
 import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
-import com.yitai.entity.MenuRole;
 import com.yitai.mapper.MenuMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.MenuService;
@@ -38,7 +37,7 @@ public class MenuServiceImpl implements MenuService {
     }
 
     /**
-     * 每次新建菜单的同时赋予ROOT管理员权限
+     * 新建菜单
      */
     @Override
     public void save(MenuDTO menuDTO) {
@@ -46,9 +45,10 @@ public class MenuServiceImpl implements MenuService {
         BeanUtils.copyProperties(menuDTO, menu);
         //返回记录行数
         int records = menuMapper.save(menu);
-        MenuRole menuRole = MenuRole.builder().roleId(888L).menuId(menu.getId()).build();
-        // 插入到系统管理员
-        menuMapper.givePermit(menuRole);
+        //每次新建菜单给是否要同时给租户管理员增加权限后期可以考虑
+//        MenuRole menuRole = MenuRole.builder().roleId(888L).menuId(menu.getId()).build();
+//        // 插入到系统管理员
+//        menuMapper.givePermit(menuRole);
     }
 
     @Override

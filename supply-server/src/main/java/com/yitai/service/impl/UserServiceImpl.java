@@ -1,5 +1,6 @@
 package com.yitai.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
@@ -8,17 +9,19 @@ import com.yitai.constant.MessageConstant;
 import com.yitai.constant.PasswordConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.sys.UserDTO;
-import com.yitai.dto.sys.UserLoginDTO;
-import com.yitai.dto.sys.UserPageQueryDTO;
-import com.yitai.dto.sys.UserRoleDTO;
+import com.yitai.dto.sys.*;
+import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
+import com.yitai.entity.UserTenant;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
+import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.UserService;
+import com.yitai.utils.SendMsgUtil;
 import com.yitai.utils.TreeUtil;
+import com.yitai.utils.VerifyCodeUtil;
 import com.yitai.vo.MenuVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import org.springframework.util.DigestUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +48,11 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private RedisTemplate<String, List<String>> redisTemplate;
+    private RedisTemplate redisTemplate;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    MangerProperties mangerProperties;
     @Override
     public User login(UserLoginDTO userLoginDTO) {
         String username = userLoginDTO.getUsername();
@@ -71,6 +77,51 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User login(LoginMessageDTO loginMessageDTO) {
+        String phoneNumber = loginMessageDTO.getPhoneNumber();
+        //查询数据库是否有手机号
+        User user = userMapper.getByPhone(phoneNumber);
+        if (ObjectUtil.isNull(user)){
+            throw new ServiceException("该手机号不存在，请确认!");
+        }
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(phoneNumber + "-MSG"))){
+            throw new ServiceException("短信验证码失效，请重新获取!");
+        }
+        String real_verifyCode = (String) redisTemplate.opsForValue().get(phoneNumber+"-MSG");
+        String verifyCode = loginMessageDTO.getVerifyCode();
+        if(!verifyCode.equals(real_verifyCode)){
+            throw new ServiceException("短信验证码错误!");
+        }
+        return user;
+    }
+
+    @Override
+    public boolean sendMsg(String phoneNumber) {
+        User user = userMapper.getByPhone(phoneNumber);
+        if (ObjectUtil.isNull(user)){
+            throw new ServiceException("该手机号不存在，请确认!");
+        }
+        String verifyCode = VerifyCodeUtil.generateCode();
+        // 发送短信
+        if(SendMsgUtil.sendMsg(phoneNumber, verifyCode)){
+            redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<Tenant> getTenant() {
+        User user = BaseContext.getCurrentUser();
+        List<Tenant> list = user.getId() == mangerProperties.getUserId() ? userMapper.
+                getAllTenant() : userMapper.getTenant(user.getId());
+        if(CollUtil.isEmpty(list)){
+            throw new ServiceException("没有找到关联租户");
+        }
+        return list;
+    }
+
+    @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
             throw new ServiceException("请输入正确的账号");
@@ -78,14 +129,15 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         //对象属性拷贝
         BeanUtils.copyProperties(userDTO, user);
-
         //设置账号的状态
         user.setStatus(StatusConstant.ENABLE);
-
         //设置默认密码
         user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-
-        userMapper.insert(user);
+        int records = userMapper.insert(user);
+        //关联相关租户
+        userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
+                tenantId(userDTO.getTenantId()).build());
+        //TODO 关联相关角色
     }
 
     @Override
@@ -115,7 +167,7 @@ public class UserServiceImpl implements UserService {
         if(ObjectUtil.isEmpty(user)){
             throw new ServiceException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
-        user.setPassword("******");
+//        user.setPassword("******");
         return user;
     }
 
@@ -134,7 +186,7 @@ public class UserServiceImpl implements UserService {
         if (ObjectUtil.isNull(user)){
             throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
         }
-        user.setPassword("******");
+//        user.setPassword("******");
         return user;
     }
 
@@ -143,17 +195,27 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = new ArrayList<>();
         typeList.add("M");
         typeList.add("C");
-
-        List<MenuVO> menuList = userMapper.pageMenu(id, typeList);
+        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
     }
 
     @Override
+    public List<String> getPermiList(Long id) {
+        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+                pageAllMenu(Collections.singletonList("B")) : userMapper.pageMenu(id, Collections.singletonList("B"));
+        List<String> permissionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
+        redisTemplate.opsForValue().set(id.toString()+ "-permission", permissionList);
+        return permissionList;
+    }
+
+    @Override
     public void logOut() {
         User user = BaseContext.getCurrentUser();
-        redisTemplate.delete(user.getId().toString());
+        redisTemplate.delete(user.getId().toString()+"-token");
+        redisTemplate.delete(user.getId().toString()+"-permission");
     }
 
     @Override
@@ -175,15 +237,10 @@ public class UserServiceImpl implements UserService {
 //        userRoleDTO.getRoleIds().forEach(roleId ->{
 //            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
 //        });
-        userMapper.assRole(userRoles);
+        userMapper.assRole(userRoles, userRoleDTO.getTenantId());
         //2、原生批量插入分片实现（解决sql拼接造成语句过大）
     }
 
-    @Override
-    public List<String> getPermiList(Long id) {
-        List<MenuVO> menuList = userMapper.pageMenu(id, Collections.singletonList("B"));
-        List<String> permessionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
-        redisTemplate.opsForValue().set(id.toString(), permessionList);
-        return permessionList;
-    }
+
+
 }

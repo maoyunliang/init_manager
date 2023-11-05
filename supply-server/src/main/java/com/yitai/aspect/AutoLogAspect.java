@@ -4,10 +4,12 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.yitai.annotation.AutoLog;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
+import com.yitai.dto.sys.LoginMessageDTO;
 import com.yitai.dto.sys.UserLoginDTO;
 import com.yitai.entity.Logs;
 import com.yitai.entity.User;
@@ -83,6 +85,8 @@ public class AutoLogAspect {
             if (ArrayUtil.isNotEmpty(args)){
                 if(args[0] instanceof UserLoginDTO userLoginDTO){
                     user = User.builder().username(userLoginDTO.getUsername()).build();
+                } else if (args[0] instanceof LoginMessageDTO loginMessageDTO){
+                    user = User.builder().phone(loginMessageDTO.getPhoneNumber()).build();
                 }
             }
         }
@@ -101,8 +105,9 @@ public class AutoLogAspect {
         if (request != null) {
             ipAddr = IpUtils.getIpAddr(request);
         }
+        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
         //组装日志的实体对象
-        Logs logs = Logs.builder().user(user.getUsername()).
+        Logs logs = Logs.builder().user(username).
                 operation(autoLog.operation()).
                 type(autoLog.type().getValue()).
                 ip(ipAddr).time(DateUtil.now()).build();

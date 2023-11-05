@@ -3,7 +3,7 @@ package com.yitai.interceptor;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.exception.ServiceException;
+import com.yitai.exception.NotAuthException;
 import com.yitai.mapper.UserMapper;
 import com.yitai.properties.JwtProperties;
 import com.yitai.utils.JwtUtil;
@@ -12,10 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Objects;
 
 
 /**
@@ -38,6 +40,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
     /*
       校验jwt
      */
@@ -54,20 +58,26 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         String token = request.getHeader(jwtProperties.getUserTokenName());
 
         //2、校验令牌
+        Claims claims;
         try {
             log.info("jwt开始校验:{}", token);
-            Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
-            long userId = Long.parseLong(claims.get(JwtClaimsConstant.USER_ID).toString());
-//            String name = (String) claims.get(JwtClaimsConstant.USERNAME);
-            BaseContext.setCurrentUser(userMapper.getById(userId));
-//            System.out.println(router);
-            //3、通过，放行
-            return true;
+            claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
+            log.info("token有效期至：{}",String.valueOf(claims.getExpiration()));
         } catch (Exception ex) {
             //4、不通过，响应401状态码
-            log.info("用户认证失败");
-            throw new ServiceException(MessageConstant.TOKEN_NOT_FIND);
+            throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);
             //response.setStatus(HttpStatusConstant.HTTP_FORBIDDEN);
         }
+        String userId = claims.get(JwtClaimsConstant.USER_ID).toString();
+        String redisToken = (String) redisTemplate.opsForValue().get(userId.concat("-token"));
+        if (redisToken == null || !Objects.equals(redisToken, token)) {
+            throw new NotAuthException(MessageConstant.ACCOUNT_ELSE);
+        }
+//            String name = (String) claims.get(JwtClaimsConstant.USERNAME);
+        BaseContext.setCurrentUser(userMapper.getById(Long.valueOf(userId)));
+//            System.out.println(router);
+        //3、通过，放行
+        return true;
+
     }
 }

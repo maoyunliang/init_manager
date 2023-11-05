@@ -5,10 +5,9 @@ import com.github.pagehelper.PageHelper;
 import com.yitai.dto.sys.RoleDTO;
 import com.yitai.dto.sys.RoleMenuDTO;
 import com.yitai.dto.sys.RolePageQueryDTO;
-import com.yitai.entity.Menu;
 import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
-import com.yitai.entity.UserRole;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.RoleMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.RoleService;
@@ -34,18 +33,22 @@ public class RoleServiceImpl implements RoleService {
     private RoleMapper roleMapper;
     @Override
     public PageResult pageQuery(RolePageQueryDTO pageQueryDTO) {
-        PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
-        Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
-        long total = page.getTotal();
-        List<Role> records = page.getResult();
-        return new PageResult(total,records);
+        try {
+            PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
+            Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
+            long total = page.getTotal();
+            List<Role> records = page.getResult();
+            return new PageResult(total,records);
+        }catch (Exception e){
+            throw new ServiceException("请携带正确的租户id参数");
+        }
     }
 
     @Override
-    public void save(RoleDTO addRoleDTO) {
+    public void save(RoleDTO roleDTO) {
         Role role = new Role();
-        BeanUtils.copyProperties(addRoleDTO, role);
-        roleMapper.save(role);
+        BeanUtils.copyProperties(roleDTO, role);
+        roleMapper.save(role, roleDTO.getTenantId());
     }
 
     @Override
@@ -54,12 +57,15 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void update(RoleDTO updateRoleDTO) {
+    public void update(RoleDTO roleDTO) {
         Role role = new Role();
-        BeanUtils.copyProperties(updateRoleDTO, role);
+        BeanUtils.copyProperties(roleDTO, role);
         roleMapper.update(role);
     }
 
+    /**
+     * 给角色分配菜单
+     */
     @Override
     public void assMenu(RoleMenuDTO roleMenuDTO) {
         List<MenuRole> menuRoles = new ArrayList<>();

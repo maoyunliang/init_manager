@@ -26,14 +26,14 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "角色管理相关接口")
 @RestController
-@RequestMapping("admin/sys/role")
+@RequestMapping("admin/role")
 @Slf4j
 public class RoleController {
     @Autowired
     private RoleService roleService;
     @Operation(summary = "角色分页查询")
-    @GetMapping("/page")
-    public Result<PageResult> page(@ModelAttribute RolePageQueryDTO pageQueryDTO){
+    @PostMapping ("/page")
+    public Result<PageResult> page(@RequestBody RolePageQueryDTO pageQueryDTO){
         log.info("分页查询:{}", pageQueryDTO);
         PageResult pageResult = roleService.pageQuery(pageQueryDTO);
         return Result.success(pageResult);

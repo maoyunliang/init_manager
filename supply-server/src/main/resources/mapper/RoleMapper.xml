@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.RoleMapper">
     <insert id="assMenu">
-        insert into order_role_menu(id, role_id, menu_id, create_time,
+        insert into role_menu_*(id, role_id, menu_id, create_time,
         update_time, create_user, update_user, is_del)
         values
         <foreach collection="list" separator="," item="item">
@@ -12,7 +12,7 @@
         </foreach>
     </insert>
     <update id="update" parameterType="com.yitai.entity.Role">
-        update supply_chain_test.order_role
+        update role_*
         <set>
             <if test="roleName != null">role_name = #{roleName},</if>
             <if test="roleType != null">role_type = #{roleType},</if>
@@ -24,7 +24,7 @@
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
-        from supply_chain_test.order_role
+        from role_*
         <where>
             <if test="roleName != null and roleName != ''">
                 and role_name like concat('%', #{roleName}, '%')

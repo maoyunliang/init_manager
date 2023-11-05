@@ -17,5 +17,6 @@ import java.util.List;
 public class UserRoleDTO {
     private Long id;
     private Long userId;
+    private Long tenantId;
     private List<Long> roleIds;
 }

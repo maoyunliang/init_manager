@@ -3,18 +3,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.MenuMapper">
     <insert id="givePermit">
-        Insert into order_role_menu(id, role_id, menu_id, create_time,
+        Insert into role_menu_1(id, role_id, menu_id, create_time,
                                     update_time, create_user, update_user, is_del)
         values (#{id},#{roleId},#{menuId},#{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{isDel})
     </insert>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        Insert into order_menu(id, menu_name, menu_path, menu_type, menu_pid, sort_no, create_time,
+        Insert into public_menu(id, menu_name, menu_path, menu_type, menu_pid, sort_no, create_time,
                                update_time, create_user, update_user, is_del)
         values (#{id}, #{menuName},#{menuPath}, #{menuType}, #{menuPid}, #{sortNo}, #{createTime},
                 #{updateTime}, #{createUser}, #{updateUser}, #{isDel})
     </insert>
     <update id="update" parameterType="com.yitai.entity.Menu">
-        update order_menu
+        update public_menu
         <set>
             <if test="menuName != null">menu_name = #{menuName},</if>
             <if test="menuType != null">menu_type = #{menuType},</if>
@@ -28,7 +28,7 @@
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.Menu">
         select *
-        from order_menu
+        from public_menu
         <where>
             <if test="menuName != null and menuName != ''">
                 and menu_name like concat('%', #{menuName}, '%')

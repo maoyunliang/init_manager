@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
+
     <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 
     <contextName>yitai_supply</contextName>
@@ -54,10 +55,10 @@
     </appender>
     <!-- 开发环境和测试环境 -->
     <springProfile name="dev,test">
-        <logger name="com.yitai" level="INFO">
+        <root level = "INFO">
             <appender-ref ref="CONSOLE" />
-            <appender-ref ref="ROLLING_FILE" />
-        </logger>
+        </root>
+<!--            <appender-ref ref="ROLLING_FILE" />-->
     </springProfile>
     <!-- 生产环境 -->
     <springProfile name="prod">

@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "菜单管理相关接口")
 @RestController
-@RequestMapping("admin/sys/menu")
+@RequestMapping("admin/menu")
 @Slf4j
 public class MenuController {
     @Autowired
     private MenuService menuService;
     @Operation(summary = "菜单分页查询")
-    @GetMapping("/page")
+    @PostMapping("/page")
     public Result<PageResult> page(@ModelAttribute MenuPageQueryDTO menuPageQueryDTO){
         log.info("分页查询:{}", menuPageQueryDTO);
         PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);

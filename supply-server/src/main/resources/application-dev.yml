@@ -5,6 +5,7 @@ yitai:
     password: Yitai@888
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
-    host: 172.31.12.101
+    host: 8.130.8.127
     port: 6379
-    database: 1
+    database: 0
+    password: yitai

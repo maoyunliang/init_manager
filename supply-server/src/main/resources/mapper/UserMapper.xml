@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.UserMapper">
     <insert id="assRole">
-        insert into order_user_role(id, user_id, role_id, create_time,
+        insert into user_role_*(id, user_id, role_id, create_time,
                                                               update_time, create_user, update_user, is_del)
         values
         <foreach collection="list" separator="," item="item">
@@ -11,8 +11,22 @@
              #{item.updateTime}, #{item.createUser}, #{item.updateUser}, #{item.isDel})
         </foreach>
     </insert>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into public_user(id, username, openid, realname, password, phone, email, sex,
+                               id_number, status, avatar, create_time, update_time, create_user, update_user, is_del)
+        values (#{id}, #{username},#{openid}, #{realname}, #{password}, #{phone}, #{email}, #{sex},
+                #{idNumber}, #{status}, #{avatar}, #{createTime}, #{updateTime}, #{createUser},
+                #{updateUser}, #{isDel})
+
+    </insert>
+    <insert id="insertUserTenant">
+        insert into public_user_tenant(id, user_id, tenant_id, create_time, update_time, create_user, update_user, is_del)
+        values (#{id}, #{userId}, #{tenantId}, #{createTime}, #{updateTime}, #{createUser},
+                #{updateUser}, #{isDel})
+    </insert>
+
     <update id="update" parameterType="User">
-        update order_user
+        update public_user
         <set>
             <if test="username != null">username = #{username},</if>
             <if test="realname != null">realname = #{realname},</if>
@@ -29,22 +43,26 @@
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.User">
         select *
-        from order_user
+        from public_user pu
+        join public_user_tenant put on pu.id = put.user_id
         <where>
             <if test="username !=null and username != ''">
-                and username like concat('%',#{username},'%')
+                and pu.username like concat('%',#{username},'%')
             </if>
-                and is_del = 0
+            <if test="tenantId !=null and tenantId != ''">
+                and put.tenant_id =  #{tenantId}
+            </if>
+                and pu.is_del = 0
         </where>
-        order by create_time desc
+        order by pu.create_time desc
     </select>
     <select id="pageMenu" resultType="com.yitai.vo.MenuVO">
         select m.id, m.menu_name,m.menu_type,m.menu_path,m.menu_pid, m.sort_no
-        from order_user u
-                 join order_user_role ur on u.id = ur.user_id
-                 join order_role r on ur.role_id= r.id
-                 join order_role_menu rm on r.id = rm.role_id
-                 join order_menu m on rm.menu_id = m.id
+        from public_user u
+                 join user_role_1 ur on u.id = ur.user_id
+                 join role_1 r on ur.role_id= r.id
+                 join role_menu_1 rm on r.id = rm.role_id
+                 join public_menu m on rm.menu_id = m.id
         <where>
             and user_id = #{id}
             <if test="typeList !=null and typeList != ''">
@@ -56,4 +74,31 @@
             </if>
         </where>
     </select>
+
+    <select id="pageAllMenu" resultType="com.yitai.vo.MenuVO">
+        select *
+        from public_menu
+        <where>
+            <if test="typeList !=null and typeList != ''">
+                and menu_type in
+                <foreach collection="typeList" item="item"
+                         open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="getTenant" resultType="com.yitai.entity.Tenant">
+        select public_tenant.id, public_tenant.tenant_id, public_tenant.tenant_name
+        from public_user_tenant
+        join public_tenant on public_tenant.id = public_user_tenant.tenant_id
+        <where>
+            <if test="userId !=null and userId != ''">
+                and public_user_tenant.user_id = #{userId}
+            </if>
+                and public_tenant.is_del = 0
+        </where>
+    </select>
+
 </mapper>

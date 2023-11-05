@@ -15,6 +15,7 @@ import lombok.Data;
 public class RolePageQueryDTO {
     private String roleName;
     private String roleType;
+    private Long tenantId;
     private int page =1 ;
     private int pageSize =10;
 }
