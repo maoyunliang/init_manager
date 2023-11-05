@@ -42,8 +42,6 @@ public class RoleServiceImpl implements RoleService {
         }catch (Exception e){
             throw new ServiceException("请携带正确的租户id参数");
         }
-//        List<Role> roles= roleMapper.Query(pageQueryDTO);
-//        return new PageResult(1,roles);
     }
 
     @Override
@@ -59,9 +57,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void update(RoleDTO updateRoleDTO) {
+    public void update(RoleDTO roleDTO) {
         Role role = new Role();
-        BeanUtils.copyProperties(updateRoleDTO, role);
+        BeanUtils.copyProperties(roleDTO, role);
         roleMapper.update(role);
     }
 

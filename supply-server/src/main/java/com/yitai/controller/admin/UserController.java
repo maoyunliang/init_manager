@@ -154,6 +154,7 @@ public class UserController {
 
     @Operation(summary = "分配角色")
     @HasPermit(permission = "sys:user:ass")
+    @AutoLog(operation = "分配用户角色", type = LogType.ASSIGN)
     @PostMapping ("/assRole")
     public Result<?> assRole(@RequestBody UserRoleDTO userRoleDTO){
         log.info("分配角色：{}", userRoleDTO);

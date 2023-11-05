@@ -59,7 +59,7 @@ public interface UserMapper {
     List<MenuVO> pageAllMenu(List<String> typeList);
 
     @AutoFill(value = OperationType.INSERT)
-    @TableShard(tableName = "user_role_*", type = ShardType.TABLE)
+    @TableShard(type = ShardType.TABLE)
     void assRole(@Param("list") List<UserRole> userRoleList, @Param("tenantId") Long tenantId);
 
     @Select("select * from public_user where phone = #{phoneNumber} and is_del = 0")

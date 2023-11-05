@@ -1,8 +1,5 @@
 package com.yitai.interceptor;
 
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.util.JdbcConstants;
 import com.yitai.annotation.TableShard;
 import com.yitai.enumeration.ShardType;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +17,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -68,9 +64,9 @@ public class MybatisStatementInterceptor implements Interceptor {
                 tenantId = (Long) getTenantId.invoke(parameterObject);
             }
             if(tableShard.type() == ShardType.TABLE) {
-                rewriteTableSql(boundSql, tableShard, tenantId);
+                rewriteTableSql(boundSql, tenantId);
             }else if (tableShard.type() == ShardType.ID){
-                rewriteFieldSql(boundSql, tableShard, tenantId);
+                rewriteFieldSql(boundSql, tenantId);
             }else {
                 throw new Exception();
             }
@@ -82,27 +78,16 @@ public class MybatisStatementInterceptor implements Interceptor {
 
     /**
      * 添加TenantId字段
-     * @param boundSql
-     * @param tableShard
      */
-    private void rewriteFieldSql(BoundSql boundSql, TableShard tableShard, Long tenantId) throws Exception {
+    private void rewriteFieldSql(BoundSql boundSql, Long tenantId) throws Exception {
         //TODO 修改sql（添加条件字段）
-        String oldSql = boundSql.getSql();
-        List<SQLStatement> statementList = SQLUtils.parseStatements(oldSql, JdbcConstants.MYSQL);
-        SQLStatement sqlStatement = statementList.get(0);
-        String newSql = SQLUtils.toSQLString(statementList, JdbcConstants.MYSQL);
-        log.info("=======sql检测到更新=======\n{}", newSql);
-        //对 BoundSql 对象通过反射修改 SQL 语句。
-        Field field = boundSql.getClass().getDeclaredField("sql");
-        field.setAccessible(true);
-        field.set(boundSql, newSql);
     }
 
     /*
      *  重写表结构
      */
-    public void rewriteTableSql(BoundSql boundSql, TableShard tableShard, Long tenantId) throws Exception {
-        String newSql = boundSql.getSql().replace("*", tenantId.toString());
+    public void rewriteTableSql(BoundSql boundSql, Long tenantId) throws Exception {
+        String newSql = boundSql.getSql().replace("_*", "_"+tenantId.toString());
         log.info("=======sql检测到更新=======\n{}", newSql);
         //对 BoundSql 对象通过反射修改 SQL 语句。
         Field field = boundSql.getClass().getDeclaredField("sql");
