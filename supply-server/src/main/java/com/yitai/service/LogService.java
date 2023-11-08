@@ -1,7 +1,8 @@
 package com.yitai.service;
 
 import com.yitai.dto.sys.LogPageQueryDTO;
-import com.yitai.entity.Logs;
+import com.yitai.entity.LoginLogs;
+import com.yitai.entity.OperationLog;
 import com.yitai.result.PageResult;
 
 import java.util.List;
@@ -24,5 +25,13 @@ public interface LogService {
 
     void removeBatchIds(List<Integer> ids);
 
-    void save(Logs logs);
+    void save2(OperationLog logs);
+
+    PageResult pageQuery1(LogPageQueryDTO logPageQueryDTO);
+
+    void removeById1(Integer id);
+
+    void removeBatchIds1(List<Integer> ids);
+
+    void save1(LoginLogs logs);
 }

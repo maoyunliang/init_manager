@@ -2,6 +2,7 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
+import com.yitai.annotation.LoginLog;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.dto.sys.*;
 import com.yitai.entity.Tenant;
@@ -56,7 +57,7 @@ public class UserController {
 
     @Operation(summary = "用户登录接口")
     @PostMapping ("/login")
-    @AutoLog(operation = "用户登录", type = LogType.LOGIN)
+    @LoginLog(operation = "用户登录", type = LogType.LOGIN)
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录：{}", userLoginDTO);
         User user = userService.login(userLoginDTO);
@@ -179,6 +180,7 @@ public class UserController {
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
         claims.put(JwtClaimsConstant.USERNAME, user.getUsername());
+        claims.put(JwtClaimsConstant.PHONE, user.getPhone());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
         String userToken = user.getId().toString()+"-token";
         redisTemplate.opsForValue().set(userToken, token, 7, TimeUnit.DAYS);

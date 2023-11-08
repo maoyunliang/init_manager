@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * ClassName: MangerProperties
  * Package: com.yitai.properties
@@ -20,6 +22,6 @@ public class MangerProperties {
     /**
      * 管理员账号相关配置
      */
-    private long userId;
+    private List<Long> userId;
     private String Role;
 }

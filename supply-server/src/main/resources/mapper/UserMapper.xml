@@ -41,7 +41,7 @@
         </set>
         where id = #{id}
     </update>
-    <select id="pageQuery" resultType="com.yitai.entity.User">
+    <select id="pageQuery" resultType="com.yitai.vo.UserVO">
         select *
         from public_user pu
         join public_user_tenant put on pu.id = put.user_id
@@ -57,7 +57,7 @@
         order by pu.create_time desc
     </select>
     <select id="pageMenu" resultType="com.yitai.vo.MenuVO">
-        select m.id, m.menu_name,m.menu_type,m.menu_path,m.menu_pid, m.sort_no
+        select m.id, m.menu_name,m.menu_type,m.menu_path,m.menu_router ,m.identify, m.menu_pid, m.sort_no
         from public_user u
                  join user_role_1 ur on u.id = ur.user_id
                  join role_1 r on ur.role_id= r.id

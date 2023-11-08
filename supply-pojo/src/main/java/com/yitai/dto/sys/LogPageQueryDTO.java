@@ -14,6 +14,9 @@ import lombok.Data;
 @Data
 public class LogPageQueryDTO {
     private String operation;
+    private Long tenantId;
+    private String user;
+    private String ip;
     private int page =1 ;
     private int pageSize =10;
 }

@@ -2,8 +2,6 @@ package com.yitai.dto.sys;
 
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * ClassName: MenuDTO
  * Package: com.yitai.dto
@@ -21,5 +19,4 @@ public class MenuDTO {
     private String menuType;
     private Long menuPid;
     private Long sortNo;
-    private List<MenuDTO> children;
 }

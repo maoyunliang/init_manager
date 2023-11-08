@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "租户信息返回数据格式")
 public class TenantVO {
     @Schema(name = "租户id")
-    private Long tenantId;
+    private Long id;
     @Schema(name = "租户名")
     private String tenantName;
 }

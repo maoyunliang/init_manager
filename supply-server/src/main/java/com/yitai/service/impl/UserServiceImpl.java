@@ -23,6 +23,7 @@ import com.yitai.utils.SendMsgUtil;
 import com.yitai.utils.TreeUtil;
 import com.yitai.utils.VerifyCodeUtil;
 import com.yitai.vo.MenuVO;
+import com.yitai.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -113,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Tenant> getTenant() {
         User user = BaseContext.getCurrentUser();
-        List<Tenant> list = user.getId() == mangerProperties.getUserId() ? userMapper.
+        List<Tenant> list = mangerProperties.getUserId().contains(user.getId()) ? userMapper.
                 getAllTenant() : userMapper.getTenant(user.getId());
         if(CollUtil.isEmpty(list)){
             throw new ServiceException("没有找到关联租户");
@@ -144,12 +145,12 @@ public class UserServiceImpl implements UserService {
     public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
         //开始分页查询
         PageHelper.startPage(userPageQueryDTO.getPage(), userPageQueryDTO.getPageSize());
-        Page<User> page = userMapper.pageQuery(userPageQueryDTO);
+        Page<UserVO> page = userMapper.pageQuery(userPageQueryDTO);
         long total = page.getTotal();
-        List<User> records = page.getResult();
-        for (User record : records) {
-            record.setPassword("**********");
-        }
+        List<UserVO> records = page.getResult();
+//        for (User record : records) {
+//            record.setPassword("**********");
+//        }
         return new PageResult(total,records);
     }
 
@@ -195,7 +196,7 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = new ArrayList<>();
         typeList.add("M");
         typeList.add("C");
-        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+        List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(typeList) : userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
@@ -204,9 +205,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<String> getPermiList(Long id) {
-        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+        List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(Collections.singletonList("B")) : userMapper.pageMenu(id, Collections.singletonList("B"));
-        List<String> permissionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
+        List<String> permissionList = menuList.stream().map(MenuVO::getIdentify).collect(Collectors.toList());
         redisTemplate.opsForValue().set(id.toString()+ "-permission", permissionList);
         return permissionList;
     }

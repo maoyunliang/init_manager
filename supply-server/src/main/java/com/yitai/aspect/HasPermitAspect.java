@@ -63,7 +63,7 @@ public class HasPermitAspect {
         if(ObjectUtil.isNull(user)){
             throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);
         }
-        permission = mapPermissionToAuthority(permission);
+//        permission = mapPermissionToAuthority(permission);
         List<String> permits = redisTemplate.opsForValue().get(user.getId().toString() + "-permission");
         log.info("权限列表：{}", permits);
         return permits != null && permits.contains(permission);

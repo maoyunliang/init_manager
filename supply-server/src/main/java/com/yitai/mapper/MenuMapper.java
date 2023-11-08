@@ -2,12 +2,15 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
+import com.yitai.dto.sys.MenuListDTO;
 import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
-import com.yitai.entity.MenuRole;
 import com.yitai.enumeration.OperationType;
+import com.yitai.vo.MenuVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 /**
  * ClassName: MenuMapper
@@ -31,6 +34,8 @@ public interface MenuMapper {
     @AutoFill(value = OperationType.UPDATE)
     void update(Menu menu);
 
-    @AutoFill(value = OperationType.INSERT)
-    void givePermit(MenuRole menuRole);
+    List<MenuVO> list(MenuListDTO menuListDTO);
+
+//    @AutoFill(value = OperationType.INSERT)
+//    void givePermit(MenuRole menuRole);
 }

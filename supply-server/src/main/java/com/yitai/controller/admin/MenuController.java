@@ -3,16 +3,20 @@ package com.yitai.controller.admin;
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.dto.sys.MenuDTO;
+import com.yitai.dto.sys.MenuListDTO;
 import com.yitai.dto.sys.MenuPageQueryDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
+import com.yitai.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * ClassName: menuController
@@ -32,10 +36,18 @@ public class MenuController {
     private MenuService menuService;
     @Operation(summary = "菜单分页查询")
     @PostMapping("/page")
-    public Result<PageResult> page(@ModelAttribute MenuPageQueryDTO menuPageQueryDTO){
+    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
         log.info("分页查询:{}", menuPageQueryDTO);
         PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @Operation(summary = "菜单列表查询")
+    @PostMapping("/list")
+    public Result<List<MenuVO>> list(@RequestBody MenuListDTO menuListDTO){
+        log.info("菜单列表查询:{}", menuListDTO);
+        List<MenuVO> menuVOList = menuService.list(menuListDTO);
+        return Result.success(menuVOList);
     }
 
     @Operation(summary = "新建菜单接口")

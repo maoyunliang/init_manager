@@ -3,7 +3,9 @@ package com.yitai.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yitai.dto.sys.LogPageQueryDTO;
-import com.yitai.entity.Logs;
+import com.yitai.entity.LoginLogs;
+import com.yitai.entity.OperationLog;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.LogMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.LogService;
@@ -31,11 +33,14 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public PageResult pageQuery(LogPageQueryDTO logPageQueryDTO) {
+        if (logPageQueryDTO.getTenantId() == 0){
+            throw new ServiceException("请输入正确的租户id");
+        }
         //开始分页查询
         PageHelper.startPage(logPageQueryDTO.getPage(), logPageQueryDTO.getPageSize());
-        Page<Logs> page = logMapper.pageQuery(logPageQueryDTO);
+        Page<OperationLog> page = logMapper.pageQuery(logPageQueryDTO);
         long total = page.getTotal();
-        List<Logs> records = page.getResult();
+        List<OperationLog> records = page.getResult();
         return new PageResult(total,records);
     }
 
@@ -50,7 +55,33 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void save(Logs logs) {
-        logMapper.save(logs);
+    public void save2(OperationLog logs) {
+        logMapper.save2(logs);
+    }
+
+    @Override
+    public void save1(LoginLogs logs) {
+        logMapper.save1(logs);
+    }
+
+
+    @Override
+    public PageResult pageQuery1(LogPageQueryDTO logPageQueryDTO) {
+        //开始分页查询
+        PageHelper.startPage(logPageQueryDTO.getPage(), logPageQueryDTO.getPageSize());
+        Page<LoginLogs> page = logMapper.pageQuery1(logPageQueryDTO);
+        long total = page.getTotal();
+        List<LoginLogs> records = page.getResult();
+        return new PageResult(total,records);
+    }
+
+    @Override
+    public void removeById1(Integer id) {
+        logMapper.removeById1(id);
+    }
+
+    @Override
+    public void removeBatchIds1(List<Integer> ids) {
+        logMapper.removeBatchIds1(ids);
     }
 }

@@ -11,6 +11,7 @@ import com.yitai.entity.UserTenant;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
 import com.yitai.vo.MenuVO;
+import com.yitai.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -42,7 +43,7 @@ public interface UserMapper {
      */
 
     //@TableShard(tableName = "role", type = ShardType.ID)
-    Page<User> pageQuery(UserPageQueryDTO userPageQueryDTO);
+    Page<UserVO> pageQuery(UserPageQueryDTO userPageQueryDTO);
 
 
     /*

@@ -73,7 +73,7 @@ yitai:
     user-ttl: 604800000
     user-token-name: token
   manger:
-    user-id: 888
+    user-id: [888, 894]
     role: root账号
 
 # mybatis配置源

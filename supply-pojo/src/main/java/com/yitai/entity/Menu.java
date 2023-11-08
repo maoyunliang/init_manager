@@ -24,9 +24,12 @@ public class Menu {
     private Long id;
     private String menuName;
     private String menuPath;
+    private String menuRouter;
+    private String identify;
     private String menuType;
     private Long menuPid;
     private Long sortNo;
+    private Long status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;
