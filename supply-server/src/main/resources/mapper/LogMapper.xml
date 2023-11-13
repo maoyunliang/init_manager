@@ -2,14 +2,21 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.LogMapper">
-    <select id="pageQuery" parameterType="com.yitai.dto.sys.LogPageQueryDTO"
-            resultType="com.yitai.entity.Logs">
+    <select id="pageQuery" parameterType="com.yitai.dto.LogPageQueryDTO"
+            resultType="com.yitai.entity.OperationLog">
         select *
         from public_logs
         <where>
             <if test="operation !=null and operation != ''">
                 and operation like concat('%',#{operation},'%')
             </if>
+            <if test="user !=null and user != ''">
+                and user like concat('%',#{user},'%')
+            </if>
+            <if test="ip !=null and ip != ''">
+                and ip like concat('%',#{ip},'%')
+            </if>
+            and tenant_id = #{tenantId}
         </where>
         order by id desc
     </select>
@@ -20,8 +27,37 @@
             #{id}
         </foreach>
     </delete>
-    <insert id="save" parameterType="logs">
-        insert into public_logs (operation, type, ip, user, time)
-        values (#{operation}, #{type}, #{ip}, #{user}, #{time} )
+    <insert id="save2">
+        insert into public_logs (operation, type, ip, user, duration, time, tenant_id)
+        values (#{operation}, #{type}, #{ip}, #{user}, #{duration}, #{time}, #{tenantId})
+    </insert>
+
+
+    <select id="pageQuery1" resultType="com.yitai.entity.LoginLogs">
+        select *
+        from public_login_logs
+        <where>
+            <if test="operation !=null and operation != ''">
+                and operation like concat('%',#{operation},'%')
+            </if>
+            <if test="user !=null and user != ''">
+                and user like concat('%',#{user},'%')
+            </if>
+            <if test="ip !=null and ip != ''">
+                and ip like concat('%',#{ip},'%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+    <delete id="removeBatchIds1">
+        delete from public_login_logs
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <insert id="save1">
+        insert into public_login_logs (operation, type, ip, user, duration, time)
+        values (#{operation}, #{type}, #{ip}, #{user}, #{duration}, #{time} )
     </insert>
 </mapper>

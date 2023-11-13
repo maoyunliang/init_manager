@@ -2,9 +2,7 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.sys.RoleDTO;
-import com.yitai.dto.sys.RoleMenuDTO;
-import com.yitai.dto.sys.RolePageQueryDTO;
+import com.yitai.dto.role.*;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
@@ -33,6 +31,7 @@ public class RoleController {
     private RoleService roleService;
     @Operation(summary = "角色分页查询")
     @PostMapping ("/page")
+    @HasPermit(permission = "sys:role:list")
     public Result<PageResult> page(@RequestBody RolePageQueryDTO pageQueryDTO){
         log.info("分页查询:{}", pageQueryDTO);
         PageResult pageResult = roleService.pageQuery(pageQueryDTO);
@@ -43,9 +42,9 @@ public class RoleController {
     @PostMapping("/add")
     @HasPermit(permission = "sys:role:add")
     @AutoLog(operation = "新增角色操作", type = LogType.ADD)
-    public Result<String> save(@RequestBody RoleDTO addRoleDTO){
-        log.info("新增角色:{}", addRoleDTO);
-        roleService.save(addRoleDTO);
+    public Result<String> save(@RequestBody RoleDTO roleDTO){
+        log.info("新增角色:{}", roleDTO);
+        roleService.save(roleDTO);
         return Result.success();
     }
 
@@ -60,22 +59,39 @@ public class RoleController {
     }
 
     @Operation(summary = "删除角色接口")
-    @PostMapping("/delete/{roleId}")
+    @PostMapping("/delete")
     @HasPermit(permission = "sys:role:delete")
     @AutoLog(operation = "删除角色操作", type = LogType.DELETE)
-    public Result<?> delete(@PathVariable Integer roleId){
-        log.info("删除角色");
-        roleService.delete(roleId);
+    public Result<?> delete(@RequestBody DeleteRoleDTO deleteRoleDTO){
+        log.info("删除角色：{}", deleteRoleDTO);
+        roleService.delete(deleteRoleDTO);
         return Result.success();
     }
 
     @Operation(summary = "分配菜单")
     @PostMapping("/assMenu")
-    @HasPermit(permission = "sys:role:ass")
+    @HasPermit(permission = "sys:role:assMenu")
     @AutoLog(operation = "给角色分配菜单", type = LogType.ASSIGN)
     public Result<?> assMenu(@RequestBody RoleMenuDTO roleMenuDTO){
         log.info("分配菜单：{}", roleMenuDTO);
         roleService.assMenu(roleMenuDTO);
         return Result.success();
+    }
+
+    @Operation(summary = "分配用户")
+    @PostMapping("/assUser")
+    @HasPermit(permission = "sys:role:assUser")
+    @AutoLog(operation = "给角色分配用户", type = LogType.ASSIGN)
+    public Result<?> assUser(@RequestBody RoleUserDTO roleUserDTO){
+        log.info("分配用户：{}", roleUserDTO);
+        roleService.assUser(roleUserDTO);
+        return Result.success();
+    }
+
+    @Operation(summary = "根据id获取角色信息（关联菜单、 关联用户）")
+    @PostMapping("/getRoleById")
+    public Result<?> getRoleMenuById(@RequestBody RoleInfoDTO roleInfoDTO){
+        log.info("根据Id获取角色关联菜单信息：{}", roleInfoDTO);
+        return Result.success(roleService.getRoleById(roleInfoDTO));
     }
 }

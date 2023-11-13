@@ -69,7 +69,6 @@ public class TreeUtil {
             throw new ServiceException("方法失效");
         }
             //如果存在，递归往上找父部门
-
     }
 
     private static <T> T buildTrees(T parent, List<T> list, Function<T,?> getParentId){

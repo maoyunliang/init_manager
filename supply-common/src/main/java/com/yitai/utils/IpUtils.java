@@ -3,6 +3,9 @@ package com.yitai.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * ClassName: IpUtils
  * Package: com.yitai.utils
@@ -31,5 +34,25 @@ public class IpUtils {
             ip = request.getRemoteAddr();
         }
         return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1":ip;
+    }
+
+    public static String getHostName(){
+        InetAddress localhost = null;
+        try {
+            localhost = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        return localhost.getHostName();
+    }
+
+    public static String getHostIp(){
+        InetAddress localhost = null;
+        try {
+            localhost = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        return localhost.getHostAddress();
     }
 }

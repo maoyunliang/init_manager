@@ -2,16 +2,18 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.MenuMapper">
-    <insert id="givePermit">
-        Insert into role_menu_1(id, role_id, menu_id, create_time,
-                                    update_time, create_user, update_user, is_del)
-        values (#{id},#{roleId},#{menuId},#{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{isDel})
-    </insert>
+<!--    <insert id="givePermit">-->
+<!--        Insert into role_menu_1(id, role_id, menu_id, create_time,-->
+<!--                                    update_time, create_user, update_user, is_del)-->
+<!--        values (#{id},#{roleId},#{menuId},#{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{isDel})-->
+<!--    </insert>-->
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        Insert into public_menu(id, menu_name, menu_path, menu_type, menu_pid, sort_no, create_time,
+        Insert into public_menu(id, menu_name, menu_path, menu_type, identify, status,
+                                menu_pid, sort_no, icon, create_time,
                                update_time, create_user, update_user, is_del)
-        values (#{id}, #{menuName},#{menuPath}, #{menuType}, #{menuPid}, #{sortNo}, #{createTime},
-                #{updateTime}, #{createUser}, #{updateUser}, #{isDel})
+        values (#{id}, #{menuName},#{menuPath}, #{menuType}, #{identify}, #{status},
+                #{menuPid}, #{sortNo}, #{icon}, #{createTime}, #{updateTime},
+                #{createUser}, #{updateUser}, #{isDel})
     </insert>
     <update id="update" parameterType="com.yitai.entity.Menu">
         update public_menu
@@ -19,6 +21,10 @@
             <if test="menuName != null">menu_name = #{menuName},</if>
             <if test="menuType != null">menu_type = #{menuType},</if>
             <if test="menuPath != null">menu_path = #{menuPath},</if>
+            <if test="menuRouter != null">menu_router = #{menuRouter},</if>
+            <if test="identify != null">identify = #{identify},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="status != null">status = #{status},</if>
             <if test="sortNo != null">sort_no = #{sortNo},</if>
             <if test="menuPid != null">menu_pid = #{menuPid},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
@@ -39,5 +45,24 @@
             and is_del = 0
         </where>
         order by create_time desc
+    </select>
+    <select id="list" resultType="com.yitai.vo.MenuVO">
+        select *
+        from public_menu
+        <where>
+            <if test="menuName != null and menuName != ''">
+                and menu_name like concat('%', #{menuName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="containChildren" resultType="com.yitai.entity.Menu">
+        select *
+        from public_menu
+        where menu_pid = #{menuId} and is_del = 0
     </select>
 </mapper>

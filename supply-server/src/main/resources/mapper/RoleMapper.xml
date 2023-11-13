@@ -11,16 +11,32 @@
             #{item.updateTime}, #{item.createUser}, #{item.updateUser}, #{item.isDel})
         </foreach>
     </insert>
+    <insert id="assUser">
+        insert into user_role_*(id, user_id, role_id, create_user, update_user, create_time, update_time, is_del)
+        VALUES
+            <foreach collection="list" separator="," item="item">
+                (#{item.id},#{item.userId},#{item.roleId}, #{item.createUser}, #{item.updateUser},
+                 #{item.createTime}, #{item.updateTime},  #{item.isDel})
+            </foreach>
+    </insert>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="role.id">
+        insert into role_*(id, role_name, role_type, role_desc, role_status, create_time, update_time, create_user,
+                           update_user, is_del) values (#{role.id}, #{role.roleName},#{role.roleType},
+                           #{role.roleDesc}, #{role.roleStatus}, #{role.createTime}, #{role.updateTime},
+                           #{role.createUser}, #{role.updateUser}, #{role.isDel})
+    </insert>
     <update id="update" parameterType="com.yitai.entity.Role">
         update role_*
         <set>
-            <if test="roleName != null">role_name = #{roleName},</if>
-            <if test="roleType != null">role_type = #{roleType},</if>
-            <if test="roleDesc != null">role_desc = #{roleDesc},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="updateUser != null">update_user = #{updateUser},</if>
+            <if test="role.roleName != null">role_name = #{role.roleName},</if>
+            <if test="role.roleType != null">role_type = #{role.roleType},</if>
+            <if test="role.roleDesc != null">role_desc = #{role.roleDesc},</if>
+            <if test="role.roleStatus != null">role_status = #{roleStatus},</if>
+            <if test="role.updateTime != null">update_time = #{role.updateTime},</if>
+            <if test="role.updateUser != null">update_user = #{role.updateUser},</if>
         </set>
-        where id = #{id}
+        where id = #{role.id}
     </update>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
@@ -32,8 +48,57 @@
             <if test="roleType != null and roleType != ''">
                 and role_type like concat('%', #{roleType}, '%')
             </if>
-            and is_del = 0
+            <if test="roleStatus != null and roleStatus != ''">
+                and role_status = #{roleStatus}
+            </if>
+                and is_del = 0
         </where>
         order by create_time desc
+    </select>
+    <select id="selectByRoleId" resultType="com.yitai.vo.MenuVO">
+        select pm.id, menu_name, menu_path, menu_router, identify, menu_type, menu_pid,
+               icon, sort_no, status, pm.create_user, pm.update_user,
+               pm.create_time, pm.update_time, pm.is_del
+        from role_menu_* rm1
+                 join public_menu pm on rm1.menu_id = pm.id
+        where role_id = #{roleId} and rm1.is_del = 0
+    </select>
+
+    <update id="deleteMenuById">
+        update role_menu_*
+        <set>
+           is_del = 1
+        </set>
+        where role_id = #{roleId}
+    </update>
+
+    <update id="deleteById">
+        update role_*
+        <set>
+            is_del = 1
+        </set>
+        where id = #{roleId}
+    </update>
+
+    <select id="getRoleById" resultType="com.yitai.entity.Role">
+        select *
+        from role_*
+        where id = #{roleId}
+            and is_del = 0
+    </select>
+    <select id="selectUserByRoleId" resultType="com.yitai.vo.UserVO">
+        select pu.id, pu.openid, pu.username, pu.realname, pu.sex, pu.phone,
+               pu.email, pu.id_number, pu.status, pu.avatar
+        from user_role_* us1
+                 join public_user pu on us1.user_id = pu.id
+        where role_id = #{roleId} and us1.is_del = 0
+    </select>
+    <select id="listMenu" resultType="com.yitai.vo.MenuVO">
+        select * from public_menu
+        where is_del = 0
+    </select>
+    <select id="list" resultType="com.yitai.vo.UserVO">
+        select * from public_user pu join public_user_tenant put on pu.id = put.user_id
+        where pu.is_del = 0
     </select>
 </mapper>

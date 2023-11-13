@@ -1,8 +1,13 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.result.PageResult;
+import com.yitai.vo.MenuVO;
+
+import java.util.List;
 
 /**
  * ClassName: RoleService
@@ -16,10 +21,14 @@ import com.yitai.result.PageResult;
 public interface MenuService {
     PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO);
 
-    void save(MenuDTO menuDTOList);
+    /*
+     * 菜单列表
+     */
+    List<MenuVO> list(MenuListDTO menuListDTO);
 
-    void delete(Integer roleId);
+    void save(MenuDTO menuDTO);
+
+    void delete(DeleteMenuDTO menuDTO);
 
     void update(MenuDTO menuDTO);
-
 }

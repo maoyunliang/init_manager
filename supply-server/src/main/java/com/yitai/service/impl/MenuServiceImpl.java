@@ -1,13 +1,19 @@
 package com.yitai.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.MenuMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.MenuService;
+import com.yitai.utils.TreeUtil;
+import com.yitai.vo.MenuVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +33,25 @@ import java.util.List;
 public class MenuServiceImpl implements MenuService {
     @Autowired
     private MenuMapper menuMapper;
+
+    /*
+     * 菜单分页查询
+     */
     @Override
     public PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO) {
         PageHelper.startPage(menuPageQueryDTO.getPage(),menuPageQueryDTO.getPageSize());
         Page<Menu> page = menuMapper.pageQuery(menuPageQueryDTO);
         long total = page.getTotal();
         List<Menu> records = page.getResult();
-        return new PageResult(total,records);
+        return new PageResult(total, records);
+    }
+    /*
+     * 菜单列表
+     */
+    @Override
+    public List<MenuVO> list(MenuListDTO menuListDTO) {
+        List<MenuVO> menuList = menuMapper.list(menuListDTO);
+        return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
     }
 
     /**
@@ -52,8 +70,13 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void delete(Integer menuId) {
-        menuMapper.deleteById(menuId);
+    public void delete(DeleteMenuDTO menuDTO) {
+        //判断是否有子菜单
+        List<Menu> menus = menuMapper.containChildren(menuDTO.getMenuId());
+        if(!CollectionUtil.isEmpty(menus)){
+            throw new ServiceException("当前菜单存在子菜单，无法删除");
+        }
+        menuMapper.deleteById(menuDTO.getMenuId());
     }
 
     @Override
@@ -62,4 +85,6 @@ public class MenuServiceImpl implements MenuService {
         BeanUtils.copyProperties(menuDTO, menu);
         menuMapper.update(menu);
     }
+
+
 }

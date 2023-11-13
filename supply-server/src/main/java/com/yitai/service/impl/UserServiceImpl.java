@@ -7,9 +7,10 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yitai.constant.MessageConstant;
 import com.yitai.constant.PasswordConstant;
+import com.yitai.constant.RedisConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.sys.*;
+import com.yitai.dto.user.*;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
@@ -23,6 +24,7 @@ import com.yitai.utils.SendMsgUtil;
 import com.yitai.utils.TreeUtil;
 import com.yitai.utils.VerifyCodeUtil;
 import com.yitai.vo.MenuVO;
+import com.yitai.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -79,12 +81,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User login(LoginMessageDTO loginMessageDTO) {
         String phoneNumber = loginMessageDTO.getPhoneNumber();
+        String key = RedisConstant.VERIFY_CODE.concat(phoneNumber);
         //查询数据库是否有手机号
         User user = userMapper.getByPhone(phoneNumber);
         if (ObjectUtil.isNull(user)){
             throw new ServiceException("该手机号不存在，请确认!");
         }
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(phoneNumber + "-MSG"))){
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(key))){
             throw new ServiceException("短信验证码失效，请重新获取!");
         }
         String real_verifyCode = (String) redisTemplate.opsForValue().get(phoneNumber+"-MSG");
@@ -104,7 +107,8 @@ public class UserServiceImpl implements UserService {
         String verifyCode = VerifyCodeUtil.generateCode();
         // 发送短信
         if(SendMsgUtil.sendMsg(phoneNumber, verifyCode)){
-            redisTemplate.opsForValue().set(phoneNumber + "-MSG", verifyCode, 300, TimeUnit.SECONDS);
+            String key = RedisConstant.VERIFY_CODE.concat(phoneNumber);
+            redisTemplate.opsForValue().set(key, verifyCode, 300, TimeUnit.SECONDS);
             return true;
         }
         return false;
@@ -113,7 +117,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Tenant> getTenant() {
         User user = BaseContext.getCurrentUser();
-        List<Tenant> list = user.getId() == mangerProperties.getUserId() ? userMapper.
+        List<Tenant> list = mangerProperties.getUserId().contains(user.getId()) ? userMapper.
                 getAllTenant() : userMapper.getTenant(user.getId());
         if(CollUtil.isEmpty(list)){
             throw new ServiceException("没有找到关联租户");
@@ -144,12 +148,12 @@ public class UserServiceImpl implements UserService {
     public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
         //开始分页查询
         PageHelper.startPage(userPageQueryDTO.getPage(), userPageQueryDTO.getPageSize());
-        Page<User> page = userMapper.pageQuery(userPageQueryDTO);
+        Page<UserVO> page = userMapper.pageQuery(userPageQueryDTO);
         long total = page.getTotal();
-        List<User> records = page.getResult();
-        for (User record : records) {
-            record.setPassword("**********");
-        }
+        List<UserVO> records = page.getResult();
+//        for (User record : records) {
+//            record.setPassword("**********");
+//        }
         return new PageResult(total,records);
     }
 
@@ -183,6 +187,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getInfo() {
         User user = BaseContext.getCurrentUser();
+        user = userMapper.getById(user.getId());
         if (ObjectUtil.isNull(user)){
             throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
         }
@@ -195,7 +200,7 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = new ArrayList<>();
         typeList.add("M");
         typeList.add("C");
-        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+        List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(typeList) : userMapper.pageMenu(id, typeList);
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
@@ -204,18 +209,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<String> getPermiList(Long id) {
-        List<MenuVO> menuList = id == mangerProperties.getUserId() ? userMapper.
+        List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(Collections.singletonList("B")) : userMapper.pageMenu(id, Collections.singletonList("B"));
-        List<String> permissionList = menuList.stream().map(MenuVO::getMenuPath).collect(Collectors.toList());
-        redisTemplate.opsForValue().set(id.toString()+ "-permission", permissionList);
+        List<String> permissionList = menuList.stream().map(MenuVO::getIdentify).collect(Collectors.toList());
+        permissionList = permissionList.stream().filter(permission -> permission.contains(":")).collect(Collectors.toList());
+        String key = RedisConstant.USER_PERMISSION.concat(id.toString());
+        redisTemplate.opsForValue().set(key, permissionList);
         return permissionList;
     }
 
     @Override
     public void logOut() {
         User user = BaseContext.getCurrentUser();
-        redisTemplate.delete(user.getId().toString()+"-token");
-        redisTemplate.delete(user.getId().toString()+"-permission");
+        String userId = user.getId().toString();
+        redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userId));
+        redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(userId));
     }
 
     @Override

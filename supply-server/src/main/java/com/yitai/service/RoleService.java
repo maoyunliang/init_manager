@@ -1,9 +1,8 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.RoleDTO;
-import com.yitai.dto.sys.RoleMenuDTO;
-import com.yitai.dto.sys.RolePageQueryDTO;
+import com.yitai.dto.role.*;
 import com.yitai.result.PageResult;
+import com.yitai.vo.RoleVO;
 
 /**
  * ClassName: RoleService
@@ -19,9 +18,15 @@ public interface RoleService {
 
     void save(RoleDTO addRoleDTO);
 
-    void delete(Integer roleId);
+    void delete(DeleteRoleDTO deleteRoleDTO);
 
     void update(RoleDTO updateRoleDTO);
 
     void assMenu(RoleMenuDTO roleMenuDTO);
+
+//    List<Menu> selectByRoleId(Long roleId, Long tenantId);
+
+    RoleVO getRoleById(RoleInfoDTO roleInfoDTO);
+
+    void assUser(RoleUserDTO roleUserDTO);
 }

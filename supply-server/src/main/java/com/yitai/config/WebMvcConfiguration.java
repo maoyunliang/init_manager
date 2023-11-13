@@ -65,6 +65,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 //    设置静态资源映射
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("=======开始设置静态资源映射=======");
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
         registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("swagger-ui/**")

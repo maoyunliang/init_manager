@@ -2,8 +2,10 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
+import com.yitai.annotation.LoginLog;
 import com.yitai.constant.JwtClaimsConstant;
-import com.yitai.dto.sys.*;
+import com.yitai.constant.RedisConstant;
+import com.yitai.dto.user.*;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.enumeration.LogType;
@@ -56,7 +58,7 @@ public class UserController {
 
     @Operation(summary = "用户登录接口")
     @PostMapping ("/login")
-    @AutoLog(operation = "用户登录", type = LogType.LOGIN)
+    @LoginLog(operation = "用户登录", type = LogType.LOGIN)
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录：{}", userLoginDTO);
         User user = userService.login(userLoginDTO);
@@ -109,6 +111,7 @@ public class UserController {
 
     @Operation(summary = "用户分页查询")
     @PostMapping("/page")
+    @HasPermit(permission = "sys:user:page")
     public Result<PageResult> page(@RequestBody UserPageQueryDTO userPageQueryDTO){
         log.info("分页查询:{}", userPageQueryDTO);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
@@ -179,9 +182,10 @@ public class UserController {
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());
         claims.put(JwtClaimsConstant.USERNAME, user.getUsername());
+        claims.put(JwtClaimsConstant.PHONE, user.getPhone());
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
-        String userToken = user.getId().toString()+"-token";
-        redisTemplate.opsForValue().set(userToken, token, 7, TimeUnit.DAYS);
+        String key = RedisConstant.USER_LOGIN.concat(user.getId().toString());
+        redisTemplate.opsForValue().set(key, token, 7, TimeUnit.DAYS);
         // 获取路由时，将菜单存在缓存中
         ArrayList<MenuVO> menuVOS = userService.getRouter(user.getId());
         List<String> permiList = userService.getPermiList(user.getId());

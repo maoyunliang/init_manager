@@ -1,16 +1,19 @@
 package com.yitai.interceptor;
 
+import cn.hutool.core.date.DateUtil;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.MessageConstant;
+import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
+import com.yitai.entity.User;
 import com.yitai.exception.NotAuthException;
-import com.yitai.mapper.UserMapper;
 import com.yitai.properties.JwtProperties;
 import com.yitai.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -38,15 +41,12 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
     private JwtProperties jwtProperties;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private RedisTemplate redisTemplate;
     /*
       校验jwt
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NotNull HttpServletRequest request, HttpServletResponse response, Object handler) {
 
 //        System.out.println("当前线程的id:"+ Thread.currentThread().getId());
         //判断当前拦截到的是Controller的方法还是其他资源
@@ -60,22 +60,26 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         //2、校验令牌
         Claims claims;
         try {
-            log.info("jwt开始校验:{}", token);
+            log.info("----------jwt开始校验----------");
+            log.info("{}", token);
             claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
-            log.info("token有效期至：{}",String.valueOf(claims.getExpiration()));
+            log.info("----------有效期至----------");
+            log.info("{}", DateUtil.format(claims.getExpiration(), "yyyy-MM-dd HH:mm:ss"));
         } catch (Exception ex) {
             //4、不通过，响应401状态码
             throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);
             //response.setStatus(HttpStatusConstant.HTTP_FORBIDDEN);
         }
+        log.info("----------生成用户信息上下文----------");
         String userId = claims.get(JwtClaimsConstant.USER_ID).toString();
-        String redisToken = (String) redisTemplate.opsForValue().get(userId.concat("-token"));
+        String username = (String) claims.get(JwtClaimsConstant.USERNAME);
+        String phone = (String) claims.get(JwtClaimsConstant.PHONE);
+        String redisToken = (String) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN.concat(userId));
         if (redisToken == null || !Objects.equals(redisToken, token)) {
             throw new NotAuthException(MessageConstant.ACCOUNT_ELSE);
         }
-//            String name = (String) claims.get(JwtClaimsConstant.USERNAME);
-        BaseContext.setCurrentUser(userMapper.getById(Long.valueOf(userId)));
-//            System.out.println(router);
+        User user = User.builder().id(Long.valueOf(userId)).username(username).phone(phone).build();
+        BaseContext.setCurrentUser(user);
         //3、通过，放行
         return true;
 

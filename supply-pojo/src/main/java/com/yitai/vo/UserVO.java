@@ -41,4 +41,6 @@ public class UserVO {
     private String email;
     @Schema(name = "状态")
     private Integer status;
+    @Schema(name = "包含")
+    private Integer hasUser = -1;
 }

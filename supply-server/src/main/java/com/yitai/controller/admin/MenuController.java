@@ -2,17 +2,25 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
+import com.yitai.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * ClassName: menuController
@@ -32,10 +40,19 @@ public class MenuController {
     private MenuService menuService;
     @Operation(summary = "菜单分页查询")
     @PostMapping("/page")
-    public Result<PageResult> page(@ModelAttribute MenuPageQueryDTO menuPageQueryDTO){
+    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
         log.info("分页查询:{}", menuPageQueryDTO);
         PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @Operation(summary = "菜单列表查询")
+    @PostMapping("/list")
+    @HasPermit(permission = "sys:menu:list")
+    public Result<List<MenuVO>> list(@RequestBody MenuListDTO menuListDTO){
+        log.info("菜单列表查询:{}", menuListDTO);
+        List<MenuVO> menuVOList = menuService.list(menuListDTO);
+        return Result.success(menuVOList);
     }
 
     @Operation(summary = "新建菜单接口")
@@ -59,12 +76,12 @@ public class MenuController {
     }
 
     @Operation(summary = "删除菜单接口")
-    @PostMapping("/delete/{menuId}")
-    @HasPermit(permission = "sys:menu:deleteById")
+    @PostMapping("/delete")
+    @HasPermit(permission = "sys:menu:delete")
     @AutoLog(operation = "删除菜单操作", type = LogType.DELETE)
-    public Result<?> delete(@PathVariable Integer menuId){
+    public Result<?> delete(@RequestBody DeleteMenuDTO menuDTO){
         log.info("删除菜单");
-        menuService.delete(menuId);
+        menuService.delete(menuDTO);
         return Result.success();
     }
 }

@@ -3,15 +3,11 @@ package com.yitai.aspect;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.yitai.annotation.AutoLog;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.sys.LoginMessageDTO;
-import com.yitai.dto.sys.UserLoginDTO;
-import com.yitai.entity.Logs;
+import com.yitai.entity.OperationLog;
 import com.yitai.entity.User;
 import com.yitai.exception.ServiceException;
 import com.yitai.result.Result;
@@ -20,13 +16,17 @@ import com.yitai.utils.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Method;
 
 /**
  * ClassName: AutoLogAspect
@@ -69,7 +69,7 @@ public class AutoLogAspect {
      *  日志请求后
      */
     @AfterReturning(value = "autoLogPointCut()", returning = "jsonResult")
-    public void doAfterReturning(JoinPoint joinPoint, Result<?> jsonResult) {
+    public void doAfterReturning(JoinPoint joinPoint, Result<?> jsonResult){
         StopWatch stopWatch = TIME_THREADLOCAL.get();
         stopWatch.stop();
         //获取当前被拦截方法的操作类型
@@ -79,17 +79,7 @@ public class AutoLogAspect {
         //LogType logType = autoLog.type();
         log.info("日志类型:"+ autoLog.type()+ "-> 接口请求结束 -> 本次请求耗时"+ stopWatch.getTotalTimeSeconds());
         User user = BaseContext.getCurrentUser();
-        if (user == null){
-            //当前用户没有信息的话，就需要从参数里面获取操作人信息
-            Object[] args = joinPoint.getArgs();
-            if (ArrayUtil.isNotEmpty(args)){
-                if(args[0] instanceof UserLoginDTO userLoginDTO){
-                    user = User.builder().username(userLoginDTO.getUsername()).build();
-                } else if (args[0] instanceof LoginMessageDTO loginMessageDTO){
-                    user = User.builder().phone(loginMessageDTO.getPhoneNumber()).build();
-                }
-            }
-        }
+        Object[] args = joinPoint.getArgs();
         if (user == null){
             log.error("-----------日志处理异常结束---------");
             throw new ServiceException(MessageConstant.LOG_ERROR);
@@ -105,15 +95,27 @@ public class AutoLogAspect {
         if (request != null) {
             ipAddr = IpUtils.getIpAddr(request);
         }
-        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
+//        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
+        Long tenantId;
+        if (args[0] instanceof Long){
+            tenantId = (Long) args[0];
+        }else{
+            try{
+                Method getTenantId = args[0].getClass().getDeclaredMethod("getTenantId");
+                tenantId  = (Long) getTenantId.invoke(args[0]);
+            }catch (Exception e){
+                throw new ServiceException("请携带正确的租户ID");
+            }
+        }
         //组装日志的实体对象
-        Logs logs = Logs.builder().user(username).
+        OperationLog logs = OperationLog.builder().user(user.getUsername()).
                 operation(autoLog.operation()).
                 type(autoLog.type().getValue()).
-                ip(ipAddr).time(DateUtil.now()).build();
+                ip(ipAddr).duration(stopWatch.getTotalTimeSeconds()).
+                time(DateUtil.now()).tenantId(tenantId).build();
         // 异步的方式擦入数据到数据库
         ThreadUtil.execAsync(()->{
-            logService.save(logs);
+            logService.save2(logs);
         });
         log.info("-----------日志处理完成---------");
     }

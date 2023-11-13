@@ -4,15 +4,17 @@ package com.yitai.mapper;
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
 import com.yitai.annotation.TableShard;
-import com.yitai.dto.sys.RolePageQueryDTO;
+import com.yitai.dto.role.DeleteRoleDTO;
+import com.yitai.dto.role.RolePageQueryDTO;
 import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
+import com.yitai.entity.UserRole;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
-import org.apache.ibatis.annotations.Insert;
+import com.yitai.vo.MenuVO;
+import com.yitai.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -31,25 +33,37 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     Page<Role> pageQuery(RolePageQueryDTO pageQueryDTO);
 
-
-    @Insert("insert into role_*(id, role_name, role_type, role_desc," +
-            "create_time, update_time, create_user, update_user, is_del) values (#{role.id}," +
-            "#{role.roleName},#{role.roleType}, #{role.roleDesc}, #{role.createTime}, #{role.updateTime}," +
-            " #{role.createUser}, #{role.updateUser}, #{role.isDel})")
     @AutoFill(value = OperationType.INSERT)
     @TableShard(type = ShardType.TABLE)
-    void save(@Param("role") Role role, @Param("tenantId") Long tenantId);
+    int save(@Param("role") Role role, @Param("tenantId") Long tenantId);
 
 
-    @Update("UPDATE role_* set is_del = 1 where id = #{roleId}")
     @TableShard(type = ShardType.TABLE)
-    void deleteById(Integer roleId);
+    void deleteById(DeleteRoleDTO deleteRoleDTO);
 
     @AutoFill(value = OperationType.UPDATE)
     @TableShard(type = ShardType.TABLE)
-    void update(Role role);
+    void update(Role role, @Param("tenantId") Long tenantId);
 
     @AutoFill(value = OperationType.INSERT)
     @TableShard(type = ShardType.TABLE)
-    void assMenu(@Param("list") List<MenuRole> menuRoles);
+    void assMenu(@Param("list") List<MenuRole> menuRoles, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<MenuVO> selectByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    void deleteMenuById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    Role getRoleById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<UserVO> selectUserByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    void assUser(@Param("list") List<UserRole> userRoles, @Param("tenantId") Long tenantId);
+
+    List<MenuVO> listMenu();
+
+    List<UserVO> list(Long tenantId);
 }

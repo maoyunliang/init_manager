@@ -9,5 +9,4 @@ class SupplyServerApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
