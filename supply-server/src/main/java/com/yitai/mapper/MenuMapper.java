@@ -2,8 +2,8 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
-import com.yitai.dto.sys.MenuListDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
 import com.yitai.enumeration.OperationType;
 import com.yitai.vo.MenuVO;
@@ -29,12 +29,14 @@ public interface MenuMapper {
     int save(Menu menu);
 
     @Update("UPDATE public_menu set is_del = 1 where id = #{menuId}")
-    void deleteById(Integer menuId);
+    void deleteById(Long menuId);
 
     @AutoFill(value = OperationType.UPDATE)
     void update(Menu menu);
 
     List<MenuVO> list(MenuListDTO menuListDTO);
+
+    List<Menu> containChildren(Long menuId);
 
 //    @AutoFill(value = OperationType.INSERT)
 //    void givePermit(MenuRole menuRole);

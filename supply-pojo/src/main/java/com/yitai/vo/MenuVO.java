@@ -25,9 +25,11 @@ public class MenuVO implements Serializable {
     private String menuRouter;
     private String identify;
     private String menuType;
+    private String icon;
     private Long menuPid;
     private Long sortNo;
     private Long status;
+    private Integer hasMenu = -1;
     private LocalDateTime createTime;
     private List<MenuVO> children;
 }

@@ -1,4 +1,4 @@
-package com.yitai.dto.sys;
+package com.yitai.dto.menu;
 
 import lombok.Data;
 
@@ -14,5 +14,5 @@ import lombok.Data;
 @Data
 public class MenuListDTO {
     private String menuName;
-    private String menuType;
+    private Long status;
 }

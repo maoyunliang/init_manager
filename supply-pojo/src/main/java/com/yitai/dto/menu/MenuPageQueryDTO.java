@@ -1,4 +1,4 @@
-package com.yitai.dto.sys;
+package com.yitai.dto.menu;
 
 import lombok.Data;
 

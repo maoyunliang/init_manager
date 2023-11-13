@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.LogMapper">
-    <select id="pageQuery" parameterType="com.yitai.dto.sys.LogPageQueryDTO"
+    <select id="pageQuery" parameterType="com.yitai.dto.LogPageQueryDTO"
             resultType="com.yitai.entity.OperationLog">
         select *
         from public_logs

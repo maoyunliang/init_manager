@@ -3,7 +3,6 @@ package com.yitai.aspect;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.yitai.annotation.AutoLog;
 import com.yitai.constant.MessageConstant;
@@ -96,16 +95,20 @@ public class AutoLogAspect {
         if (request != null) {
             ipAddr = IpUtils.getIpAddr(request);
         }
-        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
+//        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
         Long tenantId;
-        try{
-            Method getTenantId = args[0].getClass().getDeclaredMethod("getTenantId");
-            tenantId  = (Long) getTenantId.invoke(args[0]);
-        }catch (Exception e){
-            throw new ServiceException("请携带正确的租户ID");
+        if (args[0] instanceof Long){
+            tenantId = (Long) args[0];
+        }else{
+            try{
+                Method getTenantId = args[0].getClass().getDeclaredMethod("getTenantId");
+                tenantId  = (Long) getTenantId.invoke(args[0]);
+            }catch (Exception e){
+                throw new ServiceException("请携带正确的租户ID");
+            }
         }
         //组装日志的实体对象
-        OperationLog logs = OperationLog.builder().user(username).
+        OperationLog logs = OperationLog.builder().user(user.getUsername()).
                 operation(autoLog.operation()).
                 type(autoLog.type().getValue()).
                 ip(ipAddr).duration(stopWatch.getTotalTimeSeconds()).

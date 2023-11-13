@@ -1,11 +1,14 @@
 package com.yitai.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuListDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.MenuMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.MenuService;
@@ -67,8 +70,13 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void delete(Integer menuId) {
-        menuMapper.deleteById(menuId);
+    public void delete(DeleteMenuDTO menuDTO) {
+        //判断是否有子菜单
+        List<Menu> menus = menuMapper.containChildren(menuDTO.getMenuId());
+        if(!CollectionUtil.isEmpty(menus)){
+            throw new ServiceException("当前菜单存在子菜单，无法删除");
+        }
+        menuMapper.deleteById(menuDTO.getMenuId());
     }
 
     @Override

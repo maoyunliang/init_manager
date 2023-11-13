@@ -4,8 +4,10 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.sys.*;
-import com.yitai.entity.*;
+import com.yitai.dto.role.*;
+import com.yitai.entity.MenuRole;
+import com.yitai.entity.Role;
+import com.yitai.entity.UserRole;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.RoleMapper;
 import com.yitai.result.PageResult;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -69,12 +72,12 @@ public class RoleServiceImpl implements RoleService {
             throw new ServiceException("请输入正确的角色");
         }
         // 查询角色是否关联用户
-        List<User> userList = roleMapper.selectUserByRoleId(deleteRoleDTO.getRoleId(), deleteRoleDTO.getTenantId());
+        List<UserVO> userList = roleMapper.selectUserByRoleId(deleteRoleDTO.getRoleId(), deleteRoleDTO.getTenantId());
         if(!CollectionUtil.isEmpty(userList)){
             throw new ServiceException("当前角色关联相关用户");
         }
         //查询角色是否关联菜单
-        List<Menu> menuList = roleMapper.selectByRoleId(deleteRoleDTO.getRoleId(), deleteRoleDTO.getTenantId());
+        List<MenuVO> menuList = roleMapper.selectByRoleId(deleteRoleDTO.getRoleId(), deleteRoleDTO.getTenantId());
         if(!CollectionUtil.isEmpty(menuList)){
             throw new ServiceException("当前角色关联相关菜单");
         }
@@ -115,28 +118,44 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleVO getRoleById(Long roleId, Long tenantId) {
+    public RoleVO getRoleById(RoleInfoDTO roleInfoDTO) {
         RoleVO roleVO = new RoleVO();
-        Role role = roleMapper.getRoleById(roleId,tenantId);
+        Long roleId = roleInfoDTO.getRoleId();
+        Long tenantId = roleInfoDTO.getTenantId();
+        Role role = roleMapper.getRoleById(roleId, tenantId);
         if(ObjectUtil.isNull(role)){
             throw new ServiceException("你查找的角色不存在");
         }
         BeanUtils.copyProperties(role, roleVO);
-        List<Menu> menuList = roleMapper.selectByRoleId(roleId,tenantId);
-        List<MenuVO> menuVOS = menuList.stream().map(menu -> {
-            MenuVO menuVO = new MenuVO();
-            BeanUtils.copyProperties(menu, menuVO);
-            return menuVO;
-        }).collect(Collectors.toList());
+        //查询已经有的菜单
+        List<MenuVO> menuList = roleMapper.selectByRoleId(roleId,tenantId);
+        menuList.forEach(menuVO -> menuVO.setHasMenu(1));
+        //查询所有的菜单
+        List<MenuVO> allMenus = roleMapper.listMenu();
+
+        // 使用Stream API将menuList转换为Map，key为菜单ID，value为菜单对象
+        Map<Long, MenuVO> menuMap = menuList.stream()
+                .collect(Collectors.toMap(MenuVO::getId, menu -> {
+                    menu.setHasMenu(1); // 设置拥有的菜单标识
+                    return menu;
+                }));
+        // 遍历所有菜单，如果菜单在menuMap中存在，则表示拥有，带有标识
+        List<MenuVO> menuVOS = allMenus.stream()
+                .map(menu -> menuMap.getOrDefault(menu.getId(), menu))
+                .toList();
+
         // 查询角色是否关联用户
-        List<User> userList = roleMapper.selectUserByRoleId(roleId, tenantId);
-        List<UserVO> userVOS = userList.stream().map(user -> {
-            UserVO userVO = new UserVO();
-            BeanUtils.copyProperties(user, userVO);
+        List<UserVO> userVOS = roleMapper.selectUserByRoleId(roleId, tenantId);
+        Map<Long, UserVO> userVOMap = userVOS.stream().collect(Collectors.toMap(UserVO::getId, userVO -> {
+            userVO.setHasUser(1);
             return userVO;
-        }).toList();
+        }));
+        List<UserVO> allUsers = roleMapper.list(tenantId);
+
+        List<UserVO> userVOS1 = allUsers.stream().map(userVO ->
+                userVOMap.getOrDefault(userVO.getId(), userVO)).toList();
         roleVO.setMenuVOS(TreeUtil.buildTree(menuVOS, 0 ,MenuVO::getMenuPid));
-        roleVO.setUserVOS(userVOS);
+        roleVO.setUserVOS(userVOS1);
         return roleVO;
     }
 

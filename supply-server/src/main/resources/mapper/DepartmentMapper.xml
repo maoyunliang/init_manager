@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.DepartmentMapper">
+    <insert id="save">
+        INSERT INTO department_* (id, department_name, depart_no, remark, sort_no,
+                                  status, pid, leader, create_user, update_user,
+                                  create_time, update_time, is_del)
+        VALUES(#{department.id}, #{department.departmentName}, #{department.departmentNo}, #{department.remark},
+            #{department.sortNo}, #{department.status}, #{department.pid}, #{department.leader},
+            #{department.createUser}, #{department.updateUser},#{department.createTime},
+            #{department.updateTime}, #{department.isDel});
+    </insert>
+    <update id="update">
+        update department_*
+        <set>
+            <if test="department.departmentName != null">department_name = #{department.roleName},</if>
+            <if test="department.departNo != null">depart_no = #{department.roleType},</if>
+            <if test="department.remark != null">remark = #{department.remark},</if>
+            <if test="department.sortNo != null">sort_no = #{department.sortNo},</if>
+            <if test="department.status != null">status = #{department.status},</if>
+            <if test="department.updateTime != null">update_time = #{department.updateTime},</if>
+            <if test="department.updateUser != null">update_user = #{department.updateUser},</if>
+        </set>
+        where id = #{department.id}
+    </update>
+    <update id="deleteById">
+        update department_*
+        set is_del = 1
+        <where>
+            id = #{departmentId}
+        </where>
+    </update>
+    <select id="list" resultType="com.yitai.vo.DepartmentVO">
+        select *
+        from department_*
+        <where>
+            <if test="departmentName != null and departmentName != ''">
+                and department_name like concat('%', #{departmentName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+    <select id="containChildren" resultType="com.yitai.entity.Department">
+        select *
+        from department_*
+        where id =  #{departmentId}
+    </select>
+</mapper>

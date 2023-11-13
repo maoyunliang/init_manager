@@ -2,7 +2,7 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.sys.*;
+import com.yitai.dto.role.*;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
@@ -31,6 +31,7 @@ public class RoleController {
     private RoleService roleService;
     @Operation(summary = "角色分页查询")
     @PostMapping ("/page")
+    @HasPermit(permission = "sys:role:list")
     public Result<PageResult> page(@RequestBody RolePageQueryDTO pageQueryDTO){
         log.info("分页查询:{}", pageQueryDTO);
         PageResult pageResult = roleService.pageQuery(pageQueryDTO);
@@ -79,7 +80,7 @@ public class RoleController {
 
     @Operation(summary = "分配用户")
     @PostMapping("/assUser")
-    @HasPermit(permission = "sys:role:assRole")
+    @HasPermit(permission = "sys:role:assUser")
     @AutoLog(operation = "给角色分配用户", type = LogType.ASSIGN)
     public Result<?> assUser(@RequestBody RoleUserDTO roleUserDTO){
         log.info("分配用户：{}", roleUserDTO);
@@ -87,10 +88,10 @@ public class RoleController {
         return Result.success();
     }
 
-    @Operation(summary = "根据Id获取角色信息（关联菜单、 关联用户）")
+    @Operation(summary = "根据id获取角色信息（关联菜单、 关联用户）")
     @PostMapping("/getRoleById")
-    public Result<?> getRoleMenuById(@RequestParam Long roleId, @RequestParam Long tenantId){
-        log.info("根据Id获取角色关联菜单信息：{}", roleId);
-        return Result.success(roleService.getRoleById(roleId, tenantId));
+    public Result<?> getRoleMenuById(@RequestBody RoleInfoDTO roleInfoDTO){
+        log.info("根据Id获取角色关联菜单信息：{}", roleInfoDTO);
+        return Result.success(roleService.getRoleById(roleInfoDTO));
     }
 }

@@ -3,6 +3,7 @@ package com.yitai.interceptor;
 import cn.hutool.core.date.DateUtil;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.MessageConstant;
+import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.entity.User;
 import com.yitai.exception.NotAuthException;
@@ -73,7 +74,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         String userId = claims.get(JwtClaimsConstant.USER_ID).toString();
         String username = (String) claims.get(JwtClaimsConstant.USERNAME);
         String phone = (String) claims.get(JwtClaimsConstant.PHONE);
-        String redisToken = (String) redisTemplate.opsForValue().get(userId.concat("-token"));
+        String redisToken = (String) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN.concat(userId));
         if (redisToken == null || !Objects.equals(redisToken, token)) {
             throw new NotAuthException(MessageConstant.ACCOUNT_ELSE);
         }

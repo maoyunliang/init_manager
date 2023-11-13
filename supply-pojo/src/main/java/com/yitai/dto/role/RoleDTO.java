@@ -1,4 +1,4 @@
-package com.yitai.dto.sys;
+package com.yitai.dto.role;
 
 import lombok.Data;
 
@@ -20,5 +20,6 @@ public class RoleDTO {
     private String roleName;
     private String roleType;
     private String roleDesc;
+    private String roleStatus;
     private List<Long> menuIds;
 }

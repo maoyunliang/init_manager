@@ -3,7 +3,7 @@ package com.yitai.mapper;
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
 import com.yitai.annotation.TableShard;
-import com.yitai.dto.sys.UserPageQueryDTO;
+import com.yitai.dto.user.UserPageQueryDTO;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;

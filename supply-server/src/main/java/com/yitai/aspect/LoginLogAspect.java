@@ -7,8 +7,8 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
 import com.yitai.annotation.LoginLog;
-import com.yitai.dto.sys.LoginMessageDTO;
-import com.yitai.dto.sys.UserLoginDTO;
+import com.yitai.dto.user.LoginMessageDTO;
+import com.yitai.dto.user.UserLoginDTO;
 import com.yitai.entity.LoginLogs;
 import com.yitai.entity.User;
 import com.yitai.result.Result;
@@ -76,7 +76,7 @@ public class LoginLogAspect {
         log.info("日志类型:"+ loginLog.type()+ "-> 接口请求结束 -> 本次请求耗时"+ stopWatch.getTotalTimeSeconds());
         Object[] args = joinPoint.getArgs();
         User user = new User();
-            //当前用户没有信息的话，就需要从参数里面获取操作人信息
+        //当前用户没有信息的话，就需要从参数里面获取操作人信息
         if (ArrayUtil.isNotEmpty(args)){
             if(args[0] instanceof UserLoginDTO userLoginDTO){
                 user = User.builder().username(userLoginDTO.getUsername()).build();

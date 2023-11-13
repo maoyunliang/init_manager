@@ -1,22 +1,22 @@
-package com.yitai.dto.sys;
+package com.yitai.dto.role;
 
 import lombok.Data;
 
 import java.util.List;
 
 /**
- * ClassName: RoleUserDTO
+ * ClassName: RoleMenuDTO
  * Package: com.yitai.dto.sys
  * Description:
  *
  * @Author: 毛云亮
- * @Create: 2023/11/7 8:52
+ * @Create: 2023/10/24 12:35
  * @Version: 1.0
  */
 @Data
-public class RoleUserDTO {
+public class RoleMenuDTO {
     private Long id;
-    private Long roleId;
     private Long tenantId;
-    private List<Long> userIds;
+    private Long roleId;
+    private List<Long> menuIds;
 }

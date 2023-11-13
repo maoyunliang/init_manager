@@ -1,6 +1,6 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.*;
+import com.yitai.dto.role.*;
 import com.yitai.result.PageResult;
 import com.yitai.vo.RoleVO;
 
@@ -26,7 +26,7 @@ public interface RoleService {
 
 //    List<Menu> selectByRoleId(Long roleId, Long tenantId);
 
-    RoleVO getRoleById(Long roleId, Long tenantId);
+    RoleVO getRoleById(RoleInfoDTO roleInfoDTO);
 
     void assUser(RoleUserDTO roleUserDTO);
 }

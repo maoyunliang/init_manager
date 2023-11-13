@@ -1,4 +1,4 @@
-package com.yitai.dto.sys;
+package com.yitai.dto.menu;
 
 import lombok.Data;
 
@@ -16,7 +16,12 @@ public class MenuDTO {
     private Long id;
     private String menuName;
     private String menuPath;
+    private String menuRouter;
+    private String identify;
     private String menuType;
+    private String icon;
+    private Long status;
     private Long menuPid;
     private Long sortNo;
+    private Long tenantId;
 }

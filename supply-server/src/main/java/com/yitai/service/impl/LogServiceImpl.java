@@ -2,7 +2,7 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.dto.sys.LogPageQueryDTO;
+import com.yitai.dto.LogPageQueryDTO;
 import com.yitai.entity.LoginLogs;
 import com.yitai.entity.OperationLog;
 import com.yitai.exception.ServiceException;
@@ -45,11 +45,6 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void removeById(Integer id) {
-        logMapper.removeById(id);
-    }
-
-    @Override
     public void removeBatchIds(List<Integer> ids) {
         logMapper.removeBatchIds(ids);
     }
@@ -73,11 +68,6 @@ public class LogServiceImpl implements LogService {
         long total = page.getTotal();
         List<LoginLogs> records = page.getResult();
         return new PageResult(total,records);
-    }
-
-    @Override
-    public void removeById1(Integer id) {
-        logMapper.removeById1(id);
     }
 
     @Override

@@ -1,8 +1,9 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuListDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
 
@@ -25,9 +26,9 @@ public interface MenuService {
      */
     List<MenuVO> list(MenuListDTO menuListDTO);
 
-    void save(MenuDTO menuDTOList);
+    void save(MenuDTO menuDTO);
 
-    void delete(Integer roleId);
+    void delete(DeleteMenuDTO menuDTO);
 
     void update(MenuDTO menuDTO);
 }

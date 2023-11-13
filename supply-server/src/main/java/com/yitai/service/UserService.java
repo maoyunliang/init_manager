@@ -1,6 +1,6 @@
 package com.yitai.service;
 
-import com.yitai.dto.sys.*;
+import com.yitai.dto.user.*;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
 import com.yitai.result.PageResult;

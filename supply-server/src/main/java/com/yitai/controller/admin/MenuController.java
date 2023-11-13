@@ -2,9 +2,10 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.sys.MenuDTO;
-import com.yitai.dto.sys.MenuListDTO;
-import com.yitai.dto.sys.MenuPageQueryDTO;
+import com.yitai.dto.menu.DeleteMenuDTO;
+import com.yitai.dto.menu.MenuDTO;
+import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
@@ -14,7 +15,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class MenuController {
 
     @Operation(summary = "菜单列表查询")
     @PostMapping("/list")
+    @HasPermit(permission = "sys:menu:list")
     public Result<List<MenuVO>> list(@RequestBody MenuListDTO menuListDTO){
         log.info("菜单列表查询:{}", menuListDTO);
         List<MenuVO> menuVOList = menuService.list(menuListDTO);
@@ -71,12 +76,12 @@ public class MenuController {
     }
 
     @Operation(summary = "删除菜单接口")
-    @PostMapping("/delete/{menuId}")
-    @HasPermit(permission = "sys:menu:deleteById")
+    @PostMapping("/delete")
+    @HasPermit(permission = "sys:menu:delete")
     @AutoLog(operation = "删除菜单操作", type = LogType.DELETE)
-    public Result<?> delete(@PathVariable Integer menuId){
+    public Result<?> delete(@RequestBody DeleteMenuDTO menuDTO){
         log.info("删除菜单");
-        menuService.delete(menuId);
+        menuService.delete(menuDTO);
         return Result.success();
     }
 }

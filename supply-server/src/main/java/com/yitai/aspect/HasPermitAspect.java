@@ -1,8 +1,10 @@
 package com.yitai.aspect;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.yitai.annotation.HasPermit;
 import com.yitai.constant.MessageConstant;
+import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.entity.User;
 import com.yitai.exception.NotAuthException;
@@ -64,7 +66,11 @@ public class HasPermitAspect {
             throw new NotAuthException(MessageConstant.TOKEN_NOT_FIND);
         }
 //        permission = mapPermissionToAuthority(permission);
-        List<String> permits = redisTemplate.opsForValue().get(user.getId().toString() + "-permission");
+        List<String> permits = redisTemplate.opsForValue().
+                get(RedisConstant.USER_PERMISSION.concat(user.getId().toString()));
+        if(CollUtil.isEmpty(permits)){
+            permits = userService.getPermiList(user.getId());
+        }
         log.info("权限列表：{}", permits);
         return permits != null && permits.contains(permission);
     }

@@ -25,6 +25,7 @@ public class Role {
     private String roleName;
     private String roleType;
     private String roleDesc;
+    private String roleStatus;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;
