@@ -35,7 +35,7 @@ public class DepartmentController {
     @Autowired
     private DepartmentService departmentService;
 
-    @Operation(summary = "部门列表查询")
+    @Operation(summary = "部门列表")
     @PostMapping("/list")
     public Result<?> pageQuery(@RequestBody DepartmentListDTO departmentListDTO){
         log.info("部门列表查询:{}", departmentListDTO);

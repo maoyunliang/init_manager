@@ -178,6 +178,15 @@ public class UserController {
         return Result.success(list);
     }
 
+    @Operation(summary = "修改密码")
+    @HasPermit(permission = "sys:user:modify")
+    @PostMapping ("/modify")
+    public Result<?> modify(@RequestBody UserPasswordDTO userPasswordDTO){
+        log.info("修改密码{}", userPasswordDTO);
+        userService.modifyPassword(userPasswordDTO);
+        return Result.success();
+    }
+
     public UserLoginVO loginSuccess(User user){
         Map<String, Object> claims = new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID, user.getId());

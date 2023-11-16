@@ -4,8 +4,6 @@ server:
 spring:
   profiles:
     active: dev
-  main:
-    allow-circular-references: true
   datasource:
     driver-class-name: ${yitai.datasource.driver-class-name}
     url: ${yitai.datasource.url}
@@ -50,6 +48,10 @@ spring:
       port: ${yitai.redis.port}
       database: ${yitai.redis.database}
       password: ${yitai.redis.password}
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 2MB
   #spring boot admin
 #  boot:
 #    admin:

@@ -9,3 +9,6 @@ yitai:
     port: 6379
     database: 0
     password: yitai
+qingniu:
+  accesskey: 3iOb1ZZZ24XqeFn9R_yQYYep-IhQOYshyVEI2O73
+  secretkey: QE9Lc9FP926-XlEqECstUCTfYtlhrBYUIyzZTuDU

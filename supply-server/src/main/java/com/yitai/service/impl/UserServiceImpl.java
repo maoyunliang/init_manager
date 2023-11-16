@@ -126,6 +126,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void modifyPassword(UserPasswordDTO userPasswordDTO) {
+        User user = BaseContext.getCurrentUser();
+        User origin = userMapper.getById(user.getId());
+        String originPassword = origin.getPassword();
+        String inputPassword = DigestUtils.md5DigestAsHex(userPasswordDTO.getOldPassword().getBytes());
+        //校验密码
+        if(!inputPassword.equals(originPassword)){
+            throw new ServiceException("请输入正确的旧密码");
+        }
+        origin.setPassword(DigestUtils.md5DigestAsHex(userPasswordDTO.getNewPassword().getBytes()));
+        userMapper.update(origin);
+    }
+
+    @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
             throw new ServiceException("请输入正确的账号");

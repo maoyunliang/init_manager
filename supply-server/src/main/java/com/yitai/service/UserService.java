@@ -46,4 +46,6 @@ public interface UserService {
     boolean sendMsg(String phoneNumber);
 
     List<Tenant> getTenant();
+
+    void modifyPassword(UserPasswordDTO userPasswordDTO);
 }
