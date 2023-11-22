@@ -33,7 +33,7 @@ public class LogController {
     /**
      * 批量删除信息
      */
-    @DeleteMapping("/delete/batch")
+    @DeleteMapping("/delete")
     @HasPermit(permission = "run:log:delete")
     @Operation(summary = "批量删除操作日志")
     public Result<?> batchDelete(@RequestBody List<Integer> ids){
@@ -44,8 +44,7 @@ public class LogController {
     /**
      * 删除日志
      */
-
-    @PostMapping("/select")
+    @PostMapping("/page")
     @HasPermit(permission = "run:log:list")
     @Operation(summary = "操作日志分页模糊查询")
     public Result<?> selectByPage(@RequestBody LogPageQueryDTO logPageQueryDTO){
@@ -56,7 +55,7 @@ public class LogController {
     /**
      * 批量删除信息
      */
-    @DeleteMapping("/delete/loginBatch")
+    @DeleteMapping("/loginDelete")
     @HasPermit(permission = "run:loginLog:delete")
     @Operation(summary = "批量删除登录日志")
     public Result<?> batchLoginDelete(@RequestBody List<Integer> ids){
@@ -67,7 +66,7 @@ public class LogController {
     /**
      * 删除日志
      */
-    @PostMapping("/selectLogin")
+    @PostMapping("/loginPage")
     @HasPermit(permission = "run:loginLog:list")
     @Operation(summary = "登录日志分页模糊查询")
     public Result<?> selectByPage1(@RequestBody LogPageQueryDTO logPageQueryDTO){

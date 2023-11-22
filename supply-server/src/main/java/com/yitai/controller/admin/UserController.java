@@ -111,7 +111,7 @@ public class UserController {
 
     @Operation(summary = "用户分页查询")
     @PostMapping("/page")
-    @HasPermit(permission = "sys:user:page")
+    @HasPermit(permission = "sys:user:list")
     public Result<PageResult> page(@RequestBody UserPageQueryDTO userPageQueryDTO){
         log.info("分页查询:{}", userPageQueryDTO);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
@@ -176,6 +176,14 @@ public class UserController {
             return tenantVO;
         }).collect(Collectors.toList());
         return Result.success(list);
+    }
+
+    @Operation(summary = "修改密码")
+    @PostMapping ("/modify")
+    public Result<?> modify(@RequestBody UserPasswordDTO userPasswordDTO){
+        log.info("修改密码{}", userPasswordDTO);
+        userService.modifyPassword(userPasswordDTO);
+        return Result.success();
     }
 
     public UserLoginVO loginSuccess(User user){

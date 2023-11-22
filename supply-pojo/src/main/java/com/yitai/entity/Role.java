@@ -1,5 +1,6 @@
 package com.yitai.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,9 +24,11 @@ import java.time.LocalDateTime;
 public class Role {
     private Long id;
     private String roleName;
+    @Schema(name = "权限标识")
+    private String identity;
     private String roleType;
     private String roleDesc;
-    private String roleStatus;
+    private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

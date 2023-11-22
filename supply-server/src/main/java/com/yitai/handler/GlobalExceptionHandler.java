@@ -1,6 +1,7 @@
 package com.yitai.handler;
 
 import com.yitai.constant.HttpStatusConstant;
+import com.yitai.exception.LoginOutException;
 import com.yitai.exception.NotAuthException;
 import com.yitai.exception.NotPermissionException;
 import com.yitai.exception.ServiceException;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 
 /**
@@ -25,12 +27,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     /*
+     * 强制退出异常
+     */
+    @ExceptionHandler(LoginOutException.class)
+    public Result<?> exceptionHandler(LoginOutException ex, HttpServletRequest request){
+        String requestURI = request.getRequestURI();
+        log.error("请求地址:'{}', 认证异常信息：'{}'",requestURI, ex.getMessage());
+        return Result.error(ex.getMessage(), HttpStatusConstant.AUTH_EXIT);
+    }
+
+    /*
      * 认证异常
      */
     @ExceptionHandler(NotAuthException.class)
     public Result<?> exceptionHandler(NotAuthException ex, HttpServletRequest request){
         String requestURI = request.getRequestURI();
-        log.error("请求地址:'{}', 异常信息：'{}'",requestURI, ex.getMessage());
+        log.error("请求地址:'{}', 认证异常信息：'{}'",requestURI, ex.getMessage());
         return Result.error(ex.getMessage(), HttpStatusConstant.NOT_AUTH);
     }
 
@@ -40,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotPermissionException.class)
     public Result<?> exceptionHandler(NotPermissionException ex, HttpServletRequest request){
         String requestURI = request.getRequestURI();
-        log.error("请求地址:'{}', 异常信息：'{}'",requestURI, ex.getMessage());
+        log.error("请求地址:'{}', 权限异常信息：'{}'",requestURI, ex.getMessage());
         return Result.error(ex.getMessage(), HttpStatusConstant.HTTP_FORBIDDEN);
     }
 
@@ -53,7 +65,15 @@ public class GlobalExceptionHandler {
         log.error("请求地址:'{}', 业务异常信息：'{}'",requestURI, ex.getMessage());
         return Result.error(ex.getMessage(), HttpStatusConstant.SERVICE_ERROR);
     }
-
+    /*
+     * 文件上传异常
+     */
+    @ExceptionHandler(MultipartException.class)
+    public Result<?> exceptionHandler(MultipartException ex, HttpServletRequest request){
+        String requestURI = request.getRequestURI();
+        log.error("请求地址:'{}', 文件上传异常信息：'{}'",requestURI, ex.getMessage());
+        return Result.error("文件上传不得大于2MB", HttpStatusConstant.SERVICE_ERROR);
+    }
     /*
      * 系统异常
      */
@@ -61,6 +81,7 @@ public class GlobalExceptionHandler {
     public Result<?> exceptionHandler(Exception ex, HttpServletRequest request){
         String requestURI = request.getRequestURI();
         log.error("请求地址:'{}', 发生系统异常：",requestURI, ex);
-        return Result.error(ex.getMessage(), HttpStatusConstant.SYS_ERROR);
+        return Result.error("未知异常", HttpStatusConstant.SYS_ERROR);
     }
+
 }

@@ -42,9 +42,8 @@ public interface UserMapper {
     分页查询
      */
 
-    //@TableShard(tableName = "role", type = ShardType.ID)
+    @TableShard(type = ShardType.TABLE)
     Page<UserVO> pageQuery(UserPageQueryDTO userPageQueryDTO);
-
 
     /*
     更新employee

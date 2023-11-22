@@ -1,10 +1,7 @@
 package com.yitai.service;
 
-import com.yitai.dto.menu.DeleteMenuDTO;
 import com.yitai.dto.menu.MenuDTO;
 import com.yitai.dto.menu.MenuListDTO;
-import com.yitai.dto.menu.MenuPageQueryDTO;
-import com.yitai.result.PageResult;
 import com.yitai.vo.MenuVO;
 
 import java.util.List;
@@ -19,7 +16,7 @@ import java.util.List;
  * @Version: 1.0
  */
 public interface MenuService {
-    PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO);
+//    PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO);
 
     /*
      * 菜单列表
@@ -28,7 +25,7 @@ public interface MenuService {
 
     void save(MenuDTO menuDTO);
 
-    void delete(DeleteMenuDTO menuDTO);
+    void delete(MenuDTO menuDTO);
 
     void update(MenuDTO menuDTO);
 }

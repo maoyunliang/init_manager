@@ -31,5 +31,6 @@ public class MenuVO implements Serializable {
     private Long status;
     private Integer hasMenu = -1;
     private LocalDateTime createTime;
+    private LocalDateTime updateTime;
     private List<MenuVO> children;
 }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.TenantMapper">
+    <insert id="save">
+        insert into public_tenant(id, tenant_id, tenant_name, tenant_logo,
+                                  location, contact, address, qualification,
+                                  remark, status, create_user, update_user,
+                                  create_time, update_time, is_del)
+        values (#{id}, #{tenantId}, #{tenantName}, #{tenantLogo},
+                #{location}, #{contact}, #{address}, #{qualification},
+                #{remark}, #{status}, #{create_user}, #{update_user},
+                #{create_time}, #{update_time}, #{is_del})
+    </insert>
+    <update id="update">
+        update public_tenant
+        <set>
+            <if test="tenantName != null">tenant_name = #{tenantName},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="tenantLogo != null">tenant_logo = #{tenantLogo},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="pageQuery" resultType="com.yitai.entity.Tenant">
+        select *
+        from public_tenant
+        <where>
+            <if test="tenantName != null and tenantName != ''">
+                and tenant_name like concat('%', #{tenantName}, '%')
+            </if>
+            <if test="contact != null and contact != ''">
+                and contact like concat('%', #{contact}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+
+    <update id="delete">
+        update public_tenant
+        set is_del = 1
+        where id = #{id}
+    </update>
+</mapper>

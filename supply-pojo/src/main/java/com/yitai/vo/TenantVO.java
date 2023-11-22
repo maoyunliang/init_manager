@@ -25,4 +25,6 @@ public class TenantVO {
     private Long id;
     @Schema(name = "租户名")
     private String tenantName;
+    @Schema(name = "租户logo")
+    private String tenantLogo;
 }

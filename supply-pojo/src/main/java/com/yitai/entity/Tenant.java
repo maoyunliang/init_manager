@@ -24,6 +24,13 @@ public class Tenant {
     private Long id;
     private String tenantId;
     private String tenantName;
+    private String tenantLogo;
+    private String contact;
+    private String location;
+    private String address;
+    private String qualification;
+    private String remark;
+    private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

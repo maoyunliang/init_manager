@@ -4,7 +4,6 @@ package com.yitai.mapper;
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
 import com.yitai.annotation.TableShard;
-import com.yitai.dto.role.DeleteRoleDTO;
 import com.yitai.dto.role.RolePageQueryDTO;
 import com.yitai.entity.MenuRole;
 import com.yitai.entity.Role;
@@ -39,7 +38,7 @@ public interface RoleMapper {
 
 
     @TableShard(type = ShardType.TABLE)
-    void deleteById(DeleteRoleDTO deleteRoleDTO);
+    void deleteById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @AutoFill(value = OperationType.UPDATE)
     @TableShard(type = ShardType.TABLE)
@@ -52,8 +51,6 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     List<MenuVO> selectByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
-    @TableShard(type = ShardType.TABLE)
-    void deleteMenuById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
     Role getRoleById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
@@ -66,4 +63,8 @@ public interface RoleMapper {
     List<MenuVO> listMenu();
 
     List<UserVO> list(Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    void emptyMenu(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
 }

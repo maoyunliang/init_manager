@@ -1,6 +1,8 @@
 package com.yitai.dto.department;
 
+import com.yitai.dto.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: DepartmentListDTO
@@ -11,9 +13,9 @@ import lombok.Data;
  * @Create: 2023/11/10 11:27
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class DepartmentListDTO {
+public class DepartmentListDTO extends BaseBody {
     private String departmentName;
-    private Long status;
-    private Long tenantId;
+    private Integer status;
 }

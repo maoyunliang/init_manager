@@ -21,27 +21,27 @@ public class Result<T> implements Serializable {
 
 
     public static <T> Result<T> success() {
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.code = 200;
         return result;
     }
 
     public static <T> Result<T> success(T object){
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.code = 200;
         result.data = object;
         return result;
     }
 
     public static <T> Result<T> error(String msg){
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.msg = msg;
         result.code = 500;
         return result;
     }
 
     public static <T> Result<T> error(String msg, Integer code){
-        Result<T> result = new Result<T>();
+        Result<T> result = new Result<>();
         result.msg = msg;
         result.code = code;
         return result;

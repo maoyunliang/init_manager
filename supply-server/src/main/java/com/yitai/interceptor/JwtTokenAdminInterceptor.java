@@ -6,6 +6,7 @@ import com.yitai.constant.MessageConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.entity.User;
+import com.yitai.exception.LoginOutException;
 import com.yitai.exception.NotAuthException;
 import com.yitai.properties.JwtProperties;
 import com.yitai.utils.JwtUtil;
@@ -76,7 +77,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         String phone = (String) claims.get(JwtClaimsConstant.PHONE);
         String redisToken = (String) redisTemplate.opsForValue().get(RedisConstant.USER_LOGIN.concat(userId));
         if (redisToken == null || !Objects.equals(redisToken, token)) {
-            throw new NotAuthException(MessageConstant.ACCOUNT_ELSE);
+            throw new LoginOutException(MessageConstant.ACCOUNT_ELSE);
         }
         User user = User.builder().id(Long.valueOf(userId)).username(username).phone(phone).build();
         BaseContext.setCurrentUser(user);

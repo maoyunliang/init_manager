@@ -21,9 +21,11 @@
     </insert>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="role.id">
-        insert into role_*(id, role_name, role_type, role_desc, role_status, create_time, update_time, create_user,
-                           update_user, is_del) values (#{role.id}, #{role.roleName},#{role.roleType},
-                           #{role.roleDesc}, #{role.roleStatus}, #{role.createTime}, #{role.updateTime},
+        insert into role_*(id, role_name, role_type, identity, role_desc,
+                           status, create_time, update_time, create_user,
+                           update_user, is_del)
+        values (#{role.id}, #{role.roleName}, #{role.roleType}, #{role.identity},
+                           #{role.roleDesc}, #{role.status}, #{role.createTime}, #{role.updateTime},
                            #{role.createUser}, #{role.updateUser}, #{role.isDel})
     </insert>
     <update id="update" parameterType="com.yitai.entity.Role">
@@ -31,13 +33,18 @@
         <set>
             <if test="role.roleName != null">role_name = #{role.roleName},</if>
             <if test="role.roleType != null">role_type = #{role.roleType},</if>
+            <if test="role.identity != null">identity = #{role.identity},</if>
             <if test="role.roleDesc != null">role_desc = #{role.roleDesc},</if>
-            <if test="role.roleStatus != null">role_status = #{roleStatus},</if>
+            <if test="role.status != null">status = #{role.status},</if>
             <if test="role.updateTime != null">update_time = #{role.updateTime},</if>
             <if test="role.updateUser != null">update_user = #{role.updateUser},</if>
         </set>
         where id = #{role.id}
     </update>
+    <delete id="emptyMenu">
+        delete from role_menu_*
+        where role_id = #{roleId}
+    </delete>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
         from role_*
@@ -45,11 +52,11 @@
             <if test="roleName != null and roleName != ''">
                 and role_name like concat('%', #{roleName}, '%')
             </if>
-            <if test="roleType != null and roleType != ''">
-                and role_type like concat('%', #{roleType}, '%')
+            <if test="identity != null and identity != ''">
+                and identity like concat('%', #{identity}, '%')
             </if>
-            <if test="roleStatus != null and roleStatus != ''">
-                and role_status = #{roleStatus}
+            <if test="status != null">
+                and status = #{status}
             </if>
                 and is_del = 0
         </where>

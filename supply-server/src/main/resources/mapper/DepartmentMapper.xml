@@ -4,10 +4,10 @@
 <mapper namespace="com.yitai.mapper.DepartmentMapper">
     <insert id="save">
         INSERT INTO department_* (id, department_name, depart_no, remark, sort_no,
-                                  status, pid, leader, create_user, update_user,
+                                  status, pid, leader, username, create_user, update_user,
                                   create_time, update_time, is_del)
         VALUES(#{department.id}, #{department.departmentName}, #{department.departmentNo}, #{department.remark},
-            #{department.sortNo}, #{department.status}, #{department.pid}, #{department.leader},
+            #{department.sortNo}, #{department.status}, #{department.pid}, #{department.leader}, #{department.username},
             #{department.createUser}, #{department.updateUser},#{department.createTime},
             #{department.updateTime}, #{department.isDel});
     </insert>
@@ -28,7 +28,7 @@
         update department_*
         set is_del = 1
         <where>
-            id = #{departmentId}
+            id = #{id}
         </where>
     </update>
     <select id="list" resultType="com.yitai.vo.DepartmentVO">
@@ -48,6 +48,18 @@
     <select id="containChildren" resultType="com.yitai.entity.Department">
         select *
         from department_*
-        where id =  #{departmentId}
+        where id =  #{id}
+    </select>
+
+    <select id="deptList" resultType="com.yitai.vo.DepartmentVO">
+        select *
+        from department_*
+        where is_del = 0
+        order by create_time desc
+    </select>
+    <select id="getDeptUser" resultType="com.yitai.dto.department.DepartmentUserDTO">
+        select dept_id as deptId, pu.id, username, pu.phone
+        from user_department_* ud
+        join public_user pu on ud.user_id = pu.id
     </select>
 </mapper>

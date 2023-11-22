@@ -2,7 +2,10 @@ package com.yitai.service;
 
 import com.yitai.dto.role.*;
 import com.yitai.result.PageResult;
+import com.yitai.vo.DepartmentVO;
 import com.yitai.vo.RoleVO;
+
+import java.util.List;
 
 /**
  * ClassName: RoleService
@@ -18,15 +21,17 @@ public interface RoleService {
 
     void save(RoleDTO addRoleDTO);
 
-    void delete(DeleteRoleDTO deleteRoleDTO);
+    void delete(RoleDTO deleteRoleDTO);
 
     void update(RoleDTO updateRoleDTO);
 
-    void assMenu(RoleMenuDTO roleMenuDTO);
+    void assMenu(RoleAssDTO roleMenuDTO);
 
 //    List<Menu> selectByRoleId(Long roleId, Long tenantId);
 
-    RoleVO getRoleById(RoleInfoDTO roleInfoDTO);
+    RoleVO getUser(RoleDTO roleInfoDTO, List<DepartmentVO> departmentVOS);
 
-    void assUser(RoleUserDTO roleUserDTO);
+    RoleVO getMenu(RoleDTO roleInfoDTO);
+
+    void assUser(RoleAssDTO roleUserDTO);
 }

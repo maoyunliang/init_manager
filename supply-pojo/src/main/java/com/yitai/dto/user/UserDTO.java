@@ -1,6 +1,8 @@
 package com.yitai.dto.user;
 
+import com.yitai.dto.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: EmployeeDTO
@@ -11,10 +13,10 @@ import lombok.Data;
  * @Create: 2023/9/25 15:49
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class UserDTO {
+public class UserDTO extends BaseBody {
     private Long id;
-    private Long tenantId;
     private String realname;
     private String username;
     private String idNumber;

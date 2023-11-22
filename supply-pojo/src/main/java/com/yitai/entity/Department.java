@@ -26,9 +26,10 @@ public class Department {
     private String departmentNo;
     private String remark;
     private Long pid;
-    private String leader;
+    private String username;
+    private Long leader;
     private Long sortNo;
-    private Long status;
+    private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

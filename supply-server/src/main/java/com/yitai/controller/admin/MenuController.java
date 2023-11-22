@@ -2,12 +2,9 @@ package com.yitai.controller.admin;
 
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
-import com.yitai.dto.menu.DeleteMenuDTO;
 import com.yitai.dto.menu.MenuDTO;
 import com.yitai.dto.menu.MenuListDTO;
-import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.enumeration.LogType;
-import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
 import com.yitai.vo.MenuVO;
@@ -38,13 +35,13 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
-    @Operation(summary = "菜单分页查询")
-    @PostMapping("/page")
-    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
-        log.info("分页查询:{}", menuPageQueryDTO);
-        PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
-        return Result.success(pageResult);
-    }
+//    @Operation(summary = "菜单分页查询")
+//    @PostMapping("/page")
+//    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
+//        log.info("分页查询:{}", menuPageQueryDTO);
+//        PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
+//        return Result.success(pageResult);
+//    }
 
     @Operation(summary = "菜单列表查询")
     @PostMapping("/list")
@@ -79,8 +76,8 @@ public class MenuController {
     @PostMapping("/delete")
     @HasPermit(permission = "sys:menu:delete")
     @AutoLog(operation = "删除菜单操作", type = LogType.DELETE)
-    public Result<?> delete(@RequestBody DeleteMenuDTO menuDTO){
-        log.info("删除菜单");
+    public Result<?> delete(@RequestBody MenuDTO menuDTO){
+        log.info("删除菜单{}", menuDTO);
         menuService.delete(menuDTO);
         return Result.success();
     }

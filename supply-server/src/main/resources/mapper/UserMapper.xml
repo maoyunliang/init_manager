@@ -41,10 +41,26 @@
         </set>
         where id = #{id}
     </update>
-    <select id="pageQuery" resultType="com.yitai.vo.UserVO">
-        select *
+    <resultMap id="pageQueryResultMap" type="com.yitai.vo.UserVO">
+        <id property="id" column="pu.id"/>
+        <result property="username" column="pu.username"/>
+        <result property="realname" column="pu.realname"/>
+        <result property="sex" column="pu.sex"/>
+        <result property="openid" column="pu.openid"/>
+        <result property="phone" column="pu.phone"/>
+        <result property="email" column="pu.email"/>
+        <result property="idNumber" column="pu.id_number"/>
+        <result property="status" column="pu.status"/>
+        <result property="avatar" column="avatar"/>
+        <result property="departments" column="departments" typeHandler="com.yitai.handler.StringToListTypeHandler" />
+    </resultMap>
+    <select id="pageQuery" resultMap="pageQueryResultMap">
+        select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
+               pu.id_number, pu.status, avatar, GROUP_CONCAT(d.department_name order by ud.dept_id) as departments
         from public_user pu
         join public_user_tenant put on pu.id = put.user_id
+        join user_department_* ud on pu.id = ud.user_id
+        join department_* d on ud.dept_id = d.id
         <where>
             <if test="username !=null and username != ''">
                 and pu.username like concat('%',#{username},'%')
@@ -54,6 +70,7 @@
             </if>
                 and pu.is_del = 0
         </where>
+        group by pu.id, pu.create_time
         order by pu.create_time desc
     </select>
     <select id="pageMenu" resultType="com.yitai.vo.MenuVO">
@@ -102,5 +119,4 @@
                 and public_tenant.is_del = 0
         </where>
     </select>
-
 </mapper>

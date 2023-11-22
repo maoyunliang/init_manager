@@ -18,12 +18,12 @@ import java.util.List;
 public class DepartmentVO {
     private Long id;
     private String departmentName;
-    private String departmentNo;
-    private String remark;
     private Long pid;
-    private String leader;
+    private String username;
+    private Long leader;
     private Long sortNo;
-    private Long status;
+    private Integer status;
     private LocalDateTime createTime;
     private List<DepartmentVO> children;
+    private List<UserVO> users;
 }
