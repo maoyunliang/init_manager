@@ -1,6 +1,8 @@
 package com.yitai.dto.role;
 
+import com.yitai.dto.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: RolePageQueryDTO
@@ -11,12 +13,12 @@ import lombok.Data;
  * @Create: 2023/10/19 10:38
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class RolePageQueryDTO {
+public class RolePageQueryDTO extends BaseBody {
     private String roleName;
-    private String roleType;
-    private Long tenantId;
-    private String roleStatus;
+    private String identity;
+    private Integer status;
     private int page =1 ;
     private int pageSize =10;
 }

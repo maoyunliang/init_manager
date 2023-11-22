@@ -1,6 +1,8 @@
 package com.yitai.dto.menu;
 
+import com.yitai.dto.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: MenuDTO
@@ -11,8 +13,9 @@ import lombok.Data;
  * @Create: 2023/10/20 16:47
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuDTO {
+public class MenuDTO extends BaseBody {
     private Long id;
     private String menuName;
     private String menuPath;
@@ -20,8 +23,7 @@ public class MenuDTO {
     private String identify;
     private String menuType;
     private String icon;
-    private Long status;
+    private Integer status;
     private Long menuPid;
     private Long sortNo;
-    private Long tenantId;
 }

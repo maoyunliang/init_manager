@@ -2,8 +2,9 @@ package com.yitai.mapper;
 
 import com.yitai.annotation.AutoFill;
 import com.yitai.annotation.TableShard;
-import com.yitai.dto.department.DeleteDepartmentDTO;
+import com.yitai.dto.department.DepartmentDTO;
 import com.yitai.dto.department.DepartmentListDTO;
+import com.yitai.dto.department.DepartmentUserDTO;
 import com.yitai.entity.Department;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
@@ -37,8 +38,14 @@ public interface DepartmentMapper {
     void update(@Param("department") Department department, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
-    List<Department> containChildren(DeleteDepartmentDTO deleteDepartmentDTO);
+    List<Department> containChildren(DepartmentDTO deleteDepartmentDTO);
 
     @TableShard(type = ShardType.TABLE)
-    void deleteById(DeleteDepartmentDTO deleteDepartmentDTO);
+    void deleteById(DepartmentDTO deleteDepartmentDTO);
+
+    @TableShard(type = ShardType.TABLE)
+    List<DepartmentVO> deptList(@Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<DepartmentUserDTO> getDeptUser(@Param("tenantId") Long tenantId);
 }

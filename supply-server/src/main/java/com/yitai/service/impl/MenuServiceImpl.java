@@ -1,19 +1,16 @@
 package com.yitai.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.yitai.constant.MangerConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.menu.DeleteMenuDTO;
 import com.yitai.dto.menu.MenuDTO;
 import com.yitai.dto.menu.MenuListDTO;
-import com.yitai.dto.menu.MenuPageQueryDTO;
 import com.yitai.entity.Menu;
 import com.yitai.entity.User;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.MenuMapper;
-import com.yitai.result.PageResult;
+import com.yitai.properties.MangerProperties;
 import com.yitai.service.MenuService;
 import com.yitai.utils.TreeUtil;
 import com.yitai.vo.MenuVO;
@@ -41,23 +38,33 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    MangerProperties mangerProperties;
     /*
      * 菜单分页查询
      */
-    @Override
-    public PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO) {
-        PageHelper.startPage(menuPageQueryDTO.getPage(),menuPageQueryDTO.getPageSize());
-        Page<Menu> page = menuMapper.pageQuery(menuPageQueryDTO);
-        long total = page.getTotal();
-        List<Menu> records = page.getResult();
-        return new PageResult(total, records);
-    }
+//    @Override
+//    public PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO) {
+//        PageHelper.startPage(menuPageQueryDTO.getPage(),menuPageQueryDTO.getPageSize());
+//        Page<Menu> page = menuMapper.pageQuery(menuPageQueryDTO);
+//        long total = page.getTotal();
+//        List<Menu> records = page.getResult();
+//        return new PageResult(total, records);
+//    }
     /*
      * 菜单列表
      */
     @Override
     public List<MenuVO> list(MenuListDTO menuListDTO) {
         List<MenuVO> menuList = menuMapper.list(menuListDTO);
+        //获取当前用户是否是超级管理员
+        User user = BaseContext.getCurrentUser();
+        //如果是普通用户
+        if (!mangerProperties.getUserId().contains(user.getId())){
+            menuList = menuList.stream().filter(e->{
+                return !MangerConstant.MENUS.contains(e.getId().intValue());
+            }).toList();
+        };
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
     }
 
@@ -82,13 +89,13 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void delete(DeleteMenuDTO menuDTO) {
+    public void delete(MenuDTO menuDTO) {
         //判断是否有子菜单
-        List<Menu> menus = menuMapper.containChildren(menuDTO.getMenuId());
+        List<Menu> menus = menuMapper.containChildren(menuDTO.getId());
         if(!CollectionUtil.isEmpty(menus)){
             throw new ServiceException("当前菜单存在子菜单，无法删除");
         }
-        menuMapper.deleteById(menuDTO.getMenuId());
+        menuMapper.deleteById(menuDTO.getId());
     }
 
     @Override

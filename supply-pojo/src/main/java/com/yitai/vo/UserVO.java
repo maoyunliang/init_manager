@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * ClassName: UserVO
  * Package: com.yitai.vo
@@ -39,8 +41,10 @@ public class UserVO {
     private String phone;
     @Schema(name = "邮箱号")
     private String email;
+    @Schema(name = "关联部门")
+    private List<String> departments;
     @Schema(name = "状态")
     private Integer status;
-    @Schema(name = "包含")
+    @Schema(name = "角色关联包含")
     private Integer hasUser = -1;
 }

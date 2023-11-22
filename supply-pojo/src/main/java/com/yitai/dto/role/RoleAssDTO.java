@@ -1,6 +1,8 @@
 package com.yitai.dto.role;
 
+import com.yitai.dto.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -13,10 +15,11 @@ import java.util.List;
  * @Create: 2023/11/7 8:52
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class RoleUserDTO {
+public class RoleAssDTO extends BaseBody {
     private Long id;
     private Long roleId;
-    private Long tenantId;
     private List<Long> userIds;
+    private List<Long> menuIds;
 }

@@ -111,7 +111,7 @@ public class UserController {
 
     @Operation(summary = "用户分页查询")
     @PostMapping("/page")
-    @HasPermit(permission = "sys:user:page")
+    @HasPermit(permission = "sys:user:list")
     public Result<PageResult> page(@RequestBody UserPageQueryDTO userPageQueryDTO){
         log.info("分页查询:{}", userPageQueryDTO);
         PageResult pageResult = userService.pageQuery(userPageQueryDTO);
@@ -179,7 +179,6 @@ public class UserController {
     }
 
     @Operation(summary = "修改密码")
-    @HasPermit(permission = "sys:user:modify")
     @PostMapping ("/modify")
     public Result<?> modify(@RequestBody UserPasswordDTO userPasswordDTO){
         log.info("修改密码{}", userPasswordDTO);

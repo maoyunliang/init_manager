@@ -26,7 +26,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * ClassName: AutoLogAspect
@@ -100,11 +105,25 @@ public class AutoLogAspect {
         if (args[0] instanceof Long){
             tenantId = (Long) args[0];
         }else{
-            try{
-                Method getTenantId = args[0].getClass().getDeclaredMethod("getTenantId");
-                tenantId  = (Long) getTenantId.invoke(args[0]);
-            }catch (Exception e){
-                throw new ServiceException("请携带正确的租户ID");
+            tenantId = null;
+            Class<?> clazz = args[0].getClass();
+            List<Method> methods = new ArrayList<>();
+            while (clazz != null){
+                methods.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredMethods())));
+                clazz = clazz.getSuperclass();
+            }
+            Optional<Method> optionalMethod = methods.stream()
+                    .filter(method -> method.getName().equals("getTenantId"))
+                    .findFirst();
+            if (optionalMethod.isPresent()) {
+                Method getTenantId = optionalMethod.get();
+                if (getTenantId.getReturnType().equals(Long.class)) {
+                    try {
+                        tenantId = (Long) getTenantId.invoke(args[0]);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                       throw new ServiceException("传输实体不存在租户ID"); // Handle the exception according to your application's needs
+                    }
+                }
             }
         }
         //组装日志的实体对象
@@ -113,10 +132,8 @@ public class AutoLogAspect {
                 type(autoLog.type().getValue()).
                 ip(ipAddr).duration(stopWatch.getTotalTimeSeconds()).
                 time(DateUtil.now()).tenantId(tenantId).build();
+        ThreadUtil.execAsync(()-> logService.save2(logs));
         // 异步的方式擦入数据到数据库
-        ThreadUtil.execAsync(()->{
-            logService.save2(logs);
-        });
         log.info("-----------日志处理完成---------");
     }
 

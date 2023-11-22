@@ -1,10 +1,12 @@
 package com.yitai.controller.admin;
 
-import com.yitai.dto.department.DeleteDepartmentDTO;
+import com.yitai.annotation.HasPermit;
+import com.yitai.dto.BaseBody;
 import com.yitai.dto.department.DepartmentDTO;
 import com.yitai.dto.department.DepartmentListDTO;
 import com.yitai.result.Result;
 import com.yitai.service.DepartmentService;
+import com.yitai.utils.TreeUtil;
 import com.yitai.vo.DepartmentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,14 +38,16 @@ public class DepartmentController {
     private DepartmentService departmentService;
 
     @Operation(summary = "部门列表")
+    @HasPermit(permission = "sys:dep:list")
     @PostMapping("/list")
     public Result<?> pageQuery(@RequestBody DepartmentListDTO departmentListDTO){
         log.info("部门列表查询:{}", departmentListDTO);
         List<DepartmentVO> departmentVOS = departmentService.list(departmentListDTO);
-        return Result.success(departmentVOS);
+        return Result.success(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid));
     }
 
     @Operation(summary = "新增部门")
+    @HasPermit(permission = "sys:dep:add")
     @PostMapping("/save")
     public Result<?> save(@RequestBody DepartmentDTO departmentDTO){
         log.info("新增部门:{}", departmentDTO);
@@ -52,6 +56,7 @@ public class DepartmentController {
     }
 
     @Operation(summary = "修改部门")
+    @HasPermit(permission = "sys:dep:update")
     @PostMapping("/update")
     public Result<?> update(@RequestBody DepartmentDTO departmentDTO){
         log.info("修改部门信息:{}", departmentDTO);
@@ -60,10 +65,19 @@ public class DepartmentController {
     }
 
     @Operation(summary = "删除部门")
+    @HasPermit(permission = "sys:dep:delete")
     @PostMapping("/delete")
-    public Result<?> delete(@RequestBody DeleteDepartmentDTO deleteDepartmentDTO){
+    public Result<?> delete(@RequestBody DepartmentDTO deleteDepartmentDTO){
         log.info("删除部门:{}", deleteDepartmentDTO);
         departmentService.delete(deleteDepartmentDTO);
         return Result.success();
+    }
+
+    @Operation(summary = "获取部门树和关联人员信息")
+    @PostMapping("/getUserByTree")
+    public Result<?> getUserByTree(@RequestBody BaseBody baseBody){
+        log.info("获取部门树和关联人员信息:");
+        List<DepartmentVO> departmentVOS = departmentService.getUserByTree(baseBody.getTenantId());
+        return Result.success(TreeUtil.buildTree(departmentVOS,0,DepartmentVO::getPid));
     }
 }

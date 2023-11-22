@@ -52,6 +52,8 @@ spring:
     multipart:
       max-request-size: 20MB
       max-file-size: 2MB
+  jmx:
+    enabled: false
   #spring boot admin
 #  boot:
 #    admin:

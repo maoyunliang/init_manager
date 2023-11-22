@@ -30,7 +30,7 @@ public class Menu {
     private String icon;
     private Long menuPid;
     private Long sortNo;
-    private Long status;
+    private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

@@ -1,6 +1,5 @@
 package com.yitai.service;
 
-import com.yitai.dto.department.DeleteDepartmentDTO;
 import com.yitai.dto.department.DepartmentDTO;
 import com.yitai.dto.department.DepartmentListDTO;
 import com.yitai.vo.DepartmentVO;
@@ -23,5 +22,7 @@ public interface DepartmentService {
 
     void update(DepartmentDTO departmentDTO);
 
-    void delete(DeleteDepartmentDTO deleteDepartmentDTO);
+    void delete(DepartmentDTO deleteDepartmentDTO);
+
+    List<DepartmentVO> getUserByTree(Long tenantId);
 }

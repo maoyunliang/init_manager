@@ -1,6 +1,7 @@
 package com.yitai.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
@@ -68,6 +69,8 @@ public class UserServiceImpl implements UserService {
 
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(user.getPassword())){
+//            LoginLogs logs = LoginLogs.builder().build();
+//            logMapper.save1(Log);
             throw new ServiceException(MessageConstant.PASSWORD_ERROR);
         }
 
@@ -165,9 +168,6 @@ public class UserServiceImpl implements UserService {
         Page<UserVO> page = userMapper.pageQuery(userPageQueryDTO);
         long total = page.getTotal();
         List<UserVO> records = page.getResult();
-//        for (User record : records) {
-//            record.setPassword("**********");
-//        }
         return new PageResult(total,records);
     }
 
@@ -242,25 +242,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void assRole(UserRoleDTO userRoleDTO) {
-//        UserRole userRole = new UserRole();
-        //1、for 循环批量插入
-//        for (Long roleId : userRoleDTO.getRoleIds()) {
-//            userRole.setUserId(userRoleDTO.getUserId());
-//            userRole.setRoleId(roleId);
-//            userMapper.assRole(userRole);
-//        }
-        //2、 mybatis批量擦入
-        List<UserRole> userRoles = new ArrayList<>();
-        Long userId = userRoleDTO.getUserId();
-        for (Long roleId : userRoleDTO.getRoleIds()) {
-            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
+        //1、 mybatis批量擦入
+        //Lambda 表达式写法
+        if(!CollectionUtil.isEmpty(userRoleDTO.getRoleIds())) {
+            Long userId = userRoleDTO.getUserId();
+            List<UserRole> userRoleList = userRoleDTO.getRoleIds()
+                    .stream()
+                    .map(roleId -> UserRole.builder().roleId(roleId).userId(userId).build()).toList();
+            userMapper.assRole(userRoleList, userRoleDTO.getTenantId());
         }
-//        //Lambda 表达式写法
-//        userRoleDTO.getRoleIds().forEach(roleId ->{
-//            userRoles.add(UserRole.builder().roleId(roleId).userId(userId).build());
-//        });
-        userMapper.assRole(userRoles, userRoleDTO.getTenantId());
-        //2、原生批量插入分片实现（解决sql拼接造成语句过大）
     }
 
 

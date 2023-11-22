@@ -48,4 +48,5 @@ public interface UserService {
     List<Tenant> getTenant();
 
     void modifyPassword(UserPasswordDTO userPasswordDTO);
+
 }

@@ -12,6 +12,7 @@ package com.yitai.constant;
 public class HttpStatusConstant {
     public static final Integer NOT_AUTH = 401;
     public static final Integer HTTP_FORBIDDEN = 403;
+    public static final Integer AUTH_EXIT = 405;
     public static final Integer SYS_ERROR = 501;
     public static final Integer SUCCESS = 200;
     public static final Integer SERVICE_ERROR = 500;

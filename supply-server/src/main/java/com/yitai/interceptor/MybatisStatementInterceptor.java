@@ -14,10 +14,10 @@ import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * ClassName: MybatisStatementInterceptor
@@ -60,19 +60,40 @@ public class MybatisStatementInterceptor implements Interceptor {
             if (parameterObject instanceof HashMap<?,?>){
                 tenantId = (Long) ((HashMap<?, ?>) parameterObject).get("tenantId");
             }else {
-                Method getTenantId = parameterObject.getClass().getDeclaredMethod("getTenantId");
-                tenantId = (Long) getTenantId.invoke(parameterObject);
+                tenantId = null;
+                Class<?> clazz = parameterObject.getClass();
+                List<Method> methods = new ArrayList<>();
+                while (clazz != null){
+                    methods.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredMethods())));
+                    clazz = clazz.getSuperclass();
+                }
+                Optional<Method> optionalMethod = methods.stream()
+                        .filter(method -> method.getName().equals("getTenantId"))
+                        .findFirst();
+                if (optionalMethod.isPresent()) {
+                    Method getTenantId = optionalMethod.get();
+                    if (getTenantId.getReturnType().equals(Long.class)) {
+                        try {
+                            tenantId = (Long) getTenantId.invoke(parameterObject);
+                            // Use the retrieved tenantId...
+                        } catch (IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace(); // Handle the exception according to your application's needs
+                        }
+                    } else {
+                        // Handle the case where getTenantId method does not return Long
+                        throw new Exception("getTenantId method does not return Long");
+                    }
+                } else {
+                    // Handle the case where getTenantId method is not found
+                    throw new Exception("getTenantId method not found");
+                }
             }
-            if(tableShard.type() == ShardType.TABLE) {
+            if(tableShard.type() == ShardType.TABLE){
                 rewriteTableSql(boundSql, tenantId);
-            }else if (tableShard.type() == ShardType.ID){
-                rewriteFieldSql(boundSql, tenantId);
-            }else {
-                throw new Exception();
+            }else if(tableShard.type() == ShardType.ID){
+                rewriteTableSql(boundSql, tenantId);
             }
         }
-        //组装sql
-
         return invocation.proceed();
     }
 

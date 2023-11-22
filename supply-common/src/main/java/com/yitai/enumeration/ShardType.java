@@ -11,7 +11,6 @@ package com.yitai.enumeration;
  */
 public enum ShardType {
     TABLE("分表"),
-
     ID("字段");
 
     private final String value;
