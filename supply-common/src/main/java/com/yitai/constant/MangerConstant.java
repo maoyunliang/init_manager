@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * ClassName: MangerConstatn
+ * ClassName: MangerConstant
  * Package: com.yitai.constant
  * Description:
  *
@@ -13,5 +13,6 @@ import java.util.List;
  * @Version: 1.0
  */
 public class MangerConstant {
-    public static final List<Integer> MENUS = Arrays.asList(5, 6, 24, 25, 30,32,29);
+    public static final List<Integer> MENUS = Arrays.asList(5,6,24,25,30,32,38,29,69,71);
+
 }

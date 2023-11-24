@@ -14,8 +14,8 @@
     <update id="update">
         update department_*
         <set>
-            <if test="department.departmentName != null">department_name = #{department.roleName},</if>
-            <if test="department.departNo != null">depart_no = #{department.roleType},</if>
+            <if test="department.departmentName != null">department_name = #{department.departmentName},</if>
+            <if test="department.departNo != null">depart_no = #{department.departNo},</if>
             <if test="department.remark != null">remark = #{department.remark},</if>
             <if test="department.sortNo != null">sort_no = #{department.sortNo},</if>
             <if test="department.status != null">status = #{department.status},</if>
@@ -48,7 +48,8 @@
     <select id="containChildren" resultType="com.yitai.entity.Department">
         select *
         from department_*
-        where id =  #{id}
+        where pid =  #{id}
+        and is_del = 0
     </select>
 
     <select id="deptList" resultType="com.yitai.vo.DepartmentVO">
@@ -61,5 +62,6 @@
         select dept_id as deptId, pu.id, username, pu.phone
         from user_department_* ud
         join public_user pu on ud.user_id = pu.id
+        and pu.is_del = 0
     </select>
 </mapper>

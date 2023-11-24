@@ -57,7 +57,12 @@ public class DepartmentServiceImpl implements DepartmentService {
         //查询当前部门是否有子部门
         List<Department> departments = departmentMapper.containChildren(deleteDepartmentDTO);
         if(!CollectionUtil.isEmpty(departments)){
-            throw new ServiceException("当前菜单存在子菜单，无法删除");
+            throw new ServiceException("当前部门存在子部门，无法删除");
+        }
+        //查询当前部门是否关联人员
+        List<DepartmentUserDTO> result = departmentMapper.getDeptUser(deleteDepartmentDTO.getTenantId());
+        if(!CollectionUtil.isEmpty(result)){
+            throw new ServiceException("当前部门存在员工，无法删除");
         }
         departmentMapper.deleteById(deleteDepartmentDTO);
     }

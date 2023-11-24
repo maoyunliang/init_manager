@@ -23,6 +23,8 @@ public interface MenuService {
      */
     List<MenuVO> list(MenuListDTO menuListDTO);
 
+    List<MenuVO> list();
+
     void save(MenuDTO menuDTO);
 
     void delete(MenuDTO menuDTO);

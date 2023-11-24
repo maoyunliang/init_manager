@@ -1,4 +1,4 @@
-package com.yitai.vo.server;
+package com.yitai.pojo.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,40 +6,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * ClassName: CpuInfo
+ * ClassName: MemoryInfo 内存信息
  * Package: com.yitai.entity.server
  * Description:
  *
  * @Author: 毛云亮
- * @Create: 2023/11/7 11:29
+ * @Create: 2023/11/7 11:31
  * @Version: 1.0
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CpuInfo {
+public class MemoryInfo {
     /**
-     * 核心数
+     * 内存总量
      */
-    private int cpuNum;
-    /**
-     * CPU系统使用率
-     */
-    private String sys;
+    private String total;
 
     /**
-     * CPU用户使用率
+     * 已用内存
      */
     private String used;
 
     /**
-     * CPU当前等待率
-     */
-    private String wait;
-
-    /**
-     * CPU当前空闲率
+     * 剩余内存
      */
     private String free;
 }

@@ -1,4 +1,4 @@
-package com.yitai.vo.server;
+package com.yitai.pojo.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -3,7 +3,7 @@ package com.yitai.controller.admin;
 import com.yitai.enumeration.SizeEnum;
 import com.yitai.result.Result;
 import com.yitai.utils.HardWareUtil;
-import com.yitai.vo.server.ServerVO;
+import com.yitai.pojo.server.ServerVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;

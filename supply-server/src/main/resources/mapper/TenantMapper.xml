@@ -2,15 +2,24 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.TenantMapper">
-    <insert id="save">
-        insert into public_tenant(id, tenant_id, tenant_name, tenant_logo,
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into public_tenant(id, tenant_no, tenant_name, tenant_logo,
                                   location, contact, address, qualification,
                                   remark, status, create_user, update_user,
                                   create_time, update_time, is_del)
-        values (#{id}, #{tenantId}, #{tenantName}, #{tenantLogo},
+        values (#{id}, #{tenantNo}, #{tenantName}, #{tenantLogo},
                 #{location}, #{contact}, #{address}, #{qualification},
-                #{remark}, #{status}, #{create_user}, #{update_user},
-                #{create_time}, #{update_time}, #{is_del})
+                #{remark}, #{status}, #{createUser}, #{updateUser},
+                #{createTime}, #{updateTime}, #{isDel})
+    </insert>
+    <insert id="insertDept">
+        INSERT INTO department_* (id, department_name, depart_no, remark, sort_no,
+                                  status, pid, leader, username, create_user, update_user,
+                                  create_time, update_time, is_del)
+        VALUES(#{department.id}, #{department.departmentName}, #{department.departmentNo}, #{department.remark},
+            #{department.sortNo}, #{department.status}, #{department.pid}, #{department.leader}, #{department.username},
+            #{department.createUser}, #{department.updateUser},#{department.createTime},
+            #{department.updateTime}, #{department.isDel});
     </insert>
     <update id="update">
         update public_tenant
@@ -49,5 +58,8 @@
         update public_tenant
         set is_del = 1
         where id = #{id}
+    </update>
+    <update id="createTable">
+
     </update>
 </mapper>

@@ -109,7 +109,7 @@
     </select>
 
     <select id="getTenant" resultType="com.yitai.entity.Tenant">
-        select public_tenant.id, public_tenant.tenant_id, public_tenant.tenant_name
+        select public_tenant.id, public_tenant.tenant_no, public_tenant.tenant_name
         from public_user_tenant
         join public_tenant on public_tenant.id = public_user_tenant.tenant_id
         <where>

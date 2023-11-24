@@ -6,10 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.constant.MessageConstant;
-import com.yitai.constant.PasswordConstant;
-import com.yitai.constant.RedisConstant;
-import com.yitai.constant.StatusConstant;
+import com.yitai.constant.*;
 import com.yitai.context.BaseContext;
 import com.yitai.dto.user.*;
 import com.yitai.entity.Tenant;
@@ -61,7 +58,7 @@ public class UserServiceImpl implements UserService {
         String username = userLoginDTO.getUsername();
         String password = userLoginDTO.getPassword();
         //1. 根据用户名查询数据库中的数据
-        User user = userMapper.getByUsername(username);
+        User user =  userMapper.getByUsername(username);
 
         if (user == null){
             throw new ServiceException(MessageConstant.ACCOUNT_NOT_FOUND);
@@ -147,18 +144,21 @@ public class UserServiceImpl implements UserService {
         if(StrUtil.isBlank(userDTO.getUsername())) {
             throw new ServiceException("请输入正确的账号");
         }
-        User user = new User();
-        //对象属性拷贝
-        BeanUtils.copyProperties(userDTO, user);
-        //设置账号的状态
-        user.setStatus(StatusConstant.ENABLE);
-        //设置默认密码
-        user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-        int records = userMapper.insert(user);
-        //关联相关租户
-        userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
-                tenantId(userDTO.getTenantId()).build());
-        //TODO 关联相关角色
+        //账号、手机号不能重名
+        if(checkUser(userDTO)) {
+            User user = new User();
+            //对象属性拷贝
+            BeanUtils.copyProperties(userDTO, user);
+            //设置账号的状态
+            user.setStatus(StatusConstant.ENABLE);
+            //设置默认密码
+            user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+            int records = userMapper.insert(user);
+            //关联相关租户
+            userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
+                    tenantId(userDTO.getTenantId()).build());
+            //TODO 关联相关角色
+        }
     }
 
     @Override
@@ -174,7 +174,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void startOrStop(Integer status, Long id) {
         User user = User.builder().status(status).id(id).build();
-//        System.out.println(employee);
         //update
         userMapper.update(user);
     }
@@ -191,11 +190,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(UserDTO userDTO) {
-        User user = new User();
-        //属性拷贝
-        BeanUtils.copyProperties(userDTO,user);
-        //update
-        userMapper.update(user);
+        if(checkUser(userDTO)){
+            User user = new User();
+            //属性拷贝
+            BeanUtils.copyProperties(userDTO,user);
+            //update
+            userMapper.update(user);
+        }
     }
 
     @Override
@@ -215,7 +216,10 @@ public class UserServiceImpl implements UserService {
         typeList.add("M");
         typeList.add("C");
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
-                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList);
+                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList).stream()
+                .filter(e->{
+                    return !MangerConstant.MENUS.contains(e.getId().intValue());
+                }).toList();
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
@@ -224,9 +228,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> getPermiList(Long id) {
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
-                pageAllMenu(Collections.singletonList("B")) : userMapper.pageMenu(id, Collections.singletonList("B"));
-        List<String> permissionList = menuList.stream().map(MenuVO::getIdentify).collect(Collectors.toList());
-        permissionList = permissionList.stream().filter(permission -> permission.contains(":")).collect(Collectors.toList());
+                pageAllMenu(Collections.singletonList("B")) : userMapper.
+                pageMenu(id, Collections.singletonList("B"))
+                .stream().filter(e ->{
+                    return !MangerConstant.MENUS.contains(e.getId().intValue());
+                }).toList();
+        List<String> permissionList = menuList.stream().map(MenuVO::getIdentify)
+                .filter(permission -> permission.contains(":")).collect(Collectors.toList());
+//        permissionList = permissionList.stream().filter(permission -> permission.contains(":")).toList();
         String key = RedisConstant.USER_PERMISSION.concat(id.toString());
         redisTemplate.opsForValue().set(key, permissionList);
         return permissionList;
@@ -252,7 +261,13 @@ public class UserServiceImpl implements UserService {
             userMapper.assRole(userRoleList, userRoleDTO.getTenantId());
         }
     }
-
-
-
+    public boolean checkUser(UserDTO userDTO){
+        if(ObjectUtil.isNull(userMapper.getByUsername(userDTO.getUsername()))){
+            throw new ServiceException("账号已存在");
+        }
+        if(ObjectUtil.isNull(userMapper.getByPhone(userDTO.getPhone()))){
+            throw new ServiceException("手机号已绑定");
+        }
+        return true;
+    }
 }

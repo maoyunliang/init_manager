@@ -1,7 +1,7 @@
 package com.yitai.utils;
 
 import com.yitai.enumeration.SizeEnum;
-import com.yitai.vo.server.*;
+import com.yitai.pojo.server.*;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.CentralProcessor.TickType;

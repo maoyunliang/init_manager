@@ -2,10 +2,14 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.annotation.AutoFill;
+import com.yitai.annotation.TableShard;
 import com.yitai.dto.tenant.TenantListDTO;
+import com.yitai.entity.Department;
 import com.yitai.entity.Tenant;
 import com.yitai.enumeration.OperationType;
+import com.yitai.enumeration.ShardType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * ClassName: TenantMapper
@@ -21,10 +25,14 @@ public interface TenantMapper {
     Page<Tenant> pageQuery(TenantListDTO tenantListDTO);
 
     @AutoFill(value = OperationType.INSERT)
-    void save(Tenant tenant);
+    int save(Tenant tenant);
 
     @AutoFill(value = OperationType.UPDATE)
     void update(Tenant tenant);
 
     void delete(Long tenantId);
+
+    @AutoFill(value = OperationType.INSERT)
+    @TableShard(type = ShardType.TABLE)
+    void insertDept(@Param("department") Department department, @Param("tenantId") Long tenantId);
 }

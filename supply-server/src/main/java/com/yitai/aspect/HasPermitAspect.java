@@ -55,6 +55,7 @@ public class HasPermitAspect {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         HasPermit hasPermit = methodSignature.getMethod().getAnnotation(HasPermit.class);
         String permission = hasPermit.permission();
+        //TODO 另一种实现方式 判断是否是超级管理员权限 是的话直接放行！
         if(!hasPermitSession(permission)){
             throw new NotPermissionException(MessageConstant.NOT_PERMISSION);
         }

@@ -1,5 +1,8 @@
 package com.yitai.vo;
 
+import com.yitai.annotation.ExcelExport;
+import com.yitai.annotation.ExcelSheet;
+import com.yitai.annotation.Watermark;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -18,10 +21,14 @@ import java.util.List;
 
 
 @Data
+@ExcelSheet(watermark = @Watermark(type = 1, src = "江西以太科技园有限公司"))
 public class MenuVO implements Serializable {
     private Long id;
+    @ExcelExport(value = "菜单名称")
     private String menuName;
+    @ExcelExport(value = "菜单路径")
     private String menuPath;
+    @ExcelExport(value = "菜单路由")
     private String menuRouter;
     private String identify;
     private String menuType;

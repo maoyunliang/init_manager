@@ -12,7 +12,6 @@ import com.yitai.exception.ServiceException;
 import com.yitai.mapper.MenuMapper;
 import com.yitai.properties.MangerProperties;
 import com.yitai.service.MenuService;
-import com.yitai.utils.TreeUtil;
 import com.yitai.vo.MenuVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,9 +64,22 @@ public class MenuServiceImpl implements MenuService {
                 return !MangerConstant.MENUS.contains(e.getId().intValue());
             }).toList();
         };
-        return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
+        return menuList;
     }
 
+    @Override
+    public List<MenuVO> list() {
+        List<MenuVO> menuList = menuMapper.listAll();
+        //获取当前用户是否是超级管理员
+        User user = BaseContext.getCurrentUser();
+        //如果是普通用户
+        if (!mangerProperties.getUserId().contains(user.getId())){
+            menuList = menuList.stream().filter(e->{
+                return !MangerConstant.MENUS.contains(e.getId().intValue());
+            }).toList();
+        };
+        return menuList;
+    }
     /**
      * 新建菜单
      */

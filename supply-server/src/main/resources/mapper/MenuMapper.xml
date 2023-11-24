@@ -53,7 +53,7 @@
             <if test="menuName != null and menuName != ''">
                 and menu_name like concat('%', #{menuName}, '%')
             </if>
-            <if test="status != null and status != ''">
+            <if test="status != null">
                 and status = #{status}
             </if>
             and is_del = 0
@@ -64,6 +64,12 @@
         select *
         from public_menu
         where menu_pid = #{menuId} and is_del = 0
+    </select>
+    <select id="listAll" resultType="com.yitai.vo.MenuVO">
+        select *
+        from public_menu
+        where is_del = 0
+        order by create_time desc
     </select>
 
     <delete id="delete">

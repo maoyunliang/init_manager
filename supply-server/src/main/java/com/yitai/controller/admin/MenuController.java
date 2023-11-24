@@ -7,16 +7,18 @@ import com.yitai.dto.menu.MenuListDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
+import com.yitai.utils.ExcelUtils;
+import com.yitai.utils.TreeUtil;
 import com.yitai.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,13 +37,7 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
-//    @Operation(summary = "菜单分页查询")
-//    @PostMapping("/page")
-//    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
-//        log.info("分页查询:{}", menuPageQueryDTO);
-//        PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
-//        return Result.success(pageResult);
-//    }
+
 
     @Operation(summary = "菜单列表查询")
     @PostMapping("/list")
@@ -49,7 +45,19 @@ public class MenuController {
     public Result<List<MenuVO>> list(@RequestBody MenuListDTO menuListDTO){
         log.info("菜单列表查询:{}", menuListDTO);
         List<MenuVO> menuVOList = menuService.list(menuListDTO);
-        return Result.success(menuVOList);
+        return Result.success(TreeUtil.buildTree(menuVOList, MenuVO::getMenuPid));
+    }
+
+    @Operation(summary = "菜单列表导出")
+    @GetMapping("/export")
+//    @HasPermit(permission = "sys:menu:export")
+    public void export(HttpServletResponse httpResponse){
+        List<Object> head = Arrays.asList("菜单名称", "组件路径", "菜单路由" );
+        List<MenuVO> menuVOList = menuService.list();
+        List<List<Object>> data = new ArrayList<>();
+        data.add(head);
+        ExcelUtils.export(httpResponse,"用户表", menuVOList, MenuVO.class);
+//        return Result.success();
     }
 
     @Operation(summary = "新建菜单接口")

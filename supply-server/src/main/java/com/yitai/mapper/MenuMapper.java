@@ -34,6 +34,8 @@ public interface MenuMapper {
 
     List<MenuVO> list(MenuListDTO menuListDTO);
 
+    List<MenuVO> listAll();
+
     List<Menu> containChildren(Long menuId);
 
     void delete();

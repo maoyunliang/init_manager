@@ -22,10 +22,10 @@ public class RoleVO {
     private String roleType;
     private String roleDesc;
     private Integer status;
-    @Schema(name = "关联菜单")
+    @Schema(description = "关联菜单")
     private List<MenuVO> menuVOS;
-    @Schema(name = "关联用户")
+    @Schema(description = "关联用户")
     private List<DepartmentVO> userVOS;
-    @Schema(name = "关联部门")
+    @Schema(description = "关联部门")
     private List<Long> deptIds;
 }
