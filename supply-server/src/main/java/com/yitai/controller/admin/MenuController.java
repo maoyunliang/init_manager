@@ -17,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,10 +50,7 @@ public class MenuController {
     @GetMapping("/export")
 //    @HasPermit(permission = "sys:menu:export")
     public void export(HttpServletResponse httpResponse){
-        List<Object> head = Arrays.asList("菜单名称", "组件路径", "菜单路由" );
         List<MenuVO> menuVOList = menuService.list();
-        List<List<Object>> data = new ArrayList<>();
-        data.add(head);
         ExcelUtils.export(httpResponse,"用户表", menuVOList, MenuVO.class);
 //        return Result.success();
     }
