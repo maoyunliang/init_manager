@@ -2,12 +2,12 @@ package com.yitai.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import com.yitai.mapper.DepartmentMapper;
 import com.yitai.dto.department.DepartmentDTO;
 import com.yitai.dto.department.DepartmentListDTO;
 import com.yitai.dto.department.DepartmentUserDTO;
 import com.yitai.entity.Department;
 import com.yitai.exception.ServiceException;
-import com.yitai.mapper.DepartmentMapper;
 import com.yitai.service.DepartmentService;
 import com.yitai.vo.DepartmentVO;
 import com.yitai.vo.UserVO;
@@ -57,7 +57,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         //查询当前部门是否有子部门
         List<Department> departments = departmentMapper.containChildren(deleteDepartmentDTO);
         if(!CollectionUtil.isEmpty(departments)){
-            throw new ServiceException("当前菜单存在子菜单，无法删除");
+            throw new ServiceException("当前部门存在子部门，无法删除");
+        }
+        //查询当前部门是否关联人员
+        List<UserVO> userVOS = departmentMapper.containsUser(deleteDepartmentDTO);
+//        List<DepartmentUserDTO> result = departmentMapper.getDeptUser(deleteDepartmentDTO.getTenantId());
+        if(!CollectionUtil.isEmpty(userVOS)){
+            throw new ServiceException("当前部门存在员工，无法删除");
         }
         departmentMapper.deleteById(deleteDepartmentDTO);
     }

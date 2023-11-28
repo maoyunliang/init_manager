@@ -45,6 +45,10 @@
         delete from role_menu_*
         where role_id = #{roleId}
     </delete>
+    <delete id="emptyUser">
+        delete from user_role_*
+        where role_id = #{roleId}
+    </delete>
     <select id="pageQuery" resultType="com.yitai.entity.Role">
         select *
         from role_*
@@ -64,7 +68,7 @@
     </select>
     <select id="selectByRoleId" resultType="com.yitai.vo.MenuVO">
         select pm.id, menu_name, menu_path, menu_router, identify, menu_type, menu_pid,
-               icon, sort_no, status, pm.create_user, pm.update_user,
+               icon, sort_no, status, visible, pm.create_user, pm.update_user,
                pm.create_time, pm.update_time, pm.is_del
         from role_menu_* rm1
                  join public_menu pm on rm1.menu_id = pm.id

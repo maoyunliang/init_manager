@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
@@ -33,13 +30,15 @@ public class FileController {
     @Autowired
     FileService fileService;
     // 头像文件上传
-    @PostMapping("/avatar")
-    @Operation(summary = "上传头像")
-    public Result<?> avatar(@RequestParam("image") MultipartFile multipartFile){
-        log.info("上传头像:{}", multipartFile.getOriginalFilename());
-        String filename = UUID.randomUUID().toString().replaceAll("-","")+"."+ StrUtil.subAfter(multipartFile.getOriginalFilename(),
+    @PostMapping("/avatar/{location}")
+    @Operation(summary = "文件上传")
+    public Result<?> upload(@PathVariable String location, @RequestParam("image") MultipartFile multipartFile){
+        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
+        String filename = UUID.randomUUID().toString()
+                .replaceAll("-","")+"."+
+                StrUtil.subAfter(multipartFile.getOriginalFilename(),
                 ".",true);
-        filename = "images/avatars/" + filename;
+        filename = "images/"+location+"/" + filename;
         String result = fileService.upload(multipartFile, filename);
         return Result.success(result);
     }

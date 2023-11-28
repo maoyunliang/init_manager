@@ -30,4 +30,6 @@ public interface LogService {
     void removeBatchIds1(List<Integer> ids);
 
     void save1(LoginLogs logs);
+
+    List<OperationLog> list(Long tenantId);
 }

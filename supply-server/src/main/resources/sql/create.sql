@@ -9,6 +9,7 @@ create table department_1
     status          tinyint default 1 not null comment '1正常 -1停用',
     pid             bigint            null comment '父id',
     leader          bigint            null comment '部门负责人',
+    username        varchar(30)       null comment '部门负责人',
     create_user     varchar(30)       null comment '操作人',
     update_user     varchar(30)       null comment '更新人',
     create_time     datetime          null comment '创建时间',
@@ -67,15 +68,22 @@ create table public_menu
 
 create table public_tenant
 (
-    id          int auto_increment
+    id            int auto_increment
         primary key,
-    tenant_id   varchar(30)       null comment '租户编号',
-    tenant_name varchar(30)       null comment '租户名称',
-    create_user varchar(30)       null comment '操作人',
-    update_user varchar(30)       null comment '更新人',
-    create_time datetime          null comment '创建时间',
-    update_time datetime          null comment '创建时间',
-    is_del      tinyint default 0 null comment '是否删除'
+    tenant_id     varchar(30)       null comment '租户编号',
+    tenant_name   varchar(30)       null comment '租户名称',
+    tenant_logo   varchar(255)      null comment '主体logo',
+    location      varchar(30)       null comment '所在地区',
+    contact       varchar(30)       null comment '联系方式',
+    address       varchar(30)       null comment '详细地址',
+    qualification varchar(255)      null comment '相关资质',
+    remark        varchar(255)      null comment '备注',
+    status        bigint  default 1 null,
+    create_user   varchar(30)       null comment '操作人',
+    update_user   varchar(30)       null comment '更新人',
+    create_time   datetime          null comment '创建时间',
+    update_time   datetime          null comment '创建时间',
+    is_del        tinyint default 0 null comment '是否删除'
 )
     comment '租户表' collate = utf8mb4_unicode_ci;
 
@@ -123,7 +131,7 @@ create table role_1
     identity    varchar(30)       null comment '权限标识',
     role_type   varchar(30)       null comment '菜单类型',
     role_desc   varchar(30)       null comment '角色描述',
-    status      tinyint default 0 null comment '角色状态 (0 停用 1 启用)',
+    status      tinyint default 1 null comment '角色状态 (0 停用 1 启用)',
     create_user varchar(30)       null comment '操作人',
     update_user varchar(30)       null comment '更新人',
     create_time datetime          null comment '创建时间',
@@ -160,6 +168,7 @@ create table user_department_1
 )
     comment '用户--部门关联表' collate = utf8mb4_unicode_ci;
 
+
 create table user_role_1
 (
     id          int auto_increment
@@ -173,4 +182,5 @@ create table user_role_1
     is_del      tinyint default 0 null comment '是否删除'
 )
     comment '用户--角色关联表' collate = utf8mb4_unicode_ci;
+
 

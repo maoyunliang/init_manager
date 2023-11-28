@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
+import com.yitai.service.LogService;
 import com.yitai.annotation.AutoLog;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
@@ -11,7 +12,7 @@ import com.yitai.entity.OperationLog;
 import com.yitai.entity.User;
 import com.yitai.exception.ServiceException;
 import com.yitai.result.Result;
-import com.yitai.service.LogService;
+import com.yitai.utils.AspectUtil;
 import com.yitai.utils.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * ClassName: AutoLogAspect
@@ -84,7 +79,6 @@ public class AutoLogAspect {
         //LogType logType = autoLog.type();
         log.info("日志类型:"+ autoLog.type()+ "-> 接口请求结束 -> 本次请求耗时"+ stopWatch.getTotalTimeSeconds());
         User user = BaseContext.getCurrentUser();
-        Object[] args = joinPoint.getArgs();
         if (user == null){
             log.error("-----------日志处理异常结束---------");
             throw new ServiceException(MessageConstant.LOG_ERROR);
@@ -100,32 +94,8 @@ public class AutoLogAspect {
         if (request != null) {
             ipAddr = IpUtils.getIpAddr(request);
         }
+        Long tenantId = AspectUtil.getTenantId(joinPoint);
 //        String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
-        Long tenantId;
-        if (args[0] instanceof Long){
-            tenantId = (Long) args[0];
-        }else{
-            tenantId = null;
-            Class<?> clazz = args[0].getClass();
-            List<Method> methods = new ArrayList<>();
-            while (clazz != null){
-                methods.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredMethods())));
-                clazz = clazz.getSuperclass();
-            }
-            Optional<Method> optionalMethod = methods.stream()
-                    .filter(method -> method.getName().equals("getTenantId"))
-                    .findFirst();
-            if (optionalMethod.isPresent()) {
-                Method getTenantId = optionalMethod.get();
-                if (getTenantId.getReturnType().equals(Long.class)) {
-                    try {
-                        tenantId = (Long) getTenantId.invoke(args[0]);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                       throw new ServiceException("传输实体不存在租户ID"); // Handle the exception according to your application's needs
-                    }
-                }
-            }
-        }
         //组装日志的实体对象
         OperationLog logs = OperationLog.builder().user(user.getUsername()).
                 operation(autoLog.operation()).

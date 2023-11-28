@@ -3,10 +3,10 @@ package com.yitai.controller.admin;
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.dto.menu.MenuDTO;
-import com.yitai.dto.menu.MenuListDTO;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
+import com.yitai.utils.TreeUtil;
 import com.yitai.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,21 +35,15 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
-//    @Operation(summary = "菜单分页查询")
-//    @PostMapping("/page")
-//    public Result<PageResult> page(@RequestBody MenuPageQueryDTO menuPageQueryDTO){
-//        log.info("分页查询:{}", menuPageQueryDTO);
-//        PageResult pageResult = menuService.pageQuery(menuPageQueryDTO);
-//        return Result.success(pageResult);
-//    }
+
 
     @Operation(summary = "菜单列表查询")
     @PostMapping("/list")
     @HasPermit(permission = "sys:menu:list")
-    public Result<List<MenuVO>> list(@RequestBody MenuListDTO menuListDTO){
+    public Result<List<MenuVO>> list(@RequestBody MenuDTO menuListDTO){
         log.info("菜单列表查询:{}", menuListDTO);
         List<MenuVO> menuVOList = menuService.list(menuListDTO);
-        return Result.success(menuVOList);
+        return Result.success(TreeUtil.buildTree(menuVOList, MenuVO::getMenuPid));
     }
 
     @Operation(summary = "新建菜单接口")

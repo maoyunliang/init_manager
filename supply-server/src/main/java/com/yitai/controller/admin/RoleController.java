@@ -1,13 +1,13 @@
 package com.yitai.controller.admin;
 
+import com.yitai.service.DepartmentService;
+import com.yitai.service.RoleService;
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.dto.role.*;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
-import com.yitai.service.DepartmentService;
-import com.yitai.service.RoleService;
 import com.yitai.vo.DepartmentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -113,4 +113,6 @@ public class RoleController {
         List<DepartmentVO> departmentVOS = departmentService.getUserByTree(roleInfoDTO.getTenantId());
         return Result.success(roleService.getUser(roleInfoDTO, departmentVOS));
     }
+
+    //TODO 数据权限、用户个人信息修改
 }

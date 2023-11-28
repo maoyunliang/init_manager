@@ -1,7 +1,7 @@
 package com.yitai.mapper;
 
 import com.yitai.annotation.AutoFill;
-import com.yitai.dto.menu.MenuListDTO;
+import com.yitai.dto.menu.MenuDTO;
 import com.yitai.entity.Menu;
 import com.yitai.enumeration.OperationType;
 import com.yitai.vo.MenuVO;
@@ -32,7 +32,7 @@ public interface MenuMapper {
     @AutoFill(value = OperationType.UPDATE)
     void update(Menu menu);
 
-    List<MenuVO> list(MenuListDTO menuListDTO);
+    List<MenuVO> list(MenuDTO menuListDTO);
 
     List<Menu> containChildren(Long menuId);
 

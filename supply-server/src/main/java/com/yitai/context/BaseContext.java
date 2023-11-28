@@ -22,10 +22,6 @@ public class BaseContext {
         return threadLocal.get();
     }
 
-//    public static void removeCurrentId(){
-//        threadLocal.remove();
-//    }
-
     public static void removeCurrentUser(){
         threadLocal.remove();
     }

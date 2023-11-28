@@ -1,5 +1,6 @@
 package com.yitai.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +32,8 @@ public class Menu {
     private Long menuPid;
     private Long sortNo;
     private Integer status;
+    @Schema(description = "是否可见")
+    private Integer visible;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

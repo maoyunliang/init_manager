@@ -19,6 +19,7 @@ public class DepartmentVO {
     private Long id;
     private String departmentName;
     private Long pid;
+    private String remark;
     private String username;
     private Long leader;
     private Long sortNo;

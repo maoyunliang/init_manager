@@ -2,11 +2,11 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.mapper.LogMapper;
 import com.yitai.dto.LogPageQueryDTO;
 import com.yitai.entity.LoginLogs;
 import com.yitai.entity.OperationLog;
 import com.yitai.exception.ServiceException;
-import com.yitai.mapper.LogMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.LogService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +52,11 @@ public class LogServiceImpl implements LogService {
     @Override
     public void save2(OperationLog logs) {
         logMapper.save2(logs);
+    }
+
+    @Override
+    public List<OperationLog> list(Long tenantId) {
+        return logMapper.list(tenantId);
     }
 
     @Override

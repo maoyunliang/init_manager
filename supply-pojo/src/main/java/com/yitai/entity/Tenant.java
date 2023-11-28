@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Tenant {
     private Long id;
-    private String tenantId;
+    private String tenantNo;
     private String tenantName;
     private String tenantLogo;
     private String contact;

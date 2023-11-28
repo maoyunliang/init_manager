@@ -17,6 +17,7 @@
         <module>supply-server</module>
         <module>supply-pojo</module>
         <module>supply-common</module>
+        <module>supply-schedule</module>
     </modules>
     <properties>
         <java.version>17</java.version>
@@ -39,6 +40,8 @@
         <hutool>5.8.11</hutool>
         <transmit>2.14.2</transmit>
         <mysql>8.0.33</mysql>
+        <qiniu>7.13.0</qiniu>
+        <oshi>6.4.7</oshi>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -52,7 +55,17 @@
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>3.1.4</version>
             </dependency>
-
+            <!-- quartz定时任务 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-quartz</artifactId>
+                <version>3.1.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>5.2.4</version>
+            </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
@@ -138,6 +151,12 @@
                 <version>${httpclient}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>4.5.13</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-websocket</artifactId>
                 <version>${websocket}</version>
@@ -166,13 +185,13 @@
             <dependency>
                 <groupId>com.github.oshi</groupId>
                 <artifactId>oshi-core</artifactId>
-                <version>6.4.7</version>
+                <version>${oshi}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.qiniu</groupId>
                 <artifactId>qiniu-java-sdk</artifactId>
-                <version>7.13.0</version>
+                <version>${qiniu}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class Department {
     private Long id;
     private String departmentName;
-    private String departmentNo;
+    private String departNo;
     private String remark;
     private Long pid;
     private String username;

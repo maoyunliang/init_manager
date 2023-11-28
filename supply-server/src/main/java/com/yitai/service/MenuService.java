@@ -1,7 +1,6 @@
 package com.yitai.service;
 
 import com.yitai.dto.menu.MenuDTO;
-import com.yitai.dto.menu.MenuListDTO;
 import com.yitai.vo.MenuVO;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public interface MenuService {
     /*
      * 菜单列表
      */
-    List<MenuVO> list(MenuListDTO menuListDTO);
+    List<MenuVO> list(MenuDTO menuListDTO);
 
     void save(MenuDTO menuDTO);
 

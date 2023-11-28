@@ -2,10 +2,11 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.mapper.TenantMapper;
 import com.yitai.dto.tenant.TenantDTO;
 import com.yitai.dto.tenant.TenantListDTO;
+import com.yitai.entity.Department;
 import com.yitai.entity.Tenant;
-import com.yitai.mapper.TenantMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.TenantService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,13 @@ public class TenantServiceImpl implements TenantService {
     public void save(TenantDTO tenantDTO) {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
-        tenantMapper.save(tenant);
+        int records = tenantMapper.save(tenant);
+        Department department = Department.builder()
+                .departmentName(tenant.getTenantName())
+                .status(1)
+                .build();
+        //新建父部门
+        tenantMapper.insertDept(department, tenant.getId());
     }
 
     @Override

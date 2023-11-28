@@ -1,10 +1,13 @@
 package com.yitai.controller.admin;
 
+import com.yitai.service.UserService;
 import com.yitai.annotation.AutoLog;
 import com.yitai.annotation.HasPermit;
 import com.yitai.annotation.LoginLog;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.RedisConstant;
+import com.yitai.context.BaseContext;
+import com.yitai.dto.BaseBody;
 import com.yitai.dto.user.*;
 import com.yitai.entity.Tenant;
 import com.yitai.entity.User;
@@ -12,12 +15,8 @@ import com.yitai.enumeration.LogType;
 import com.yitai.properties.JwtProperties;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
-import com.yitai.service.UserService;
 import com.yitai.utils.JwtUtil;
-import com.yitai.vo.MenuVO;
-import com.yitai.vo.TenantVO;
-import com.yitai.vo.UserLoginVO;
-import com.yitai.vo.UserVO;
+import com.yitai.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +87,6 @@ public class UserController {
         }
 
     }
-
 
     @Operation(summary = "用户退出登录")
     @PostMapping("/logout")
@@ -178,6 +175,21 @@ public class UserController {
         return Result.success(list);
     }
 
+    @Operation(summary = "获取关联菜单和权限相关信息")
+    @PostMapping ("/getRouter")
+    public Result<?> getRouter(@RequestBody BaseBody baseBody){
+        log.info("获取关联菜单和权限相关信息");
+        User user = BaseContext.getCurrentUser();
+        Long tenantId = baseBody.getTenantId();
+        List<MenuVO> menuVOS = userService.getRouter(user.getId(), tenantId);
+        List<String> permiList = userService.getPermiList(user.getId(), tenantId);
+        return Result.success(RouterVO.builder().id(user.getId())
+                .tenantId(tenantId)
+                .menuVOS(menuVOS)
+                .permiList(permiList)
+                .build());
+    }
+
     @Operation(summary = "修改密码")
     @PostMapping ("/modify")
     public Result<?> modify(@RequestBody UserPasswordDTO userPasswordDTO){
@@ -194,15 +206,10 @@ public class UserController {
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claims);
         String key = RedisConstant.USER_LOGIN.concat(user.getId().toString());
         redisTemplate.opsForValue().set(key, token, 7, TimeUnit.DAYS);
-        // 获取路由时，将菜单存在缓存中
-        ArrayList<MenuVO> menuVOS = userService.getRouter(user.getId());
-        List<String> permiList = userService.getPermiList(user.getId());
-        //TODO 单点登录用redis实现（redis中的哈希map数据类型隔离生产测试环境） 相同情况下，商家营业状态通过redis存储效率更高！
         return UserLoginVO.builder().id(user.getId())
                 .username(user.getUsername())
                 .realname(user.getRealname())
-                .token(token).menuVOS(menuVOS)
-                .permiList(permiList)
+                .token(token)
                 .build();
     }
 }

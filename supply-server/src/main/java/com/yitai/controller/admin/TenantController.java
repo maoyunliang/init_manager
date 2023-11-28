@@ -1,5 +1,6 @@
 package com.yitai.controller.admin;
 
+import com.yitai.annotation.HasPermit;
 import com.yitai.dto.tenant.TenantDTO;
 import com.yitai.dto.tenant.TenantListDTO;
 import com.yitai.result.PageResult;
@@ -29,7 +30,7 @@ public class TenantController {
     private TenantService tenantService;
 
     @Operation(summary = "租户分页查询")
-//    @HasPermit(permission = "sys:tenant:page")
+    @HasPermit(permission = "sys:tenant:list")
     @PostMapping("/page")
     public Result<?> pageQuery(@RequestBody TenantListDTO tenantListDTO){
         log.info("租户分页查询:{}", tenantListDTO);
@@ -38,6 +39,7 @@ public class TenantController {
     }
 
     @Operation(summary = "新增租户")
+    @HasPermit(permission = "sys:tenant:add")
     @PostMapping("/save")
     public Result<?> save(@RequestBody TenantDTO tenantDTO){
         log.info("新增租户:{}", tenantDTO);
@@ -46,6 +48,7 @@ public class TenantController {
     }
 
     @Operation(summary = "修改租户")
+    @HasPermit(permission = "sys:tenant:update")
     @PostMapping("/update")
     public Result<?> update(@RequestBody TenantDTO tenantDTO){
         log.info("修改租户信息:{}", tenantDTO);
@@ -54,6 +57,7 @@ public class TenantController {
     }
 
     @Operation(summary = "删除租户")
+    @HasPermit(permission = "sys:tenant:delete")
     @PostMapping("/delete/{tenantId}")
     public Result<?> delete(@PathVariable Long tenantId){
         log.info("删除租户:{}", tenantId);

@@ -31,4 +31,6 @@ public interface LogMapper {
     void save1(LoginLogs logs);
     Page<LoginLogs> pageQuery1(LogPageQueryDTO logPageQueryDTO);
     void removeBatchIds1(List<Integer> ids);
+
+    List<OperationLog> list(Long tenantId);
 }
