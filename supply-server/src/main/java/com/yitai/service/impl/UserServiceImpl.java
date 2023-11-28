@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.mapper.UserMapper;
 import com.yitai.constant.*;
 import com.yitai.context.BaseContext;
 import com.yitai.dto.user.*;
@@ -14,7 +15,6 @@ import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
 import com.yitai.entity.UserTenant;
 import com.yitai.exception.ServiceException;
-import com.yitai.mapper.UserMapper;
 import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.UserService;
@@ -29,9 +29,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -211,33 +209,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ArrayList<MenuVO> getRouter(Long id){
-        List<String> typeList = new ArrayList<>();
-        typeList.add("M");
-        typeList.add("C");
+    public ArrayList<MenuVO> getRouter(Long id, Long tenantId){
+        List<String> typeList = Arrays.asList("M", "C");
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
-                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList).stream()
-                .filter(e->{
-                    return !MangerConstant.MENUS.contains(e.getId().intValue());
-                }).toList();
+                pageAllMenu(typeList) : userMapper.pageMenu(id, typeList, tenantId).stream()
+                .filter(e-> e.getVisible() == 1 ).toList();
         //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
 //        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
         return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
     }
 
     @Override
-    public List<String> getPermiList(Long id) {
+    public List<String> getPermiList(Long id, Long tenantId) {
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(Collections.singletonList("B")) : userMapper.
-                pageMenu(id, Collections.singletonList("B"))
-                .stream().filter(e ->{
-                    return !MangerConstant.MENUS.contains(e.getId().intValue());
-                }).toList();
+                pageMenu(id, Collections.singletonList("B"), tenantId)
+                .stream().filter(e -> e.getVisible() == 1).toList();
         List<String> permissionList = menuList.stream().map(MenuVO::getIdentify)
                 .filter(permission -> permission.contains(":")).collect(Collectors.toList());
-//        permissionList = permissionList.stream().filter(permission -> permission.contains(":")).toList();
         String key = RedisConstant.USER_PERMISSION.concat(id.toString());
-        redisTemplate.opsForValue().set(key, permissionList);
+//        map.put(tenantId, permissionList);
+        redisTemplate.opsForHash().put(key, tenantId.toString(), permissionList);
         return permissionList;
     }
 

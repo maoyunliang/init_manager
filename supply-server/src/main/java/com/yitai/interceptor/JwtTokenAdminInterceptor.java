@@ -43,9 +43,17 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Override
+    public void afterCompletion(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+                                @NotNull Object handler, Exception ex) throws Exception {
+        BaseContext.removeCurrentUser();
+        HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+    }
+
     /*
-      校验jwt
-     */
+          校验jwt
+         */
     @Override
     public boolean preHandle(@NotNull HttpServletRequest request, HttpServletResponse response, Object handler) {
 
@@ -57,7 +65,6 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader(jwtProperties.getUserTokenName());
-
         //2、校验令牌
         Claims claims;
         try {

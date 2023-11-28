@@ -2,31 +2,12 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.MenuMapper">
-<!--    <insert id="givePermit">-->
-<!--        Insert into role_menu_1(id, role_id, menu_id, create_time,-->
-<!--                                    update_time, create_user, update_user, is_del)-->
-<!--        values (#{id},#{roleId},#{menuId},#{createTime}, #{updateTime}, #{createUser}, #{updateUser}, #{isDel})-->
-<!--    </insert>-->
-    <!--    <select id="pageQuery" resultType="com.yitai.entity.Menu">-->
-    <!--        select *-->
-    <!--        from public_menu-->
-    <!--        <where>-->
-    <!--            <if test="menuName != null and menuName != ''">-->
-    <!--                and menu_name like concat('%', #{menuName}, '%')-->
-    <!--            </if>-->
-    <!--            <if test="menuType != null and menuType != ''">-->
-    <!--                and menu_type like concat('%', #{menuType}, '%')-->
-    <!--            </if>-->
-    <!--            and is_del = 0-->
-    <!--        </where>-->
-    <!--        order by create_time desc-->
-    <!--    </select>-->
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         Insert into public_menu(id, menu_name, menu_path, menu_type, menu_router, identify, status,
-                                menu_pid, sort_no, icon, create_time,
+                                visible, menu_pid, sort_no, icon, create_time,
                                update_time, create_user, update_user, is_del)
         values (#{id}, #{menuName},#{menuPath},  #{menuType}, #{menuRouter}, #{identify}, #{status},
-                #{menuPid}, #{sortNo}, #{icon}, #{createTime}, #{updateTime},
+                #{visible}, #{menuPid}, #{sortNo}, #{icon}, #{createTime}, #{updateTime},
                 #{createUser}, #{updateUser}, #{isDel})
     </insert>
     <update id="update" parameterType="com.yitai.entity.Menu">
@@ -39,6 +20,7 @@
             <if test="identify != null">identify = #{identify},</if>
             <if test="icon != null">icon = #{icon},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="visible != null">visible = #{visible},</if>
             <if test="sortNo != null">sort_no = #{sortNo},</if>
             <if test="menuPid != null">menu_pid = #{menuPid},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
@@ -64,12 +46,6 @@
         select *
         from public_menu
         where menu_pid = #{menuId} and is_del = 0
-    </select>
-    <select id="listAll" resultType="com.yitai.vo.MenuVO">
-        select *
-        from public_menu
-        where is_del = 0
-        order by create_time desc
     </select>
 
     <delete id="delete">

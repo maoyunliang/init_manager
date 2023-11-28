@@ -54,7 +54,9 @@ public interface UserMapper {
     @Select("select * from public_user where id = #{id} and is_del = 0")
     User getById(Long id);
 
-    List<MenuVO> pageMenu(@Param("id") Long id, @Param("typeList") List<String> typeList);
+    @TableShard(type = ShardType.TABLE)
+    List<MenuVO> pageMenu(@Param("id") Long id,
+                          @Param("typeList") List<String> typeList, @Param("tenantId") Long tenantId);
 
     List<MenuVO> pageAllMenu(List<String> typeList);
 

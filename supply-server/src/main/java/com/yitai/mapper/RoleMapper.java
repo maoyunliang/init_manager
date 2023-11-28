@@ -58,6 +58,8 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     List<UserVO> selectUserByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
+    @TableShard(type = ShardType.TABLE)
+    @AutoFill(value = OperationType.INSERT)
     void assUser(@Param("list") List<UserRole> userRoles, @Param("tenantId") Long tenantId);
 
     List<MenuVO> listMenu();
@@ -67,4 +69,6 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     void emptyMenu(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
+    @TableShard(type = ShardType.TABLE)
+    void emptyUser(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 }

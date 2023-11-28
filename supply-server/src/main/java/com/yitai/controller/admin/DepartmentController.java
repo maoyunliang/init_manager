@@ -1,11 +1,11 @@
 package com.yitai.controller.admin;
 
+import com.yitai.service.DepartmentService;
 import com.yitai.annotation.HasPermit;
 import com.yitai.dto.BaseBody;
 import com.yitai.dto.department.DepartmentDTO;
 import com.yitai.dto.department.DepartmentListDTO;
 import com.yitai.result.Result;
-import com.yitai.service.DepartmentService;
 import com.yitai.utils.TreeUtil;
 import com.yitai.vo.DepartmentVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,6 @@ import java.util.List;
 @RestController
 @Slf4j
 public class DepartmentController {
-
     @Autowired
     private DepartmentService departmentService;
 

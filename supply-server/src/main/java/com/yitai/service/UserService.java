@@ -35,18 +35,19 @@ public interface UserService {
 
     User getInfo();
 
-    ArrayList<MenuVO> getRouter(Long id);
+    ArrayList<MenuVO> getRouter(Long id, Long tenantId);
 
     void logOut();
 
     void assRole(UserRoleDTO userRoleDTO);
 
-    List<String> getPermiList(Long id);
+    List<String> getPermiList(Long id, Long tenantId);
 
     boolean sendMsg(String phoneNumber);
 
     List<Tenant> getTenant();
 
     void modifyPassword(UserPasswordDTO userPasswordDTO);
+
 
 }

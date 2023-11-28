@@ -18,11 +18,6 @@ import java.util.Map;
  * @Version: 1.0
  */
 public class JwtUtil {
-//    @PostConstruct
-//    public void setUserService(){
-//        staticEmployeeMapper = employeeMapper;
-//    }
-
     //生成token
     public static String createJWT(String secretKey, long ttlMillis, Map<String, Object> claims){
         // 指定签名的时候使用的签名算法，也就是header那部分
@@ -46,8 +41,7 @@ public class JwtUtil {
 
     //token解析获取用户名
     public static Claims parseJWT(String secretKey, String token){
-        Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
+        return Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
                 .parseClaimsJws(token).getBody();
-        return claims;
     }
 }

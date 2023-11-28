@@ -74,14 +74,13 @@
         order by pu.create_time desc
     </select>
     <select id="pageMenu" resultType="com.yitai.vo.MenuVO">
-        select m.id, m.menu_name,m.menu_type,m.menu_path,m.menu_router ,m.identify, m.menu_pid, m.sort_no
-        from public_user u
-                 join user_role_1 ur on u.id = ur.user_id
-                 join role_1 r on ur.role_id= r.id
-                 join role_menu_1 rm on r.id = rm.role_id
-                 join public_menu m on rm.menu_id = m.id
+        select distinct m.id, m.menu_name, m.menu_type, m.menu_path,
+                        m.menu_router, m.identify,m.visible, m.menu_pid, m.sort_no
+        from public_menu m
+        join role_menu_* rm on m.id = rm.menu_id
+        join user_role_* ur on ur.role_id = rm.role_id
         <where>
-            and user_id = #{id}
+            and ur.user_id = #{id}
             <if test="typeList !=null and typeList != ''">
                 and m.menu_type in
                     <foreach collection="typeList" item="item"
@@ -109,7 +108,7 @@
     </select>
 
     <select id="getTenant" resultType="com.yitai.entity.Tenant">
-        select public_tenant.id, public_tenant.tenant_no, public_tenant.tenant_name
+        select public_tenant.id, public_tenant.tenant_no, public_tenant.tenant_name, public_tenant.tenant_logo
         from public_user_tenant
         join public_tenant on public_tenant.id = public_user_tenant.tenant_id
         <where>

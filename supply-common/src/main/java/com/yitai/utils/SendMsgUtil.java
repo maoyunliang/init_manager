@@ -30,10 +30,8 @@ public class SendMsgUtil {
             SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(phone).
                     setTemplateCode(TEMPLATE_CODE).setSignName(SIGN_NAME).
                     setTemplateParam("{\"code\":\"" + verifyCode + "\"}");
-//            com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
 //            SendSmsResponse sendSmsResponse = client.sendSmsWithOptions(sendSmsRequest, runtime);
             SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
-//            System.out.println(sendSmsResponse.getBody().getMessage());
 //            System.out.println(sendSmsResponse.getBody().getCode());
         } catch (Exception e) {
             e.printStackTrace();

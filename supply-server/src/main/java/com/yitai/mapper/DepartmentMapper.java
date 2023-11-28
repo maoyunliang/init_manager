@@ -9,6 +9,7 @@ import com.yitai.entity.Department;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
 import com.yitai.vo.DepartmentVO;
+import com.yitai.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -48,4 +49,7 @@ public interface DepartmentMapper {
 
     @TableShard(type = ShardType.TABLE)
     List<DepartmentUserDTO> getDeptUser(@Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<UserVO> containsUser(DepartmentDTO deleteDepartmentDTO);
 }

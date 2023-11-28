@@ -6,7 +6,7 @@
         INSERT INTO department_* (id, department_name, depart_no, remark, sort_no,
                                   status, pid, leader, username, create_user, update_user,
                                   create_time, update_time, is_del)
-        VALUES(#{department.id}, #{department.departmentName}, #{department.departmentNo}, #{department.remark},
+        VALUES(#{department.id}, #{department.departmentName}, #{department.departNo}, #{department.remark},
             #{department.sortNo}, #{department.status}, #{department.pid}, #{department.leader}, #{department.username},
             #{department.createUser}, #{department.updateUser},#{department.createTime},
             #{department.updateTime}, #{department.isDel});
@@ -17,6 +17,9 @@
             <if test="department.departmentName != null">department_name = #{department.departmentName},</if>
             <if test="department.departNo != null">depart_no = #{department.departNo},</if>
             <if test="department.remark != null">remark = #{department.remark},</if>
+            <if test="department.pid != null">pid = #{department.pid},</if>
+            <if test="department.leader != null">leader = #{department.leader},</if>
+            <if test="department.username != null">username = #{department.username},</if>
             <if test="department.sortNo != null">sort_no = #{department.sortNo},</if>
             <if test="department.status != null">status = #{department.status},</if>
             <if test="department.updateTime != null">update_time = #{department.updateTime},</if>
@@ -45,13 +48,6 @@
         </where>
         order by create_time desc
     </select>
-    <select id="containChildren" resultType="com.yitai.entity.Department">
-        select *
-        from department_*
-        where pid =  #{id}
-        and is_del = 0
-    </select>
-
     <select id="deptList" resultType="com.yitai.vo.DepartmentVO">
         select *
         from department_*
@@ -63,5 +59,19 @@
         from user_department_* ud
         join public_user pu on ud.user_id = pu.id
         and pu.is_del = 0
+    </select>
+
+    <select id="containChildren" resultType="com.yitai.entity.Department">
+        select *
+        from department_*
+        where pid =  #{id}
+          and is_del = 0
+    </select>
+    <select id="containsUser" resultType="com.yitai.vo.UserVO">
+        select pu.id, username, pu.phone
+        from public_user pu
+                 join user_department_* d on d.user_id = pu.id
+        where d.dept_id = #{id}
+          and pu.is_del = 0
     </select>
 </mapper>

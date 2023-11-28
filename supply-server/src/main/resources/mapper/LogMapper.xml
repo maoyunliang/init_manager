@@ -49,6 +49,10 @@
         </where>
         order by id desc
     </select>
+    <select id="list" resultType="com.yitai.entity.OperationLog">
+        select * from public_logs
+        where tenant_id = #{tenantId}
+    </select>
     <delete id="removeBatchIds1">
         delete from public_login_logs
         where id in

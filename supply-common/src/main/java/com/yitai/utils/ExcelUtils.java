@@ -153,7 +153,7 @@ public class ExcelUtils {
 //            String name = fileName+ExcelType.XLSX;
             fileName= URLEncoder.encode(fileName, StandardCharsets.UTF_8);
 //            String name = new String(fileName.getBytes("GBK"), "ISO8859_1") + ExcelType.XLSX;
-            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName +".xlsx");
             ServletOutputStream out = response.getOutputStream();
             workbook.write(out);
             out.flush();

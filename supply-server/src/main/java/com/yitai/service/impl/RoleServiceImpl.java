@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.constant.MangerConstant;
+import com.yitai.mapper.RoleMapper;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.dto.role.RoleAssDTO;
@@ -15,7 +15,6 @@ import com.yitai.entity.Role;
 import com.yitai.entity.User;
 import com.yitai.entity.UserRole;
 import com.yitai.exception.ServiceException;
-import com.yitai.mapper.RoleMapper;
 import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.RoleService;
@@ -142,17 +141,24 @@ public class RoleServiceImpl implements RoleService {
         }
         // 菜单重新分配后，查询角色关联用户、删除redis用户相关缓存
         List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
-        List<String> userKey = users.stream().map(e ->RedisConstant.USER_PERMISSION.concat(e.getId().toString())).toList();
+        List<String> userKey = users.stream().
+                map(e -> RedisConstant.USER_PERMISSION
+                        .concat(e.getId().toString())).toList();
         redisTemplate.delete(userKey);
+        Role role = new Role();
+        role.setId(roleId);
+        //角色操作记录更新
+        roleMapper.update(role, tenantId);
     }
     /*
      * 分配用户
      */
     @Override
     public void assUser(RoleAssDTO roleUserDTO) {
-
+        Long tenantId = roleUserDTO.getTenantId();
         Long roleId = roleUserDTO.getRoleId();
         //清除之前的用户
+        roleMapper.emptyUser(roleId, tenantId);
 
         if(!CollectionUtil.isEmpty(roleUserDTO.getUserIds())){
             List<UserRole> userRoles = roleUserDTO.getUserIds().stream()
@@ -220,9 +226,7 @@ public class RoleServiceImpl implements RoleService {
         User user = BaseContext.getCurrentUser();
         //如果是普通用户
         if (!mangerProperties.getUserId().contains(user.getId())){
-            allMenus = allMenus.stream().filter(e->{
-                return !MangerConstant.MENUS.contains(e.getId().intValue());
-            }).toList();
+            allMenus = allMenus.stream().filter(e-> e.getVisible() == 1).toList();
         };
         roleVO.setMenuVOS(TreeUtil.buildTree(allMenus, MenuVO::getMenuPid));
         return roleVO;

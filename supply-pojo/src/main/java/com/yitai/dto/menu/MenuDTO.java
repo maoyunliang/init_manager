@@ -24,6 +24,7 @@ public class MenuDTO extends BaseBody {
     private String menuType;
     private String icon;
     private Integer status;
+    private Integer visible;
     private Long menuPid;
     private Long sortNo;
 }

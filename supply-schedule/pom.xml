@@ -7,9 +7,9 @@
         <artifactId>supply_chain</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>supply-pojo</artifactId>
+    <artifactId>supply-schedule</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>supply-pojo</name>
+    <name>supply-schedule</name>
     <packaging>jar</packaging>
     <dependencies>
         <dependency>

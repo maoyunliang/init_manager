@@ -3,6 +3,7 @@ package com.yitai.vo;
 import com.yitai.annotation.ExcelExport;
 import com.yitai.annotation.ExcelSheet;
 import com.yitai.annotation.Watermark;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,6 +37,8 @@ public class MenuVO implements Serializable {
     private Long menuPid;
     private Long sortNo;
     private Long status;
+    @Schema(description = "是否可见")
+    private Integer visible;
     private Integer hasMenu = -1;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
