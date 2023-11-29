@@ -1,10 +1,12 @@
 package com.yitai.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
 import com.yitai.mapper.JobMapper;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.service.JobService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,22 @@ public class JobServiceImpl implements JobService {
     private JobMapper jobMapper;
     @Override
     public List<SysJob> list(JobDTO jobDTO) {
+        //开始分页查询
+        PageHelper.startPage(jobDTO.getPage(), jobDTO.getPageSize());
         return jobMapper.page(jobDTO);
+    }
+
+    @Override
+    public void save(JobDTO jobDTO) {
+        SysJob sysJob = new SysJob();
+        BeanUtils.copyProperties(jobDTO, sysJob);
+        int record = jobMapper.save(sysJob, jobDTO.getTenantId());
+    }
+
+    @Override
+    public void update(JobDTO jobDTO) {
+        SysJob sysJob = new SysJob();
+        BeanUtils.copyProperties(jobDTO, sysJob);
+        jobMapper.update(sysJob, jobDTO.getTenantId());
     }
 }

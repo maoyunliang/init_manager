@@ -5,6 +5,8 @@ import com.yitai.constant.ScheduleConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 /**
  * ClassName: Job
  * Package: com.yitai.entity.quartz
@@ -14,12 +16,11 @@ import lombok.*;
  * @Create: 2023/11/29 14:36
  * @Version: 1.0
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SysJob extends BaseEntity {
+public class SysJob {
     private Long id;
     private String jobName;
     @Schema(description = "任务组名")
@@ -34,4 +35,11 @@ public class SysJob extends BaseEntity {
     private Integer concurrent;
     @Schema(description = "任务状态 1=正常,-1=暂停")
     private Integer status;
+    @Schema(description = "备注")
+    private String remark;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+    private String createUser;
+    private String updateUser;
+    private Integer isDel;
 }

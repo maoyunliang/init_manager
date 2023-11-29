@@ -16,4 +16,8 @@ import java.util.List;
  */
 public interface JobService {
     List<SysJob> list(JobDTO jobDTO);
+
+    void save(JobDTO jobDTO);
+
+    void update(JobDTO jobDTO);
 }

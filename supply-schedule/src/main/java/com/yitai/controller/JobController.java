@@ -42,6 +42,24 @@ public class JobController {
     public Result<?> list(@RequestBody JobDTO jobDTO){
         List<SysJob> list = jobService.list(jobDTO);
 //        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
-        return Result.success("yes");
+        return Result.success(list);
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "更新定时任务")
+    @HasPermit(permission = "sys:job:update")
+    public Result<?> update(@RequestBody JobDTO jobDTO){
+        jobService.update(jobDTO);
+//        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
+        return Result.success();
+    }
+
+    @PostMapping("/save")
+    @Operation(summary = "添加定时任务")
+    @HasPermit(permission = "sys:job:add")
+    public Result<?> save(@RequestBody JobDTO jobDTO){
+        jobService.save(jobDTO);
+//        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
+        return Result.success();
     }
 }

@@ -41,7 +41,7 @@
             <if test="departmentName != null and departmentName != ''">
                 and department_name like concat('%', #{departmentName}, '%')
             </if>
-            <if test="status != null and status != ''">
+            <if test="status != null">
                 and status = #{status}
             </if>
             and is_del = 0
