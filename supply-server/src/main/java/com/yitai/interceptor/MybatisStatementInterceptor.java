@@ -1,7 +1,7 @@
 package com.yitai.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.yitai.annotation.TableShard;
+import com.yitai.annotation.admin.TableShard;
 import com.yitai.enumeration.ShardType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;

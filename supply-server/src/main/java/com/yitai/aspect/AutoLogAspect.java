@@ -4,14 +4,14 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.StopWatch;
 import cn.hutool.core.thread.ThreadUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
-import com.yitai.service.LogService;
-import com.yitai.annotation.AutoLog;
+import com.yitai.admin.entity.OperationLog;
+import com.yitai.admin.entity.User;
+import com.yitai.annotation.admin.AutoLog;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.entity.OperationLog;
-import com.yitai.entity.User;
 import com.yitai.exception.ServiceException;
 import com.yitai.result.Result;
+import com.yitai.service.LogService;
 import com.yitai.utils.AspectUtil;
 import com.yitai.utils.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,11 +22,10 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.annotation.Resource;
 
 /**
  * ClassName: AutoLogAspect
@@ -43,15 +42,15 @@ import javax.annotation.Resource;
 @Slf4j
 public class AutoLogAspect {
 
-    @Resource
-    LogService logService;
+    @Autowired
+    private LogService logService;
 
     /**
      * 计算操作耗时
      */
     private static final ThreadLocal<StopWatch> TIME_THREADLOCAL = new TransmittableThreadLocal<>();
 
-    @Pointcut("@annotation(com.yitai.annotation.AutoLog)")
+    @Pointcut("@annotation(com.yitai.annotation.admin.AutoLog)")
     public void autoLogPointCut() {
     }
     /**

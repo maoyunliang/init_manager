@@ -5,7 +5,7 @@ import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.MessageConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.entity.User;
+import com.yitai.admin.entity.User;
 import com.yitai.exception.LoginOutException;
 import com.yitai.exception.NotAuthException;
 import com.yitai.properties.JwtProperties;

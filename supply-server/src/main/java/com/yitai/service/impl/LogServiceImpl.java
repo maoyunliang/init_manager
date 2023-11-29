@@ -2,11 +2,11 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.mapper.LogMapper;
-import com.yitai.dto.LogPageQueryDTO;
-import com.yitai.entity.LoginLogs;
-import com.yitai.entity.OperationLog;
+import com.yitai.admin.dto.LogPageQueryDTO;
+import com.yitai.admin.entity.LoginLogs;
+import com.yitai.admin.entity.OperationLog;
 import com.yitai.exception.ServiceException;
+import com.yitai.mapper.LogMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.LogService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +24,13 @@ import java.util.List;
  * @Create: 2023/10/8 14:11
  * @Version: 1.0
  */
-@Service
+
 @Slf4j
+@Service
 public class LogServiceImpl implements LogService {
 
     @Autowired
-    LogMapper logMapper;
+    private LogMapper logMapper;
 
     @Override
     public PageResult pageQuery(LogPageQueryDTO logPageQueryDTO) {

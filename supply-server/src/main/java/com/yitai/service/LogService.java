@@ -1,8 +1,8 @@
 package com.yitai.service;
 
-import com.yitai.dto.LogPageQueryDTO;
-import com.yitai.entity.LoginLogs;
-import com.yitai.entity.OperationLog;
+import com.yitai.admin.dto.LogPageQueryDTO;
+import com.yitai.admin.entity.LoginLogs;
+import com.yitai.admin.entity.OperationLog;
 import com.yitai.result.PageResult;
 
 import java.util.List;

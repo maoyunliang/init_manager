@@ -1,13 +1,13 @@
 package com.yitai.controller.admin;
 
-import com.yitai.service.DepartmentService;
-import com.yitai.annotation.HasPermit;
-import com.yitai.dto.BaseBody;
-import com.yitai.dto.department.DepartmentDTO;
-import com.yitai.dto.department.DepartmentListDTO;
+import com.yitai.admin.dto.department.DepartmentDTO;
+import com.yitai.admin.dto.department.DepartmentListDTO;
+import com.yitai.admin.vo.DepartmentVO;
+import com.yitai.annotation.admin.HasPermit;
+import com.yitai.base.BaseBody;
 import com.yitai.result.Result;
+import com.yitai.service.DepartmentService;
 import com.yitai.utils.TreeUtil;
-import com.yitai.vo.DepartmentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class DepartmentController {
     public Result<?> pageQuery(@RequestBody DepartmentListDTO departmentListDTO){
         log.info("部门列表查询:{}", departmentListDTO);
         List<DepartmentVO> departmentVOS = departmentService.list(departmentListDTO);
-        return Result.success(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid));
+        return Result.success(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid, DepartmentVO::getSortNo));
     }
 
     @Operation(summary = "新增部门")

@@ -1,10 +1,11 @@
 package com.yitai.service;
 
-import com.yitai.dto.user.*;
-import com.yitai.entity.Tenant;
-import com.yitai.entity.User;
+import com.yitai.admin.dto.user.*;
+import com.yitai.admin.entity.Tenant;
+import com.yitai.admin.entity.User;
 import com.yitai.result.PageResult;
-import com.yitai.vo.MenuVO;
+import com.yitai.admin.vo.MenuVO;
+import com.yitai.admin.vo.UserVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public interface UserService {
 
     void update(UserDTO userDTO);
 
-    User getInfo();
+    UserVO getInfo(Long tenantId);
 
     ArrayList<MenuVO> getRouter(Long id, Long tenantId);
 

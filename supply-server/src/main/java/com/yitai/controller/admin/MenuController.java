@@ -1,13 +1,13 @@
 package com.yitai.controller.admin;
 
-import com.yitai.annotation.AutoLog;
-import com.yitai.annotation.HasPermit;
-import com.yitai.dto.menu.MenuDTO;
+import com.yitai.admin.dto.menu.MenuDTO;
+import com.yitai.admin.vo.MenuVO;
+import com.yitai.annotation.admin.AutoLog;
+import com.yitai.annotation.admin.HasPermit;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.Result;
 import com.yitai.service.MenuService;
 import com.yitai.utils.TreeUtil;
-import com.yitai.vo.MenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,9 @@ public class MenuController {
     public Result<List<MenuVO>> list(@RequestBody MenuDTO menuListDTO){
         log.info("菜单列表查询:{}", menuListDTO);
         List<MenuVO> menuVOList = menuService.list(menuListDTO);
-        return Result.success(TreeUtil.buildTree(menuVOList, MenuVO::getMenuPid));
+//        List<MenuVO> tree = ;
+        return Result.success(TreeUtil.buildTree(menuVOList,
+                MenuVO::getMenuPid, MenuVO::getSortNo));
     }
 
     @Operation(summary = "新建菜单接口")

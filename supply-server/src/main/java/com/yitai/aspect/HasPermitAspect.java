@@ -2,15 +2,15 @@ package com.yitai.aspect;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.yitai.annotation.HasPermit;
-import com.yitai.service.UserService;
+import com.yitai.admin.entity.User;
+import com.yitai.annotation.admin.HasPermit;
 import com.yitai.constant.MessageConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.entity.User;
 import com.yitai.exception.NotAuthException;
 import com.yitai.exception.NotPermissionException;
 import com.yitai.properties.MangerProperties;
+import com.yitai.service.UserService;
 import com.yitai.utils.AspectUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -44,7 +44,7 @@ public class HasPermitAspect {
     private RedisTemplate<String, List<String>> redisTemplate;
     @Autowired
     private MangerProperties mangerProperties;
-    @Pointcut("@annotation(com.yitai.annotation.HasPermit)")
+    @Pointcut("@annotation(com.yitai.annotation.admin.HasPermit)")
     public void hasPermitPointCut() {
     }
     /**
@@ -67,8 +67,10 @@ public class HasPermitAspect {
             if(!hasPermitSession(permission, tenantId, user.getId())){
                 throw new NotPermissionException(MessageConstant.NOT_PERMISSION);
             }
+        }else {
+            log.info("----------超级用户权限---------");
         }
-        log.info("----------超级用户权限---------");
+
     }
 
     private boolean hasPermitSession(String permission, Long tenantId, Long userId) {

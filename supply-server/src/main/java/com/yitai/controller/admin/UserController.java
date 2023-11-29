@@ -1,22 +1,22 @@
 package com.yitai.controller.admin;
 
-import com.yitai.service.UserService;
-import com.yitai.annotation.AutoLog;
-import com.yitai.annotation.HasPermit;
-import com.yitai.annotation.LoginLog;
+import com.yitai.admin.dto.user.*;
+import com.yitai.admin.entity.Tenant;
+import com.yitai.admin.entity.User;
+import com.yitai.admin.vo.*;
+import com.yitai.annotation.admin.AutoLog;
+import com.yitai.annotation.admin.HasPermit;
+import com.yitai.annotation.admin.LoginLog;
+import com.yitai.base.BaseBody;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.BaseBody;
-import com.yitai.dto.user.*;
-import com.yitai.entity.Tenant;
-import com.yitai.entity.User;
 import com.yitai.enumeration.LogType;
 import com.yitai.properties.JwtProperties;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
+import com.yitai.service.UserService;
 import com.yitai.utils.JwtUtil;
-import com.yitai.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -143,12 +143,10 @@ public class UserController {
     }
 
     @Operation(summary = "获取用户信息")
-    @GetMapping("/getInfo")
-    public Result<UserVO> getInfo(){
+    @PostMapping("/getInfo")
+    public Result<UserVO> getInfo(@RequestBody BaseBody baseBody){
         log.info("获取用户信息：" );
-        User user = userService.getInfo();
-        UserVO userVO = new UserVO();
-        BeanUtils.copyProperties(user, userVO);
+        UserVO userVO = userService.getInfo(baseBody.getTenantId());
         return Result.success(userVO);
     }
 

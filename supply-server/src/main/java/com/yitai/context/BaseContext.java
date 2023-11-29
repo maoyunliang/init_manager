@@ -1,6 +1,6 @@
 package com.yitai.context;
 
-import com.yitai.entity.User;
+import com.yitai.admin.entity.User;
 
 /**
  * ClassName: BaseContext

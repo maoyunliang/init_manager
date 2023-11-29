@@ -1,11 +1,11 @@
 package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
-import com.yitai.annotation.AutoFill;
-import com.yitai.annotation.TableShard;
-import com.yitai.dto.tenant.TenantListDTO;
-import com.yitai.entity.Department;
-import com.yitai.entity.Tenant;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.TableShard;
+import com.yitai.admin.dto.tenant.TenantListDTO;
+import com.yitai.admin.entity.Department;
+import com.yitai.admin.entity.Tenant;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
 import org.apache.ibatis.annotations.Mapper;

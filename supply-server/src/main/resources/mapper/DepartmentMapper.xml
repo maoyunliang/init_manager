@@ -34,7 +34,7 @@
             id = #{id}
         </where>
     </update>
-    <select id="list" resultType="com.yitai.vo.DepartmentVO">
+    <select id="list" resultType="com.yitai.admin.vo.DepartmentVO">
         select *
         from department_*
         <where>
@@ -48,26 +48,26 @@
         </where>
         order by create_time desc
     </select>
-    <select id="deptList" resultType="com.yitai.vo.DepartmentVO">
+    <select id="deptList" resultType="com.yitai.admin.vo.DepartmentVO">
         select *
         from department_*
         where is_del = 0
         order by create_time desc
     </select>
-    <select id="getDeptUser" resultType="com.yitai.dto.department.DepartmentUserDTO">
+    <select id="getDeptUser" resultType="com.yitai.admin.dto.department.DepartmentUserDTO">
         select dept_id as deptId, pu.id, username, pu.phone
         from user_department_* ud
         join public_user pu on ud.user_id = pu.id
         and pu.is_del = 0
     </select>
 
-    <select id="containChildren" resultType="com.yitai.entity.Department">
+    <select id="containChildren" resultType="com.yitai.admin.entity.Department">
         select *
         from department_*
         where pid =  #{id}
           and is_del = 0
     </select>
-    <select id="containsUser" resultType="com.yitai.vo.UserVO">
+    <select id="containsUser" resultType="com.yitai.admin.vo.UserVO">
         select pu.id, username, pu.phone
         from public_user pu
                  join user_department_* d on d.user_id = pu.id

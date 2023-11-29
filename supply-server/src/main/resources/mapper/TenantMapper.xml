@@ -36,7 +36,7 @@
         where id = #{id}
     </update>
 
-    <select id="pageQuery" resultType="com.yitai.entity.Tenant">
+    <select id="pageQuery" resultType="com.yitai.admin.entity.Tenant">
         select *
         from public_tenant
         <where>

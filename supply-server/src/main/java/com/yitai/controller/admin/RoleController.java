@@ -1,14 +1,16 @@
 package com.yitai.controller.admin;
 
+import com.yitai.admin.dto.role.RoleAssDTO;
+import com.yitai.admin.dto.role.RoleDTO;
+import com.yitai.admin.dto.role.RolePageQueryDTO;
 import com.yitai.service.DepartmentService;
 import com.yitai.service.RoleService;
-import com.yitai.annotation.AutoLog;
-import com.yitai.annotation.HasPermit;
-import com.yitai.dto.role.*;
+import com.yitai.annotation.admin.AutoLog;
+import com.yitai.annotation.admin.HasPermit;
 import com.yitai.enumeration.LogType;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
-import com.yitai.vo.DepartmentVO;
+import com.yitai.admin.vo.DepartmentVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -109,7 +111,7 @@ public class RoleController {
     @HasPermit(permission = "sys:role:assUser")
     @PostMapping("/getUser")
     public Result<?> getUser(@RequestBody RoleDTO roleInfoDTO){
-        log.info("根据Id获取角色关联菜单信息：{}", roleInfoDTO);
+        log.info("根据Id获取角色关联用户信息：{}", roleInfoDTO);
         List<DepartmentVO> departmentVOS = departmentService.getUserByTree(roleInfoDTO.getTenantId());
         return Result.success(roleService.getUser(roleInfoDTO, departmentVOS));
     }

@@ -1,7 +1,7 @@
 package com.yitai.service;
 
-import com.yitai.dto.menu.MenuDTO;
-import com.yitai.vo.MenuVO;
+import com.yitai.admin.dto.menu.MenuDTO;
+import com.yitai.admin.vo.MenuVO;
 
 import java.util.List;
 
