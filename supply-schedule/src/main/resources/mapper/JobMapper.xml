@@ -14,7 +14,7 @@
                 and job_group like concat('%', #{jobGroup}, '%')
             </if>
             <if test="status != null">
-                and status = #{status})
+                and status = #{status}
             </if>
         and is_del = 0
         </where>
