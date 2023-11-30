@@ -1,7 +1,7 @@
 package com.yitai.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.yitai.annotation.TableShard;
+import com.yitai.annotation.admin.TableShard;
 import com.yitai.enumeration.ShardType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -58,7 +58,7 @@ public class MybatisStatementInterceptor implements Interceptor {
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
         TableShard tableShard = getTableShard(mappedStatement);
-//        log.info("=======执行sql语句=======\n{}", boundSql.getSql());
+        log.info("=======执行sql语句=======\n{}", boundSql.getSql());
         if(tableShard != null){
             Object parameterObject = boundSql.getParameterObject();
             Long tenantId;

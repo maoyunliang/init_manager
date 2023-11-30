@@ -1,8 +1,8 @@
 package com.yitai.controller.admin;
 
-import com.yitai.annotation.HasPermit;
-import com.yitai.dto.LogPageQueryDTO;
-import com.yitai.entity.OperationLog;
+import com.yitai.annotation.admin.HasPermit;
+import com.yitai.admin.dto.LogPageQueryDTO;
+import com.yitai.admin.entity.OperationLog;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.LogService;
@@ -60,7 +60,7 @@ public class LogController {
     @GetMapping("/export/{tenantId}")
     @HasPermit(permission = "run:log:export")
     @Operation(summary = "操作日志导出")
-    public void selectByPage(HttpServletResponse response, @PathVariable Long tenantId){
+    public void selectByPage(@PathVariable Long tenantId, HttpServletResponse response){
         log.info("操作日志导出");
         List<OperationLog> list = logService.list(tenantId);
         ExcelUtils.export(response,"操作日志表", list, OperationLog.class);

@@ -1,9 +1,9 @@
 package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
-import com.yitai.dto.LogPageQueryDTO;
-import com.yitai.entity.LoginLogs;
-import com.yitai.entity.OperationLog;
+import com.yitai.admin.dto.LogPageQueryDTO;
+import com.yitai.admin.entity.LoginLogs;
+import com.yitai.admin.entity.OperationLog;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

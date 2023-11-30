@@ -11,11 +11,11 @@ package com.yitai.aspect;
  */
 
 import cn.hutool.core.util.ObjectUtil;
-import com.yitai.annotation.AutoFill;
+import com.yitai.admin.entity.User;
+import com.yitai.annotation.admin.AutoFill;
 import com.yitai.constant.AutoFillConstant;
 import com.yitai.constant.MessageConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.entity.User;
 import com.yitai.enumeration.OperationType;
 import com.yitai.exception.NotAuthException;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class AutoFillAspect {
     /**
      * 切入点, 拦截指定的包和文件
      */
-    @Pointcut("execution(* com.yitai.mapper.*.*(..)) && @annotation(com.yitai.annotation.AutoFill)")
+    @Pointcut("execution(* com.yitai.mapper.*.*(..)) && @annotation(com.yitai.annotation.admin.AutoFill)")
     public void autoFillPointCut() {
     }
 

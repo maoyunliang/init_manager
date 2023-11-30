@@ -1,10 +1,10 @@
 package com.yitai.mapper;
 
-import com.yitai.annotation.AutoFill;
-import com.yitai.dto.menu.MenuDTO;
-import com.yitai.entity.Menu;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.admin.dto.menu.MenuDTO;
+import com.yitai.admin.entity.Menu;
 import com.yitai.enumeration.OperationType;
-import com.yitai.vo.MenuVO;
+import com.yitai.admin.vo.MenuVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 

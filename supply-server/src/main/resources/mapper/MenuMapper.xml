@@ -10,7 +10,7 @@
                 #{visible}, #{menuPid}, #{sortNo}, #{icon}, #{createTime}, #{updateTime},
                 #{createUser}, #{updateUser}, #{isDel})
     </insert>
-    <update id="update" parameterType="com.yitai.entity.Menu">
+    <update id="update" parameterType="com.yitai.admin.entity.Menu">
         update public_menu
         <set>
             <if test="menuName != null">menu_name = #{menuName},</if>
@@ -28,7 +28,7 @@
         </set>
         where id = #{id}
     </update>
-    <select id="list" resultType="com.yitai.vo.MenuVO">
+    <select id="list" resultType="com.yitai.admin.vo.MenuVO">
         select *
         from public_menu
         <where>
@@ -42,7 +42,7 @@
         </where>
         order by create_time desc
     </select>
-    <select id="containChildren" resultType="com.yitai.entity.Menu">
+    <select id="containChildren" resultType="com.yitai.admin.entity.Menu">
         select *
         from public_menu
         where menu_pid = #{menuId} and is_del = 0

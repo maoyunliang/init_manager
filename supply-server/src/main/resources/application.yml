@@ -82,8 +82,8 @@ yitai:
 
 # mybatis配置源
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.yitai.entity
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.yitai.**.entity
   configuration:
     # 开启驼峰命名
     map-underscore-to-camel-case: true

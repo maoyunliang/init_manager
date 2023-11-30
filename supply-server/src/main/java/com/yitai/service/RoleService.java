@@ -1,9 +1,11 @@
 package com.yitai.service;
 
-import com.yitai.dto.role.*;
+import com.yitai.admin.dto.role.RoleAssDTO;
+import com.yitai.admin.dto.role.RoleDTO;
+import com.yitai.admin.dto.role.RolePageQueryDTO;
 import com.yitai.result.PageResult;
-import com.yitai.vo.DepartmentVO;
-import com.yitai.vo.RoleVO;
+import com.yitai.admin.vo.DepartmentVO;
+import com.yitai.admin.vo.RoleVO;
 
 import java.util.List;
 

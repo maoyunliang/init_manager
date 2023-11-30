@@ -6,13 +6,13 @@ import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.ttl.TransmittableThreadLocal;
-import com.yitai.annotation.LoginLog;
-import com.yitai.service.LogService;
-import com.yitai.dto.user.LoginMessageDTO;
-import com.yitai.dto.user.UserLoginDTO;
-import com.yitai.entity.LoginLogs;
-import com.yitai.entity.User;
+import com.yitai.admin.dto.user.LoginMessageDTO;
+import com.yitai.admin.dto.user.UserLoginDTO;
+import com.yitai.admin.entity.LoginLogs;
+import com.yitai.admin.entity.User;
+import com.yitai.annotation.admin.LoginLog;
 import com.yitai.result.Result;
+import com.yitai.service.LogService;
 import com.yitai.utils.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class LoginLogAspect {
      */
     private static final ThreadLocal<StopWatch> TIME_THREADLOCAL = new TransmittableThreadLocal<>();
 
-    @Pointcut("@annotation(com.yitai.annotation.LoginLog)")
+    @Pointcut("@annotation(com.yitai.annotation.admin.LoginLog)")
     public void loginLogPointCut() {
     }
     /**

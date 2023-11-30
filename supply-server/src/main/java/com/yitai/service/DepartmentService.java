@@ -1,8 +1,8 @@
 package com.yitai.service;
 
-import com.yitai.dto.department.DepartmentDTO;
-import com.yitai.dto.department.DepartmentListDTO;
-import com.yitai.vo.DepartmentVO;
+import com.yitai.admin.dto.department.DepartmentDTO;
+import com.yitai.admin.dto.department.DepartmentListDTO;
+import com.yitai.admin.vo.DepartmentVO;
 
 import java.util.List;
 

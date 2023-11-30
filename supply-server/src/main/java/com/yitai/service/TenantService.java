@@ -1,7 +1,7 @@
 package com.yitai.service;
 
-import com.yitai.dto.tenant.TenantDTO;
-import com.yitai.dto.tenant.TenantListDTO;
+import com.yitai.admin.dto.tenant.TenantDTO;
+import com.yitai.admin.dto.tenant.TenantListDTO;
 import com.yitai.result.PageResult;
 
 /**

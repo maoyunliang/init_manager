@@ -4,6 +4,7 @@ import com.yitai.exception.ServiceException;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -20,6 +21,26 @@ import java.util.function.Predicate;
  * @Version: 1.0
  */
 public class TreeUtil {
+
+    public static <T> ArrayList<T> buildTree(List<T> list, Function<T, ?> getParentId, Function<T, ?> getSortNo){
+        ArrayList<T> trees = new ArrayList<>();
+        ArrayList<T> parents = new ArrayList<>();
+        list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        //寻找顶级父部门
+        for (T item : list) {
+            T parent = buildParent(item,list,getParentId);
+            if(!parents.contains(parent)){
+                parents.add(parent);
+            }
+        }
+        parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        //构建部门树
+        for (T parent: parents){
+            T tree = buildTrees(parent, list, getParentId);
+            trees.add(tree);
+        }
+        return trees;
+    }
     public static <T> ArrayList<T> buildTree(List<T> list, Function<T, ?> getParentId){
         ArrayList<T> trees = new ArrayList<>();
         ArrayList<T> parents = new ArrayList<>();
@@ -30,6 +51,8 @@ public class TreeUtil {
                 parents.add(parent);
             }
         }
+
+//        parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
         //构建部门树
         for (T parent: parents){
             T tree = buildTrees(parent, list, getParentId);

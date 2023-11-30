@@ -6,14 +6,14 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.admin.dto.user.*;
 import com.yitai.mapper.UserMapper;
 import com.yitai.constant.*;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.user.*;
-import com.yitai.entity.Tenant;
-import com.yitai.entity.User;
-import com.yitai.entity.UserRole;
-import com.yitai.entity.UserTenant;
+import com.yitai.admin.entity.Tenant;
+import com.yitai.admin.entity.User;
+import com.yitai.admin.entity.UserRole;
+import com.yitai.admin.entity.UserTenant;
 import com.yitai.exception.ServiceException;
 import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
@@ -21,8 +21,8 @@ import com.yitai.service.UserService;
 import com.yitai.utils.SendMsgUtil;
 import com.yitai.utils.TreeUtil;
 import com.yitai.utils.VerifyCodeUtil;
-import com.yitai.vo.MenuVO;
-import com.yitai.vo.UserVO;
+import com.yitai.admin.vo.MenuVO;
+import com.yitai.admin.vo.UserVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -198,14 +198,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getInfo() {
+    public UserVO getInfo(Long tenantId) {
         User user = BaseContext.getCurrentUser();
         user = userMapper.getById(user.getId());
         if (ObjectUtil.isNull(user)){
             throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
         }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        List<String> roleName = userMapper.getRole(user.getId(), tenantId);
+        userVO.setRoles(roleName);
 //        user.setPassword("******");
-        return user;
+        return userVO;
     }
 
     @Override
@@ -213,10 +217,8 @@ public class UserServiceImpl implements UserService {
         List<String> typeList = Arrays.asList("M", "C");
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
                 pageAllMenu(typeList) : userMapper.pageMenu(id, typeList, tenantId).stream()
-                .filter(e-> e.getVisible() == 1 ).toList();
-        //自定义方法的建立树结构 (state 表示顶层父ID的设定标准 只支持int类型)
-//        return TreeUtil.buildTree(menuList, 0, MenuVO::getMenuPid);
-        return TreeUtil.buildTree(menuList, MenuVO::getMenuPid);
+                .filter(e-> e.getVisible() == 1 ).collect(Collectors.toList());
+        return TreeUtil.buildTree(menuList, MenuVO::getMenuPid, MenuVO::getSortNo);
     }
 
     @Override

@@ -1,22 +1,23 @@
 package com.yitai.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.yitai.mapper.MenuMapper;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
-import com.yitai.dto.menu.MenuDTO;
-import com.yitai.entity.Menu;
-import com.yitai.entity.User;
+import com.yitai.admin.dto.menu.MenuDTO;
+import com.yitai.admin.entity.Menu;
+import com.yitai.admin.entity.User;
 import com.yitai.exception.ServiceException;
+import com.yitai.mapper.MenuMapper;
 import com.yitai.properties.MangerProperties;
 import com.yitai.service.MenuService;
-import com.yitai.vo.MenuVO;
+import com.yitai.admin.vo.MenuVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ClassName: RoleServiceImpl
@@ -58,8 +59,9 @@ public class MenuServiceImpl implements MenuService {
         User user = BaseContext.getCurrentUser();
         //如果是普通用户
         if (!mangerProperties.getUserId().contains(user.getId())){
-            menuList = menuList.stream().filter(e-> e.getVisible() == 1).toList();
+            menuList = menuList.stream().filter(e-> e.getVisible() == 1).collect(Collectors.toList());
         };
+
         return menuList;
     }
 

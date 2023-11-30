@@ -2,16 +2,16 @@ package com.yitai.mapper;
 
 
 import com.github.pagehelper.Page;
-import com.yitai.annotation.AutoFill;
-import com.yitai.annotation.TableShard;
-import com.yitai.dto.role.RolePageQueryDTO;
-import com.yitai.entity.MenuRole;
-import com.yitai.entity.Role;
-import com.yitai.entity.UserRole;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.TableShard;
+import com.yitai.admin.dto.role.RolePageQueryDTO;
+import com.yitai.admin.entity.MenuRole;
+import com.yitai.admin.entity.Role;
+import com.yitai.admin.entity.UserRole;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
-import com.yitai.vo.MenuVO;
-import com.yitai.vo.UserVO;
+import com.yitai.admin.vo.MenuVO;
+import com.yitai.admin.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

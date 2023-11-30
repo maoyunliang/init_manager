@@ -1,15 +1,15 @@
 package com.yitai.mapper;
 
-import com.yitai.annotation.AutoFill;
-import com.yitai.annotation.TableShard;
-import com.yitai.dto.department.DepartmentDTO;
-import com.yitai.dto.department.DepartmentListDTO;
-import com.yitai.dto.department.DepartmentUserDTO;
-import com.yitai.entity.Department;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.TableShard;
+import com.yitai.admin.dto.department.DepartmentDTO;
+import com.yitai.admin.dto.department.DepartmentListDTO;
+import com.yitai.admin.dto.department.DepartmentUserDTO;
+import com.yitai.admin.entity.Department;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
-import com.yitai.vo.DepartmentVO;
-import com.yitai.vo.UserVO;
+import com.yitai.admin.vo.DepartmentVO;
+import com.yitai.admin.vo.UserVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
