@@ -1,6 +1,5 @@
 package com.yitai.quartz.entity;
 
-import com.yitai.base.BaseEntity;
 import com.yitai.constant.ScheduleConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
