@@ -29,6 +29,7 @@ public class SysJob {
     @Schema(description = "调用目标字符串")
     private String cronExpression;
     @Schema(description = "计划策略  0=默认,1=立即触发执行,2=触发一次执行,3=不触发立即执行")
+    @Builder.Default
     private String misfirePolicy = ScheduleConstant.MISFIRE_DEFAULT;
     @Schema(description = "并发执行 1=允许,-1=禁止")
     private Integer concurrent;

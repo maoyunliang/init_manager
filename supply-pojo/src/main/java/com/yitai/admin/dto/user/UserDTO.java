@@ -4,6 +4,8 @@ import com.yitai.base.BaseBody;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * ClassName: EmployeeDTO
  * Package: com.yitai.dto
@@ -24,4 +26,6 @@ public class UserDTO extends BaseBody {
     private String email;
     private String sex;
     private String avatar;
+    private List<Integer> deptIds;
+    private List<Integer> roleIds;
 }

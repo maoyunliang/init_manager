@@ -19,11 +19,13 @@ import lombok.EqualsAndHashCode;
 @Data
 public class JobDTO extends BaseBody {
     private Long id;
+    @Schema(description = "任务名")
     private String jobName;
+    @Schema(description = "任务组")
     private String jobGroup;
     @Schema(description = "调用目标字符串")
     private String invokeTarget;
-    @Schema(description = "调用目标字符串")
+    @Schema(description = "调用cron表达式")
     private String cronExpression;
     @Schema(description = "计划策略  0=默认,1=立即触发执行,2=触发一次执行,3=不触发立即执行")
     private String misfirePolicy = ScheduleConstant.MISFIRE_DEFAULT;

@@ -2,10 +2,12 @@ package com.yitai.service.impl;
 
 
 import com.github.pagehelper.PageHelper;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.JobMapper;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.service.JobService;
+import com.yitai.utils.CronUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,11 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public void save(JobDTO jobDTO) {
+        String cronExpression = jobDTO.getCronExpression();
+        String jobName = jobDTO.getJobName();
+        if(!CronUtils.isValid(cronExpression)){
+            throw new ServiceException("新建任务"+jobName+"：cron表达式不正确");
+        }
         SysJob sysJob = new SysJob();
         BeanUtils.copyProperties(jobDTO, sysJob);
         int record = jobMapper.save(sysJob, jobDTO.getTenantId());

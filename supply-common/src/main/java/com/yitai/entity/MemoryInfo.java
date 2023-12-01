@@ -33,4 +33,6 @@ public class MemoryInfo {
      * 剩余内存
      */
     private String free;
+
+    private String usage;
 }

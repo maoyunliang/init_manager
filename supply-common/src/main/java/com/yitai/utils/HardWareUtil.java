@@ -106,6 +106,7 @@ public class HardWareUtil {
         double used = (Objects.isNull(size) ? (memory.getTotal() - memory.getAvailable()) : (float)
                 (memory.getTotal() - memory.getAvailable()) / size.getSize());
         double free = (Objects.isNull(size) ? memory.getAvailable() : (float) memory.getAvailable() / size.getSize());
+        mem.setUsage(new DecimalFormat("#.##%").format(used/total));
         if(size == SizeEnum.GB){
             mem.setTotal(new DecimalFormat("#.##").format(total) + "GB");
             mem.setUsed(new DecimalFormat("#.##").format(used) + "GB");
@@ -119,6 +120,7 @@ public class HardWareUtil {
             mem.setUsed(new DecimalFormat("#.##").format(used) + "KB");
             mem.setFree(new DecimalFormat("#.##").format(free) + "KB");
         }
+
         return mem;
     }
 
