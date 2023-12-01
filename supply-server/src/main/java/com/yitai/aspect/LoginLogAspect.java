@@ -14,6 +14,7 @@ import com.yitai.annotation.admin.LoginLog;
 import com.yitai.result.Result;
 import com.yitai.service.LogService;
 import com.yitai.utils.IpUtils;
+import com.yitai.utils.SpringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -25,8 +26,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import javax.annotation.Resource;
 
 /**
  * ClassName: LoginLogAspect
@@ -41,8 +40,6 @@ import javax.annotation.Resource;
 @Component
 @Slf4j
 public class LoginLogAspect {
-    @Resource
-    LogService logService;
 
     /**
      * 计算操作耗时
@@ -104,6 +101,7 @@ public class LoginLogAspect {
                 time(DateUtil.now()).build();
         // 异步的方式擦入数据到数据库
         ThreadUtil.execAsync(()->{
+            LogService logService = SpringUtils.getBean(LogService.class);
             logService.save1(logs);
         });
         log.info("-----------日志处理完成---------");

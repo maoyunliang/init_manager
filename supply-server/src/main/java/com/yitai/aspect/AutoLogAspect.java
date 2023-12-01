@@ -14,6 +14,7 @@ import com.yitai.result.Result;
 import com.yitai.service.LogService;
 import com.yitai.utils.AspectUtil;
 import com.yitai.utils.IpUtils;
+import com.yitai.utils.SpringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -22,7 +23,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -41,10 +41,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @Slf4j
 public class AutoLogAspect {
-
-    @Autowired
-    private LogService logService;
-
     /**
      * 计算操作耗时
      */
@@ -101,7 +97,11 @@ public class AutoLogAspect {
                 type(autoLog.type().getValue()).
                 ip(ipAddr).duration(stopWatch.getTotalTimeSeconds()).
                 time(DateUtil.now()).tenantId(tenantId).build();
-        ThreadUtil.execAsync(()-> logService.save2(logs));
+        ThreadUtil.execAsync(()-> {
+            LogService logService = SpringUtils.getBean(LogService.class);
+            logService.save2(logs);
+        });
+        TIME_THREADLOCAL.remove();
         // 异步的方式擦入数据到数据库
         log.info("-----------日志处理完成---------");
     }

@@ -256,10 +256,10 @@ public class UserServiceImpl implements UserService {
         }
     }
     public boolean checkUser(UserDTO userDTO){
-        if(ObjectUtil.isNull(userMapper.getByUsername(userDTO.getUsername()))){
+        if(!ObjectUtil.isNull(userMapper.getByUsername(userDTO.getUsername()))){
             throw new ServiceException("账号已存在");
         }
-        if(ObjectUtil.isNull(userMapper.getByPhone(userDTO.getPhone()))){
+        if(!ObjectUtil.isNull(userMapper.getByPhone(userDTO.getPhone()))){
             throw new ServiceException("手机号已绑定");
         }
         return true;
