@@ -25,6 +25,7 @@ public class TreeUtil {
     public static <T> ArrayList<T> buildTree(List<T> list, Function<T, ?> getParentId, Function<T, ?> getSortNo){
         ArrayList<T> trees = new ArrayList<>();
         ArrayList<T> parents = new ArrayList<>();
+        //对初始列表做排序
         list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
         //寻找顶级父部门
         for (T item : list) {
@@ -51,8 +52,6 @@ public class TreeUtil {
                 parents.add(parent);
             }
         }
-
-//        parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
         //构建部门树
         for (T parent: parents){
             T tree = buildTrees(parent, list, getParentId);
