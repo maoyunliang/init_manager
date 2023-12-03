@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.springframework.beans.BeanUtils;
 
 import java.time.Duration;
@@ -31,9 +30,9 @@ public abstract class AbstractQuartzJob implements Job {
     /**
      * 线程本地变量
      */
-    private static ThreadLocal<LocalDateTime> TIME = new ThreadLocal<>();
+    private static final ThreadLocal<LocalDateTime> TIME = new ThreadLocal<>();
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         SysJob sysJob = new SysJob();
         BeanUtils.copyProperties(context.getMergedJobDataMap().get(SchedulerConstant.TASK_PROPERTIES), sysJob);
         try {
@@ -58,10 +57,10 @@ public abstract class AbstractQuartzJob implements Job {
     /**
      * 继承类真实执行方法（需重写）
      */
-    protected abstract void doExecute(JobExecutionContext context, SysJob sysJob);
+    protected abstract void doExecute(JobExecutionContext context, SysJob sysJob) throws Exception;
 
     /**
-     * 执行后
+     * 执行后日志记录
      */
     private void after(SysJob sysJob, Exception e) {
         LocalDateTime startTime = TIME.get();

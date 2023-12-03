@@ -59,13 +59,24 @@ public class AutoLogAspect {
      */
     @AfterReturning(value = "autoLogPointCut()", returning = "jsonResult")
     public void doAfterReturning(JoinPoint joinPoint, Result<?> jsonResult){
+        handlerLog(joinPoint,null, jsonResult);
+        // 异步的方式擦入数据到数据库
+        log.info("-----------日志处理完成---------");
+    }
+
+    //操作日志 异常不记录日志
+//    @AfterThrowing(value = "autoLogPointCut()", throwing = "e")
+//    public void doAfterThrowing(JoinPoint joinPoint, Exception e){
+//        handlerLog(joinPoint, e, null);
+//    }
+
+    private void handlerLog(JoinPoint joinPoint, Exception e, Result<?> jsonResult) {
         StopWatch stopWatch = TIME_THREADLOCAL.get();
         stopWatch.stop();
         //获取当前被拦截方法的操作类型
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         AutoLog autoLog = methodSignature.getMethod().getAnnotation(AutoLog.class);
         //获得数据库操作类型
-        //LogType logType = autoLog.type();
         log.info("日志类型:"+ autoLog.type()+ "-> 接口请求结束 -> 本次请求耗时"+ stopWatch.getTotalTimeSeconds());
         User user = BaseContext.getCurrentUser();
         if (user == null){
@@ -87,17 +98,6 @@ public class AutoLogAspect {
             logService.save2(logs);
         });
         TIME_THREADLOCAL.remove();
-        // 异步的方式擦入数据到数据库
-        log.info("-----------日志处理完成---------");
-    }
-
-    @AfterThrowing(value = "autoLogPointCut()", throwing = "e")
-    public void doAfterThrowing(JoinPoint joinPoint, Exception e){
-        handlerLog(joinPoint, e);
-    }
-
-    private void handlerLog(JoinPoint joinPoint, Exception e) {
-
     }
     // around模式
 //    @Around("autoLogPointCut()")

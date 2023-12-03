@@ -67,7 +67,7 @@ public class UserController {
 
     @Operation(summary = "用户短信登录接口")
     @PostMapping ("/loginMessage")
-    @AutoLog(operation = "短信登录", type = LogType.LOGIN)
+    @LoginLog(operation = "短信登录", type = LogType.LOGIN)
     public Result<UserLoginVO> login(@RequestBody LoginMessageDTO loginMessageDTO){
         log.info("用户短信登录：{}", loginMessageDTO);
         User user = userService.login(loginMessageDTO);

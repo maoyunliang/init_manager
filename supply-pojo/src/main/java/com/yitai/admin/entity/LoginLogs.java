@@ -25,6 +25,7 @@ public class LoginLogs {
     private String type;
     private String ip;
     private String user;
+    private Integer status;
     private double duration;
     private String time;
 }
