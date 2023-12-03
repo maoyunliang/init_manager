@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+用户 -> 服务端: 请求认证
+服务端 --> 用户: token拦截器路由拦截（登录、注册不拦截）
+
+用户 -> 服务端: 资源请求
+用户 <-- 服务端: 权限校验（通过：返回资源 - 失败：返回权限校验失败异常）
+@enduml

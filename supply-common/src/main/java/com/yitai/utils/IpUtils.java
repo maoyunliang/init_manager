@@ -2,6 +2,8 @@ package com.yitai.utils;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -54,5 +56,19 @@ public class IpUtils {
             throw new RuntimeException(e);
         }
         return localhost.getHostAddress();
+    }
+
+    public static String getIp(){
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes)
+                RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = null;
+        if (servletRequestAttributes != null) {
+            request = servletRequestAttributes.getRequest();
+        }
+        String ipAddr = null;
+        if (request != null) {
+            ipAddr = IpUtils.getIpAddr(request);
+        }
+        return ipAddr;
     }
 }

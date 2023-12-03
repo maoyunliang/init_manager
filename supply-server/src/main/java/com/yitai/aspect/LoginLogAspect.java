@@ -15,7 +15,6 @@ import com.yitai.result.Result;
 import com.yitai.service.LogService;
 import com.yitai.utils.IpUtils;
 import com.yitai.utils.SpringUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -24,8 +23,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * ClassName: LoginLogAspect
@@ -82,16 +79,7 @@ public class LoginLogAspect {
             }
         }
         //获取IP
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes)
-                RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = null;
-        if (servletRequestAttributes != null) {
-            request = servletRequestAttributes.getRequest();
-        }
-        String ipAddr = null;
-        if (request != null) {
-            ipAddr = IpUtils.getIpAddr(request);
-        }
+        String ipAddr = IpUtils.getIp();
         String username = (!StrUtil.isBlank(user.getUsername())) ? user.getUsername() : user.getPhone();
         //组装日志的实体对象
         LoginLogs logs = LoginLogs.builder().user(username).
