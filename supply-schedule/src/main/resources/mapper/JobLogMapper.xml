@@ -3,8 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.JobLogMapper">
     <insert id="save">
-        insert into sys_joblog (id, job_name, job_group, invoke_target,
-            job_message,exception_info, status, start_time, end_time,)
+        insert into public_sys_job_logs (id, job_name, job_group, invoke_target,
+            job_message,exception_info, status, start_time, end_time)
         values (#{sysJobLog.id}, #{sysJobLog.jobName}, #{sysJobLog.jobGroup}, #{sysJobLog.invokeTarget},
             #{sysJobLog.jobMessage}, #{sysJobLog.exception_info},
             #{sysJobLog.status}, #{sysJobLog.startTime}, #{sysJobLog.endTime});

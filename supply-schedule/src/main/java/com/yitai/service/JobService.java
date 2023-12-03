@@ -20,4 +20,6 @@ public interface JobService {
     void save(JobDTO jobDTO);
 
     void update(JobDTO jobDTO);
+
+    List<SysJob> list();
 }

@@ -35,6 +35,11 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public List<SysJob> list() {
+        return null;
+    }
+
+    @Override
     public void save(JobDTO jobDTO) {
         String cronExpression = jobDTO.getCronExpression();
         String jobName = jobDTO.getJobName();

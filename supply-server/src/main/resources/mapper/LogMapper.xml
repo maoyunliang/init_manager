@@ -61,7 +61,7 @@
         </foreach>
     </delete>
     <insert id="save1">
-        insert into public_login_logs (operation, type, ip, user, duration, time)
-        values (#{operation}, #{type}, #{ip}, #{user}, #{duration}, #{time} )
+        insert into public_login_logs (operation, type, ip, user, duration, time, status)
+        values (#{operation}, #{type}, #{ip}, #{user}, #{duration}, #{time}, #{status})
     </insert>
 </mapper>
