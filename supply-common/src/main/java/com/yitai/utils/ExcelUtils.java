@@ -234,7 +234,6 @@ public class ExcelUtils {
                 if (columnWidth <= 0) {
                     columnWidth = globalWidth;
                 }
-                System.out.println("columnWidth = " + columnWidth);
                 sheet.setColumnWidth(columnIndex, columnWidth * 256);
             }
         }
@@ -1296,11 +1295,6 @@ public class ExcelUtils {
                 watermark.setType(wmk.type());
                 watermark.setSrc(wmk.src());
                 columnWidth = excelSheet.columnWidth();
-            }
-            if (watermark == null){
-                watermark = new ExportWatermark();
-                watermark.setType(1);
-                watermark.setSrc("江西以太科技园有限公司");
             }
             // 属性注解
             List<ExportClassField> exportFields = filterExportFields(c);

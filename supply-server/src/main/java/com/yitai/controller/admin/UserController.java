@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -198,13 +199,22 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "导出")
+    @Operation(summary = "用户导出")
     @HasPermit(permission = "sys:user:export")
     @GetMapping("/export/{tenantId}")
     public void export(@PathVariable Long tenantId, HttpServletResponse response){
         log.info("用户导出");
         List<UserVO> list = userService.list(tenantId);
         ExcelUtils.export(response,"用户导出表", list, UserVO.class);
+    }
+
+    @Operation(summary = "用户导入")
+    @HasPermit(permission = "sys:user:import")
+    @PostMapping("/import/{tenantId}")
+    public Result<?> importUser(@PathVariable Long tenantId, @RequestParam("userSheet") MultipartFile multipartFile){
+        log.info("用户导入");
+        List<UserVO> userVOS = ExcelUtils.read(multipartFile, UserVO.class);
+        return Result.success(userVOS);
     }
 
 

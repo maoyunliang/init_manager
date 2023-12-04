@@ -25,7 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "用户信息返回的数据格式")
-@ExcelSheet(watermark = @Watermark(type = 1, src = "江西以太科技园有限公司"))
+@ExcelSheet(watermark = @Watermark(type = 1))
 public class UserVO {
     @Schema(name = "用户id")
     private Long id;
