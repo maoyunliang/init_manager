@@ -16,9 +16,11 @@ import com.yitai.properties.JwtProperties;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.UserService;
+import com.yitai.utils.ExcelUtils;
 import com.yitai.utils.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,6 +197,17 @@ public class UserController {
         userService.modifyPassword(userPasswordDTO);
         return Result.success();
     }
+
+    @Operation(summary = "导出")
+    @HasPermit(permission = "sys:user:export")
+    @GetMapping("/export/{tenantId}")
+    public void export(@PathVariable Long tenantId, HttpServletResponse response){
+        log.info("用户导出");
+        List<UserVO> list = userService.list(tenantId);
+        ExcelUtils.export(response,"用户导出表", list, UserVO.class);
+    }
+
+
 
     public UserLoginVO loginSuccess(User user){
         Map<String, Object> claims = new HashMap<>();

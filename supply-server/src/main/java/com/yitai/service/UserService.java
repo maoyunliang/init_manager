@@ -50,5 +50,5 @@ public interface UserService {
 
     void modifyPassword(UserPasswordDTO userPasswordDTO);
 
-
+    List<UserVO> list(Long tenantId);
 }

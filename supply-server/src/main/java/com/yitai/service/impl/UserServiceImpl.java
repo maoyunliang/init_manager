@@ -144,6 +144,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserVO> list(Long tenantId) {
+        return userMapper.listAll(tenantId);
+    }
+
+    @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
             throw new ServiceException("请输入正确的账号");

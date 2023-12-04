@@ -74,4 +74,7 @@ public interface UserMapper {
 
     @TableShard(type = ShardType.TABLE)
     List<String> getRole(@Param("id") Long id,  @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<UserVO> listAll(@Param("tenantId") Long tenantId);
 }

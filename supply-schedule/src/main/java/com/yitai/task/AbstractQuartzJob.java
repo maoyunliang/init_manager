@@ -83,7 +83,6 @@ public abstract class AbstractQuartzJob implements Job {
         }
         TIME.remove();
         ThreadUtil.execAsync(()->{
-            System.out.println(sysJobLog);
             // 写入数据库当中
             SpringUtils.getBean(JobLogService.class).save(sysJobLog);
             }

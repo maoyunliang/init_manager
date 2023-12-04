@@ -60,7 +60,6 @@ public class MybatisStatementInterceptor implements Interceptor {
         TableShard tableShard = getTableShard(mappedStatement);
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = getSql(configuration, boundSql, mappedStatement.getId());
-        log.info("=======执行sql语句=======\n{}", sql);
         if(tableShard != null){
             Object parameterObject = boundSql.getParameterObject();
             Long tenantId;
@@ -103,6 +102,8 @@ public class MybatisStatementInterceptor implements Interceptor {
                     rewriteTableSql(boundSql, tenantId, mappedStatement);
                 }
             }
+        }else {
+            log.info("=======执行sql语句=======\n{}", sql);
         }
         return invocation.proceed();
     }
