@@ -1,10 +1,8 @@
 package com.yitai.quartz.dto;
 
-import com.yitai.base.BaseBody;
 import com.yitai.constant.ScheduleConstant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: JobDTO
@@ -15,9 +13,8 @@ import lombok.EqualsAndHashCode;
  * @Create: 2023/11/29 15:00
  * @Version: 1.0
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class JobDTO extends BaseBody {
+public class JobDTO {
     private Long id;
     @Schema(description = "任务名")
     private String jobName;

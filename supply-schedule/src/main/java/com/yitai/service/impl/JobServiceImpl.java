@@ -2,16 +2,19 @@ package com.yitai.service.impl;
 
 
 import com.github.pagehelper.PageHelper;
-import com.yitai.exception.ServiceException;
 import com.yitai.mapper.JobMapper;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.service.JobService;
-import com.yitai.utils.CronUtils;
+import com.yitai.utils.ScheduleUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -23,10 +26,28 @@ import java.util.List;
  * @Create: 2023/11/29 14:30
  * @Version: 1.0
  */
+@Slf4j
 @Service
 public class JobServiceImpl implements JobService {
     @Autowired
     private JobMapper jobMapper;
+    @Autowired
+    private Scheduler scheduler;
+
+    /**
+     * 项目启动时，初始化定时器
+     * 主要是防止手动修改数据库导致未同步到定时任务处理（注：不能手动修改数据库ID和任务组名，否则会导致脏数据）
+     */
+    @PostConstruct
+    public void init() throws SchedulerException {
+        log.info("==========定时任务初始化===========");
+        scheduler.clear();
+        List<SysJob> jobList = jobMapper.listAll();
+        for (SysJob job : jobList) {
+            ScheduleUtil.createScheduleJob(scheduler, job);
+        }
+    }
+
     @Override
     public List<SysJob> list(JobDTO jobDTO) {
         //开始分页查询
@@ -35,26 +56,27 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<SysJob> list() {
-        return null;
-    }
-
-    @Override
-    public void save(JobDTO jobDTO) {
-        String cronExpression = jobDTO.getCronExpression();
-        String jobName = jobDTO.getJobName();
-        if(!CronUtils.isValid(cronExpression)){
-            throw new ServiceException("新建任务"+jobName+"：cron表达式不正确");
+    public void save(JobDTO jobDTO) throws SchedulerException {
+        SysJob sysJob = new SysJob();
+        BeanUtils.copyProperties(jobDTO, sysJob);
+        int record = jobMapper.save(sysJob);
+        if(record > 0){
+            ScheduleUtil.createScheduleJob(scheduler, sysJob);
         }
-        SysJob sysJob = new SysJob();
-        BeanUtils.copyProperties(jobDTO, sysJob);
-        int record = jobMapper.save(sysJob, jobDTO.getTenantId());
     }
 
     @Override
-    public void update(JobDTO jobDTO) {
+    public void update(JobDTO jobDTO) throws SchedulerException {
         SysJob sysJob = new SysJob();
         BeanUtils.copyProperties(jobDTO, sysJob);
-        jobMapper.update(sysJob, jobDTO.getTenantId());
+        int record = jobMapper.update(sysJob);
+        if(record > 0){
+            ScheduleUtil.createScheduleJob(scheduler, sysJob);
+        }
+    }
+
+    @Override
+    public void removeBatchIds(List<Integer> ids) {
+        jobMapper.removeBatchIds(ids);
     }
 }

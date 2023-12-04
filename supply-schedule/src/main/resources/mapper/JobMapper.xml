@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.JobMapper">
-    <insert id="save">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into public_sys_job (id, job_name, job_group, invoke_target, cron_expression, misfire_policy
             , concurrent, status, remark, create_user, update_user, create_time, update_time, is_del)
         values (#{sysJob.id}, #{sysJob.jobName}, #{sysJob.jobGroup}, #{sysJob.invokeTarget},
@@ -26,6 +26,14 @@
         </set>
         where id = #{sysJob.id}
     </update>
+    <update id="removeBatchIds">
+        update public_sys_job
+        set is_del = 1
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 
     <select id="page" resultType="com.yitai.quartz.entity.SysJob">
         select *
@@ -42,5 +50,11 @@
             </if>
         and is_del = 0
         </where>
+    </select>
+    <select id="listAll" resultType="com.yitai.quartz.entity.SysJob">
+        select id, job_name, job_group, invoke_target, cron_expression, misfire_policy,
+               concurrent, status, remark, create_user, update_user, create_time, update_time, is_del
+        from public_sys_job
+        where status = 1 and is_del = 0
     </select>
 </mapper>

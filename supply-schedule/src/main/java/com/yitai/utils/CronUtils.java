@@ -37,15 +37,12 @@ public class CronUtils {
      * @param cronExpression Cron表达式
      * @return String 无效时返回表达式错误描述,如果有效返回null
      */
-    public static String getInvalidMessage(String cronExpression)
-    {
-        try
-        {
+    public static String getInvalidMessage(String cronExpression) {
+        try {
             new CronExpression(cronExpression);
             return null;
         }
-        catch (ParseException pe)
-        {
+        catch (ParseException pe) {
             return pe.getMessage();
         }
     }
@@ -56,15 +53,12 @@ public class CronUtils {
      * @param cronExpression Cron表达式
      * @return Date 下次Cron表达式执行时间
      */
-    public static Date getNextExecution(String cronExpression)
-    {
-        try
-        {
+    public static Date getNextExecution(String cronExpression) {
+        try {
             CronExpression cron = new CronExpression(cronExpression);
             return cron.getNextValidTimeAfter(new Date(System.currentTimeMillis()));
         }
-        catch (ParseException e)
-        {
+        catch (ParseException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
@@ -75,21 +69,17 @@ public class CronUtils {
      * @param cron 表达式
      * @return 时间列表
      */
-    public static List<String> getRecentTriggerTime(String cron)
-    {
+    public static List<String> getRecentTriggerTime(String cron) {
         List<String> list = new ArrayList<>();
-        try
-        {
+        try {
             CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
             cronTriggerImpl.setCronExpression(cron);
             List<Date> dates = TriggerUtils.computeFireTimes(cronTriggerImpl, null, 10);
-            for (Date date : dates)
-            {
+            for (Date date : dates) {
                 list.add(new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss").format(date));
             }
         }
-        catch (ParseException e)
-        {
+        catch (ParseException e) {
             return null;
         }
         return list;

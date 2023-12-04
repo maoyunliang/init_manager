@@ -44,7 +44,7 @@ public class JobInvokeUtil {
             method.invoke(bean, getMethodParamsValue(methodParams));
         }else {
             Method method = bean.getClass().getMethod(methodName);
-            method.invoke(method);
+            method.invoke(bean);
         }
     }
 

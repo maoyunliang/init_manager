@@ -1,9 +1,7 @@
 package com.yitai.mapper;
 
 import com.yitai.annotation.admin.AutoFill;
-import com.yitai.annotation.admin.TableShard;
 import com.yitai.enumeration.OperationType;
-import com.yitai.enumeration.ShardType;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,11 +22,13 @@ import java.util.List;
 public interface JobMapper {
     List<SysJob> page(JobDTO jobDTO);
 
+    List<SysJob> listAll();
+
     @AutoFill(value = OperationType.INSERT)
-    @TableShard(type = ShardType.TABLE)
-    int save(@Param("sysJob") SysJob sysJob, @Param("tenantId") Long tenantId);
+    int save(@Param("sysJob") SysJob sysJob);
 
     @AutoFill(value = OperationType.UPDATE)
-    @TableShard(type = ShardType.TABLE)
-    void update(@Param("sysJob") SysJob sysJob, @Param("tenantId") Long tenantId);
+    int update(@Param("sysJob") SysJob sysJob);
+
+    void removeBatchIds(List<Integer> ids);
 }

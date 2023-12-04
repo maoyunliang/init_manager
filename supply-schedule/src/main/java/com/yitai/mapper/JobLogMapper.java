@@ -2,6 +2,7 @@ package com.yitai.mapper;
 
 import com.yitai.quartz.entity.SysJobLog;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * ClassName: JobLogMapper
@@ -14,5 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface JobLogMapper {
-    void save(SysJobLog sysJobLog);
+    int save(@Param("sysJobLog") SysJobLog sysJobLog);
 }

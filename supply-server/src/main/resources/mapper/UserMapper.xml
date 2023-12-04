@@ -58,8 +58,8 @@
     <select id="pageQuery" resultMap="pageQueryResultMap">
         select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
                pu.id_number, pu.status, avatar,
-               GROUP_CONCAT(d.department_name order by ud.dept_id) as departments,
-               GROUP_CONCAT(r.role_name order by r.id) as roles
+               GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,
+               GROUP_CONCAT(distinct r.role_name order by r.id) as roles
         from public_user pu
         left join public_user_tenant put on pu.id = put.user_id
         left join user_department_* ud on pu.id = ud.user_id
@@ -72,6 +72,15 @@
             </if>
             <if test="tenantId !=null and tenantId != ''">
                 and put.tenant_id =  #{tenantId}
+            </if>
+            <if  test="phone !=null and phone != ''">
+                and pu.phone like concat('%',#{phone},'%')
+            </if>
+            <if test="departIds != null and departIds != ''">
+                <foreach collection="departIds" item="id"
+                         open="(" close=")" separator=",">
+                    where ud.dept_id in #{id}
+                </foreach>
             </if>
                 and pu.is_del = 0
         </where>

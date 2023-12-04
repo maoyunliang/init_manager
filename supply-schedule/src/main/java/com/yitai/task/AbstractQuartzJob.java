@@ -1,7 +1,7 @@
 package com.yitai.task;
 
 import cn.hutool.core.thread.ThreadUtil;
-import com.yitai.constant.SchedulerConstant;
+import com.yitai.constant.ScheduleConstant;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.quartz.entity.SysJobLog;
 import com.yitai.service.JobLogService;
@@ -34,7 +34,7 @@ public abstract class AbstractQuartzJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         SysJob sysJob = new SysJob();
-        BeanUtils.copyProperties(context.getMergedJobDataMap().get(SchedulerConstant.TASK_PROPERTIES), sysJob);
+        BeanUtils.copyProperties(context.getMergedJobDataMap().get(ScheduleConstant.TASK_PROPERTIES), sysJob);
         try {
             before();
             doExecute(context, sysJob);
@@ -73,15 +73,17 @@ public abstract class AbstractQuartzJob implements Job {
                 .startTime(startTime).endTime(LocalDateTime.now())
                 .build();
         if (e != null) {
-            sysJobLog.setStatus(SchedulerConstant.FAIL);
+            sysJobLog.setStatus(ScheduleConstant.FAIL);
             String errorMsg = StringUtils.substring(e.getMessage(), 0, 2000);
             sysJobLog.setExceptionInfo(errorMsg);
         }
         else{
-            sysJobLog.setStatus(SchedulerConstant.SUCCESS);
+            sysJobLog.setStatus(ScheduleConstant.SUCCESS);
+            sysJobLog.setExceptionInfo("null");
         }
         TIME.remove();
         ThreadUtil.execAsync(()->{
+            System.out.println(sysJobLog);
             // 写入数据库当中
             SpringUtils.getBean(JobLogService.class).save(sysJobLog);
             }

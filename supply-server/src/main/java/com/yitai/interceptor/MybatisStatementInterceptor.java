@@ -58,7 +58,9 @@ public class MybatisStatementInterceptor implements Interceptor {
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
         TableShard tableShard = getTableShard(mappedStatement);
-        log.info("=======执行sql语句=======\n{}", boundSql.getSql());
+        Configuration configuration = mappedStatement.getConfiguration();
+        String sql = getSql(configuration, boundSql, mappedStatement.getId());
+        log.info("=======执行sql语句=======\n{}", sql);
         if(tableShard != null){
             Object parameterObject = boundSql.getParameterObject();
             Long tenantId;

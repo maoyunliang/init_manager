@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * ClassName: EmployeePageQueryDTO
  * Package: com.yitai.dto
@@ -21,6 +23,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserPageQueryDTO extends BaseBody {
     private String username;
+    private String phone;
+    //部门id集合
+    private List<Integer> departIds;
     private int page =1 ;
     private int pageSize =10;
 }

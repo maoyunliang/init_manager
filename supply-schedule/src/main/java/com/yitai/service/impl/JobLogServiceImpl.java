@@ -1,5 +1,6 @@
 package com.yitai.service.impl;
 
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.JobLogMapper;
 import com.yitai.quartz.entity.SysJobLog;
 import com.yitai.service.JobLogService;
@@ -21,6 +22,9 @@ public class JobLogServiceImpl implements JobLogService {
     JobLogMapper jobLogMapper;
     @Override
     public void save(SysJobLog sysJobLog) {
-        jobLogMapper.save(sysJobLog);
+        int record = jobLogMapper.save(sysJobLog);
+        if(record < 1){
+            throw new ServiceException("插入异常");
+        }
     }
 }

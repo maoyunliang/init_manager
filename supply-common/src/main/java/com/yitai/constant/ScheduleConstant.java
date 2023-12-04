@@ -1,13 +1,13 @@
 package com.yitai.constant;
 
 /**
- * ClassName: ScheduleConstant
+ * ClassName: SchedulerConstant
  * Package: com.yitai.constant
  * Description:
  *
- * @Author: 毛云亮
- * @Create: 2023/11/29 14:38
- * @Version: 1.0
+ * @Author: mao
+ * @Create 2023/12/1 18:34
+ * @Version 1.0
  */
 public class ScheduleConstant {
     public static final String TASK_CLASS_NAME = "TASK_CLASS_NAME";
@@ -26,28 +26,13 @@ public class ScheduleConstant {
 
     /** 不触发立即执行 */
     public static final String MISFIRE_DO_NOTHING = "3";
+    /** 任务执行状态 */
+    public static final Integer FAIL = -1;
 
-    public enum Status
-    {
-        /**
-         * 正常
-         */
-        NORMAL("0"),
-        /**
-         * 暂停
-         */
-        PAUSE("1");
+    public static final Integer SUCCESS = 1;
 
-        private final String value;
+    public static final String[] JOB_WHITELIST_STR = { "com.yitai" };
 
-        private Status(String value)
-        {
-            this.value = value;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-    }
+    public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
+            "org.springframework", "org.apache", "com.yitai.config", "com.yitai.entity" };
 }

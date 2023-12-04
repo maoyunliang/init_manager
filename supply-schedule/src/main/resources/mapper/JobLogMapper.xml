@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.JobLogMapper">
-    <insert id="save">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into public_sys_job_logs (id, job_name, job_group, invoke_target,
             job_message,exception_info, status, start_time, end_time)
         values (#{sysJobLog.id}, #{sysJobLog.jobName}, #{sysJobLog.jobGroup}, #{sysJobLog.invokeTarget},
-            #{sysJobLog.jobMessage}, #{sysJobLog.exception_info},
+            #{sysJobLog.jobMessage}, #{sysJobLog.exceptionInfo},
             #{sysJobLog.status}, #{sysJobLog.startTime}, #{sysJobLog.endTime});
     </insert>
 <!--    <update id="update">-->

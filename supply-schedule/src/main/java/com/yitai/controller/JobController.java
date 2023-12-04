@@ -1,13 +1,17 @@
 package com.yitai.controller;
 
 import com.yitai.annotation.admin.HasPermit;
+import com.yitai.exception.ServiceException;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.result.Result;
 import com.yitai.service.JobService;
+import com.yitai.utils.CronUtils;
+import com.yitai.utils.ScheduleUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,25 +45,40 @@ public class JobController {
     @HasPermit(permission = "run:job:list")
     public Result<?> list(@RequestBody JobDTO jobDTO){
         List<SysJob> list = jobService.list(jobDTO);
-//        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
         return Result.success(list);
     }
 
     @PostMapping("/update")
     @Operation(summary = "更新定时任务")
     @HasPermit(permission = "run:job:update")
-    public Result<?> update(@RequestBody JobDTO jobDTO){
+    public Result<?> update(@RequestBody JobDTO jobDTO) throws SchedulerException {
+        if(!CronUtils.isValid(jobDTO.getCronExpression())){
+            throw new ServiceException("修改任务"+jobDTO.getJobName()+"'失败，cron表达式不正确");
+        }else if(!ScheduleUtil.whiteList(jobDTO.getInvokeTarget())){
+            throw new ServiceException("修改任务'" + jobDTO.getJobName() + "'失败，目标字符串不在白名单内");
+        }
         jobService.update(jobDTO);
-//        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
         return Result.success();
     }
 
     @PostMapping("/save")
     @Operation(summary = "添加定时任务")
     @HasPermit(permission = "run:job:add")
-    public Result<?> save(@RequestBody JobDTO jobDTO){
+    public Result<?> save(@RequestBody JobDTO jobDTO) throws SchedulerException {
+        if(!CronUtils.isValid(jobDTO.getCronExpression())){
+            throw new ServiceException("新增任务"+jobDTO.getJobName()+"'失败，cron表达式不正确");
+        }else if(!ScheduleUtil.whiteList(jobDTO.getInvokeTarget())){
+            throw new ServiceException("新增任务'" + jobDTO.getJobName() + "'失败，目标字符串不在白名单内");
+        }
         jobService.save(jobDTO);
-//        log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
+        return Result.success();
+    }
+
+    @PostMapping("/delete")
+    @Operation(summary = "删除定时任务")
+    @HasPermit(permission = "run:job:delete")
+    public Result<?> delete(@RequestBody List<Integer> ids) {
+        jobService.removeBatchIds(ids);
         return Result.success();
     }
 }

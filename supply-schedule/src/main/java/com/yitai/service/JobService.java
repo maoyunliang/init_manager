@@ -2,6 +2,7 @@ package com.yitai.service;
 
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
+import org.quartz.SchedulerException;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ import java.util.List;
 public interface JobService {
     List<SysJob> list(JobDTO jobDTO);
 
-    void save(JobDTO jobDTO);
+    void save(JobDTO jobDTO) throws SchedulerException;
 
-    void update(JobDTO jobDTO);
+    void update(JobDTO jobDTO) throws SchedulerException;
 
-    List<SysJob> list();
+    void removeBatchIds(List<Integer> ids);
 }

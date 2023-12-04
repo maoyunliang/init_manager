@@ -4,19 +4,19 @@ public enum Status {
     /**
      * 正常
      */
-    NORMAL("1"),
+    NORMAL(1),
     /**
      * 暂停
      */
-    PAUSE("-1");
+    PAUSE(-1);
 
-    private String value;
+    private final Integer value;
 
-    Status(String value) {
+    Status(Integer value) {
         this.value = value;
     }
 
-    public String getValue() {
+    public Integer getValue() {
         return value;
     }
 }
