@@ -34,7 +34,11 @@ import java.util.regex.Matcher;
  * @Create: 2023/11/2 14:36
  * @Version: 1.0
  */
+@Component
 @Intercepts({
+//        @Signature(type = Executor.class, method = "query", args = {
+//                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
+//        )
         @Signature(
                 type = StatementHandler.class,
                 method = "prepare",
@@ -42,18 +46,22 @@ import java.util.regex.Matcher;
         )
 })
 @Slf4j
-@Component
+//@Component
 //@ConditionalOnProperty(value = "table.shard.enabled", havingValue = "true") //加上了table.shard.enabled 该配置才会生效
 public class MybatisStatementInterceptor implements Interceptor {
 
 
     @Override
     public Object intercept(Invocation invocation) throws Exception {
+//        Object[] args = invocation.getArgs();
+//        MappedStatement mappedStatement = (MappedStatement)args[0];
+//        Object parameter = args[1];
+//        BoundSql boundSql = mappedStatement.getBoundSql(parameter);
         //获取执行参数
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
         MetaObject metaObject = MetaObject.forObject(statementHandler,
                 new DefaultObjectFactory(), new DefaultObjectWrapperFactory(), new DefaultReflectorFactory());
-//        MappedStatement mappedStatement = (MappedStatement)invocation.getArgs()[0];
+
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
@@ -75,7 +83,7 @@ public class MybatisStatementInterceptor implements Interceptor {
                     clazz = clazz.getSuperclass();
                 }
                 Optional<Method> optionalMethod = methods.stream()
-                        .filter(method -> method.getName().equals("getTenantId"))
+                        .filter(method -> "getTenantId".equals(method.getName()))
                         .findFirst();
                 if (optionalMethod.isPresent()) {
                     Method getTenantId = optionalMethod.get();
