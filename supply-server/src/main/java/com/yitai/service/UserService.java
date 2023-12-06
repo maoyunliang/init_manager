@@ -24,21 +24,21 @@ public interface UserService {
 
     User login(LoginMessageDTO loginMessageDTO);
 
-    void save(UserDTO userDTO);
+    UserVO getInfo(Long tenantId);
+
+    void logOut();
 
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
 
-    void startOrStop(Integer status, Long id);
+    List<UserVO> list(Long tenantId);
 
-    User getById(Long id);
+    void save(UserDTO userDTO);
 
     void update(UserDTO userDTO);
 
-    UserVO getInfo(Long tenantId);
+    void startOrStop(Integer status, Long id);
 
     ArrayList<MenuVO> getRouter(Long id, Long tenantId);
-
-    void logOut();
 
     void assRole(UserRoleDTO userRoleDTO);
 
@@ -50,5 +50,8 @@ public interface UserService {
 
     void modifyPassword(UserPasswordDTO userPasswordDTO);
 
-    List<UserVO> list(Long tenantId);
+
+    void saveBatch(List<UserDTO> userDTOS);
+
+    void hasScopeRange(Long id, Long tenantId);
 }

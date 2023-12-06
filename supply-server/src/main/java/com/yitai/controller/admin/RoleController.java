@@ -99,7 +99,7 @@ public class RoleController {
         return Result.success();
     }
 
-    @Operation(summary = "权限按钮-->关联菜单接口")
+    @Operation(summary = "菜单权限按钮-->关联菜单接口列表")
     @HasPermit(permission = "sys:role:assMenu")
     @PostMapping("/getMenu")
     public Result<?> getMenu(@RequestBody RoleDTO roleInfoDTO){
@@ -107,7 +107,7 @@ public class RoleController {
         return Result.success(roleService.getMenu(roleInfoDTO));
     }
 
-    @Operation(summary = "人员按钮-->关联用户接口")
+    @Operation(summary = "人员按钮-->关联用户接口列表")
     @HasPermit(permission = "sys:role:assUser")
     @PostMapping("/getUser")
     public Result<?> getUser(@RequestBody RoleDTO roleInfoDTO){
@@ -116,5 +116,11 @@ public class RoleController {
         return Result.success(roleService.getUser(roleInfoDTO, departmentVOS));
     }
 
-    //TODO 数据权限、用户个人信息修改
+    @Operation(summary = "数据权限按钮-->关联部门接口列表")
+    @HasPermit(permission = "sys:role:assDept")
+    @PostMapping("/getDept")
+    public Result<?> getDept(@RequestBody RoleDTO roleDTO){
+        log.info("根据Id获取角色关联部门信息：{}", roleDTO);
+        return Result.success(roleService.getDept(roleDTO));
+    }
 }

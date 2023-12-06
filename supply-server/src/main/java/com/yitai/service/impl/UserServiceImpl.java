@@ -18,6 +18,7 @@ import com.yitai.constant.PasswordConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
+import com.yitai.exception.NotScopeRangeException;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
 import com.yitai.properties.MangerProperties;
@@ -52,7 +53,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    private RedisTemplate redisTemplate;
+    RedisTemplate redisTemplate;
     @Autowired
     UserMapper userMapper;
     @Autowired
@@ -70,8 +71,6 @@ public class UserServiceImpl implements UserService {
 
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(user.getPassword())){
-//            LoginLogs logs = LoginLogs.builder().build();
-//            logMapper.save1(Log);
             throw new ServiceException(MessageConstant.PASSWORD_ERROR);
         }
 
@@ -94,7 +93,7 @@ public class UserServiceImpl implements UserService {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(key))){
             throw new ServiceException("短信验证码失效，请重新获取!");
         }
-        String real_verifyCode = (String) redisTemplate.opsForValue().get(phoneNumber+"-MSG");
+        String real_verifyCode = (String) redisTemplate.opsForValue().get(key);
         String verifyCode = loginMessageDTO.getVerifyCode();
         if(!verifyCode.equals(real_verifyCode)){
             throw new ServiceException("短信验证码错误!");
@@ -118,15 +117,14 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+
     @Override
-    public List<Tenant> getTenant() {
+    public void logOut() {
         User user = BaseContext.getCurrentUser();
-        List<Tenant> list = mangerProperties.getUserId().contains(user.getId()) ? userMapper.
-                getAllTenant() : userMapper.getTenant(user.getId());
-        if(CollUtil.isEmpty(list)){
-            throw new ServiceException("没有找到关联租户");
-        }
-        return list;
+        String userId = user.getId().toString();
+        redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userId));
+        redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(userId));
+        redisTemplate.delete(RedisConstant.DATASCOPE.concat(userId));
     }
 
     @Override
@@ -149,6 +147,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
+        //开始分页查询
+        PageHelper.startPage(userPageQueryDTO.getPage(), userPageQueryDTO.getPageSize());
+        Page<UserVO> page = userMapper.pageQuery(userPageQueryDTO);
+        long total = page.getTotal();
+        List<UserVO> records = page.getResult();
+        return new PageResult(total,records);
+    }
+
+
+    @Override
     public void save(UserDTO userDTO) {
         if(StrUtil.isBlank(userDTO.getUsername())) {
             throw new ServiceException("请输入正确的账号");
@@ -163,21 +172,13 @@ public class UserServiceImpl implements UserService {
             //设置默认密码
             user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
             int records = userMapper.insert(user);
-            //关联相关租户
-            userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
-                    tenantId(userDTO.getTenantId()).build());
+            if(records > 0){
+                //关联相关租户
+                userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
+                        tenantId(userDTO.getTenantId()).build());
+            }
             //TODO 关联相关角色
         }
-    }
-
-    @Override
-    public PageResult pageQuery(UserPageQueryDTO userPageQueryDTO) {
-        //开始分页查询
-        PageHelper.startPage(userPageQueryDTO.getPage(), userPageQueryDTO.getPageSize());
-        Page<UserVO> page = userMapper.pageQuery(userPageQueryDTO);
-        long total = page.getTotal();
-        List<UserVO> records = page.getResult();
-        return new PageResult(total,records);
     }
 
     @Override
@@ -185,16 +186,6 @@ public class UserServiceImpl implements UserService {
         User user = User.builder().status(status).id(id).build();
         //update
         userMapper.update(user);
-    }
-
-    @Override
-    public User getById(Long id) {
-        User user = userMapper.getById(id);
-        if(ObjectUtil.isEmpty(user)){
-            throw new ServiceException(MessageConstant.ACCOUNT_NOT_FOUND);
-        }
-//        user.setPassword("******");
-        return user;
     }
 
     @Override
@@ -224,6 +215,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Tenant> getTenant() {
+        User user = BaseContext.getCurrentUser();
+        List<Tenant> list = mangerProperties.getUserId().contains(user.getId()) ? userMapper.
+                getAllTenant() : userMapper.getTenant(user.getId());
+        if(CollUtil.isEmpty(list)){
+            throw new ServiceException("没有找到关联租户");
+        }
+        return list;
+    }
+
+    @Override
     public ArrayList<MenuVO> getRouter(Long id, Long tenantId){
         List<String> typeList = Arrays.asList("M", "C");
         List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
@@ -246,13 +248,21 @@ public class UserServiceImpl implements UserService {
         return permissionList;
     }
 
-    @Override
-    public void logOut() {
-        User user = BaseContext.getCurrentUser();
-        String userId = user.getId().toString();
-        redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userId));
-        redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(userId));
+    /*
+     * 查看用户的数据权限
+     */
+    public void hasScopeRange(Long userId, Long tenantId){
+        List<Long> deptIds = mangerProperties.getUserId().contains(userId) ?
+                null : userMapper.hasScopeRange(userId, tenantId);
+        String key = RedisConstant.DATASCOPE.concat(userId.toString());
+        if(deptIds != null){
+            if(CollectionUtil.isEmpty(deptIds)){
+                throw new NotScopeRangeException("没有开通数据权限");
+            }
+            redisTemplate.opsForHash().put(key, tenantId.toString(), deptIds);
+        }
     }
+
 
     @Override
     public void assRole(UserRoleDTO userRoleDTO) {
@@ -275,4 +285,11 @@ public class UserServiceImpl implements UserService {
         }
         return true;
     }
+
+    @Override
+    public void saveBatch(List<UserDTO> userDTOS) {
+
+    }
+
+
 }

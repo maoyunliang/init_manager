@@ -22,4 +22,5 @@ public class RoleAssDTO extends BaseBody {
     private Long roleId;
     private List<Long> userIds;
     private List<Long> menuIds;
+    private List<Long> deptIds;
 }

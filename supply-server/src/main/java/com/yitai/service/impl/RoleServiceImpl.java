@@ -4,9 +4,6 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.mapper.RoleMapper;
-import com.yitai.constant.RedisConstant;
-import com.yitai.context.BaseContext;
 import com.yitai.admin.dto.role.RoleAssDTO;
 import com.yitai.admin.dto.role.RoleDTO;
 import com.yitai.admin.dto.role.RolePageQueryDTO;
@@ -14,15 +11,18 @@ import com.yitai.admin.entity.MenuRole;
 import com.yitai.admin.entity.Role;
 import com.yitai.admin.entity.User;
 import com.yitai.admin.entity.UserRole;
-import com.yitai.exception.ServiceException;
-import com.yitai.properties.MangerProperties;
-import com.yitai.result.PageResult;
-import com.yitai.service.RoleService;
-import com.yitai.utils.TreeUtil;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.RoleVO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.constant.RedisConstant;
+import com.yitai.context.BaseContext;
+import com.yitai.exception.ServiceException;
+import com.yitai.mapper.RoleMapper;
+import com.yitai.properties.MangerProperties;
+import com.yitai.result.PageResult;
+import com.yitai.service.RoleService;
+import com.yitai.utils.TreeUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -112,15 +112,6 @@ public class RoleServiceImpl implements RoleService {
         if(ObjectUtil.isNull(roleMapper.getRoleById(roleDTO.getId(),roleDTO.getTenantId()))){
             throw new ServiceException("角色id不存在");
         }
-//        //删除角色原有的菜单
-//        roleMapper.deleteMenuById(roleDTO.getId(), roleDTO.getTenantId());
-//        //重新分配新的菜单权限
-//        List<MenuRole> menuRoles = new ArrayList<>();
-//        for (Long menuId : roleDTO.getMenuIds()) {
-////            MenuRole menuRole = new MenuRole();
-//            menuRoles.add(MenuRole.builder().menuId(menuId).roleId(roleDTO.getId()).build());
-//        }
-//        roleMapper.assMenu(menuRoles, roleDTO.getTenantId());
     }
 
     /**
@@ -229,6 +220,31 @@ public class RoleServiceImpl implements RoleService {
             allMenus = allMenus.stream().filter(e-> e.getVisible() == 1).toList();
         };
         roleVO.setMenuVOS(TreeUtil.buildTree(allMenus, MenuVO::getMenuPid));
+        return roleVO;
+    }
+
+    public RoleVO getDept(RoleDTO roleDTO){
+        RoleVO roleVO = new RoleVO();
+        Long roleId = roleDTO.getId();
+        Long tenantId = roleDTO.getTenantId();
+        Role role = roleMapper.getRoleById(roleId, tenantId);
+        if(ObjectUtil.isNull(role)){
+            throw new ServiceException("你查找的角色不存在");
+        }
+        BeanUtils.copyProperties(role, roleVO);
+        List<DepartmentVO> listAll = roleMapper.listDepartment(tenantId);
+
+        List<DepartmentVO> departmentVOS = roleMapper.selectDeptByRoleId(roleId, tenantId);
+        if(!CollectionUtil.isEmpty(departmentVOS)){
+            Map<Long, DepartmentVO> deptMap = departmentVOS.stream()
+                    .collect(Collectors.toMap(DepartmentVO::getId, departmentVO -> {
+                        departmentVO.setHasDep(1);
+                        return departmentVO;
+                    }));
+            listAll = listAll.stream().map(dept -> deptMap.getOrDefault(dept.getId(), dept))
+                    .toList();
+        }
+        roleVO.setDeptVOS(TreeUtil.buildTree(listAll, DepartmentVO::getPid));
         return roleVO;
     }
 }

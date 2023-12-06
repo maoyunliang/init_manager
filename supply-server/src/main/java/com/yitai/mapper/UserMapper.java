@@ -1,17 +1,18 @@
 package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
-import com.yitai.annotation.admin.AutoFill;
-import com.yitai.annotation.admin.TableShard;
 import com.yitai.admin.dto.user.UserPageQueryDTO;
 import com.yitai.admin.entity.Tenant;
 import com.yitai.admin.entity.User;
 import com.yitai.admin.entity.UserRole;
 import com.yitai.admin.entity.UserTenant;
-import com.yitai.enumeration.OperationType;
-import com.yitai.enumeration.ShardType;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.DataScope;
+import com.yitai.annotation.admin.TableShard;
+import com.yitai.enumeration.OperationType;
+import com.yitai.enumeration.ShardType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -43,6 +44,7 @@ public interface UserMapper {
      */
 
     @TableShard(type = ShardType.TABLE)
+    @DataScope(deptAlias = "d")
     Page<UserVO> pageQuery(UserPageQueryDTO userPageQueryDTO);
 
     /*
@@ -77,4 +79,7 @@ public interface UserMapper {
 
     @TableShard(type = ShardType.TABLE)
     List<UserVO> listAll(@Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<Long> hasScopeRange(@Param("id") Long id,  @Param("tenantId") Long tenantId);
 }

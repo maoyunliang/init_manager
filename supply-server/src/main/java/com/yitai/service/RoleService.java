@@ -3,9 +3,9 @@ package com.yitai.service;
 import com.yitai.admin.dto.role.RoleAssDTO;
 import com.yitai.admin.dto.role.RoleDTO;
 import com.yitai.admin.dto.role.RolePageQueryDTO;
-import com.yitai.result.PageResult;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.RoleVO;
+import com.yitai.result.PageResult;
 
 import java.util.List;
 
@@ -29,11 +29,11 @@ public interface RoleService {
 
     void assMenu(RoleAssDTO roleMenuDTO);
 
-//    List<Menu> selectByRoleId(Long roleId, Long tenantId);
+    void assUser(RoleAssDTO roleUserDTO);
+
+    RoleVO getDept(RoleDTO roleDTO);
 
     RoleVO getUser(RoleDTO roleInfoDTO, List<DepartmentVO> departmentVOS);
 
     RoleVO getMenu(RoleDTO roleInfoDTO);
-
-    void assUser(RoleAssDTO roleUserDTO);
 }

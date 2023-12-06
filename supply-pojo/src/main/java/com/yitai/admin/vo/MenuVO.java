@@ -39,6 +39,7 @@ public class MenuVO implements Serializable {
     private Long status;
     @Schema(description = "是否可见")
     private Integer visible;
+    @Schema(description = "角色是否包含菜单")
     private Integer hasMenu = -1;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

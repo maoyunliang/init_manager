@@ -4,10 +4,10 @@ import com.yitai.interceptor.MybatisStatementInterceptor;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -22,23 +22,24 @@ import java.util.List;
  */
 
 /**
- * InterceptorChain 类加载了执行器
+ * InterceptorChain 类加载执行器 mybatis 拦截器链源码
  * @author 毛云亮
  */
-@Component
+// ioc容器加载处理完相应的bean之后 使用ApplicationListener<ContextRefreshedEvent>监听器注册自定义的Bean
+//@Component
 public class CustomerInterceptorRegister implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private List<SqlSessionFactory> sqlSessionFactoryList;
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
         for (SqlSessionFactory sqlSessionFactory : sqlSessionFactoryList) {
             Configuration configuration = sqlSessionFactory.getConfiguration();
             MybatisStatementInterceptor mybatisStatementInterceptor = new MybatisStatementInterceptor();
-//            if (!containsInterceptor(configuration, mybatisStatementInterceptor)) {
-//                    configuration.addInterceptor(mybatisStatementInterceptor);
-//            }
+            if (!containsInterceptor(configuration, mybatisStatementInterceptor)) {
+                    configuration.addInterceptor(mybatisStatementInterceptor);
+            }
         }
 
     }

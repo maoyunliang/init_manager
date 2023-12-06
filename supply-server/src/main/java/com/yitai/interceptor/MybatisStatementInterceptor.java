@@ -1,8 +1,15 @@
 package com.yitai.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ReflectUtil;
+import com.yitai.admin.entity.User;
+import com.yitai.annotation.admin.DataScope;
 import com.yitai.annotation.admin.TableShard;
+import com.yitai.constant.RedisConstant;
+import com.yitai.context.BaseContext;
 import com.yitai.enumeration.ShardType;
+import com.yitai.properties.MangerProperties;
+import com.yitai.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -15,15 +22,18 @@ import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandlerRegistry;
+import org.mybatis.spring.MyBatisSystemException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * ClassName: MybatisStatementInterceptor
@@ -36,9 +46,6 @@ import java.util.regex.Matcher;
  */
 @Component
 @Intercepts({
-//        @Signature(type = Executor.class, method = "query", args = {
-//                MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}
-//        )
         @Signature(
                 type = StatementHandler.class,
                 method = "prepare",
@@ -46,17 +53,13 @@ import java.util.regex.Matcher;
         )
 })
 @Slf4j
-//@Component
-//@ConditionalOnProperty(value = "table.shard.enabled", havingValue = "true") //加上了table.shard.enabled 该配置才会生效
 public class MybatisStatementInterceptor implements Interceptor {
-
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @Override
     public Object intercept(Invocation invocation) throws Exception {
-//        Object[] args = invocation.getArgs();
-//        MappedStatement mappedStatement = (MappedStatement)args[0];
-//        Object parameter = args[1];
-//        BoundSql boundSql = mappedStatement.getBoundSql(parameter);
+
         //获取执行参数
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
         MetaObject metaObject = MetaObject.forObject(statementHandler,
@@ -66,48 +69,15 @@ public class MybatisStatementInterceptor implements Interceptor {
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
         TableShard tableShard = getTableShard(mappedStatement);
+        DataScope dataScope = getDateScope(mappedStatement);
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = getSql(configuration, boundSql, mappedStatement.getId());
-        if(tableShard != null){
-            Object parameterObject = boundSql.getParameterObject();
-            Long tenantId;
-            //改装sql进行分表，直接传递给下一个拦截器处理
-            if (parameterObject instanceof HashMap<?,?>){
-                tenantId = (Long) ((HashMap<?, ?>) parameterObject).get("tenantId");
-            }else {
-                tenantId = null;
-                Class<?> clazz = parameterObject.getClass();
-                List<Method> methods = new ArrayList<>();
-                while (clazz != null){
-                    methods.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredMethods())));
-                    clazz = clazz.getSuperclass();
-                }
-                Optional<Method> optionalMethod = methods.stream()
-                        .filter(method -> "getTenantId".equals(method.getName()))
-                        .findFirst();
-                if (optionalMethod.isPresent()) {
-                    Method getTenantId = optionalMethod.get();
-                    if (getTenantId.getReturnType().equals(Long.class)) {
-                        try {
-                            tenantId = (Long) getTenantId.invoke(parameterObject);
-                            // Use the retrieved tenantId...
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace(); // Handle the exception according to your application's needs
-                        }
-                    } else {
-                        // Handle the case where getTenantId method does not return Long
-                        throw new Exception("getTenantId method does not return Long");
-                    }
-                } else {
-                    // Handle the case where getTenantId method is not found
-                    throw new Exception("getTenantId method not found");
-                }
-            }
+        if(tableShard != null && tableShard.type() == ShardType.TABLE){
+            Long tenantId = getTenantId(boundSql);
             if(tenantId!= null){
-                if(tableShard.type() == ShardType.TABLE){
-                    rewriteTableSql(boundSql, tenantId, mappedStatement);
-                }else if(tableShard.type() == ShardType.ID){
-                    rewriteTableSql(boundSql, tenantId, mappedStatement);
+                rewriteTableSql(boundSql, tenantId, mappedStatement);
+                if(dataScope != null){
+                    getDataRange(boundSql,tenantId,dataScope);
                 }
             }
         }else {
@@ -116,28 +86,53 @@ public class MybatisStatementInterceptor implements Interceptor {
         return invocation.proceed();
     }
 
-    /**
-     * 添加TenantId字段
-     */
-    private void rewriteFieldSql(BoundSql boundSql, Long tenantId) throws Exception {
-        //TODO 修改sql（添加条件字段）
-    }
-
     /*
      *  重写表结构
      */
-    public void rewriteTableSql(BoundSql boundSql, Long tenantId, MappedStatement mappedStatement) throws Exception {
+    public void rewriteTableSql(BoundSql boundSql, Long tenantId,
+                                MappedStatement mappedStatement) throws Exception {
         String newSql = boundSql.getSql().replace("_*", "_"+tenantId.toString());
         //对 BoundSql 对象通过反射修改 SQL 语句。
         Field field = boundSql.getClass().getDeclaredField("sql");
         field.setAccessible(true);
         field.set(boundSql, newSql);
+
         String sqlId = mappedStatement.getId(); // 获取到节点的id,即sql语句的id
         Configuration configuration = mappedStatement.getConfiguration(); // 获取节点的配置
         String sql = getSql(configuration, boundSql, sqlId); // 获取到最终的sql语句
         log.info("=======sql检测到更新=======\n{}", sql);
-        //对 BoundSql 对象通过反射修改 SQL 语句。
     }
+
+    private void getDataRange(BoundSql boundSql, Long tenantId, DataScope dataScope) {
+        MangerProperties mangerProperties = SpringUtils.getBean(MangerProperties.class);
+        User user = BaseContext.getCurrentUser();
+        if (!mangerProperties.getUserId().contains(user.getId())){
+            log.info("======企业用户数据权限======");
+            String key = RedisConstant.DATASCOPE.concat(user.getId().toString());
+            List<Long> deptIds = (List<Long>) redisTemplate.opsForHash().get(key, tenantId.toString());
+            if(!CollectionUtil.isEmpty(deptIds)){
+                // 使用 String.join() 将 List<Long> 转换为逗号分隔的字符串
+                String deptIdsString = deptIds.stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(","));
+                String params = " " + dataScope.deptAlias()+ ".id in ("+ deptIdsString +") and \n";
+                String originSql = boundSql.getSql();
+                //统一转换小写，作对比
+                int post = originSql.toLowerCase().indexOf("where");
+                if(post != -1){
+                    StringBuilder modifySql = new StringBuilder(originSql);
+                    modifySql.insert(post+ "where".length(), params);
+                    String newSql = modifySql.toString();
+                    ReflectUtil.setFieldValue(boundSql, "sql", newSql);
+                }
+            }else {
+                throw new MyBatisSystemException(new Throwable("数据权限异常"));
+            }
+        }else {
+            log.info("======超级管理员权限======");
+        }
+    }
+
     // 封装了一下sql语句，使得结果返回完整xml路径下的sql语句节点id + sql语句
     public static String getSql(Configuration configuration, BoundSql boundSql, String sqlId)
     {
@@ -148,27 +143,21 @@ public class MybatisStatementInterceptor implements Interceptor {
     }
 
     // 如果参数是String，则添加单引号， 如果是日期，则转换为时间格式器并加单引号； 对参数是null和不是null的情况作了处理
-    private static String getParameterValue(Object obj)
-    {
+    private static String getParameterValue(Object obj) {
         String value;
-        if (obj instanceof String)
-        {
+        if (obj instanceof String) {
             value = "'" + obj + "'";
         }
-        else if (obj instanceof Date)
-        {
+        else if (obj instanceof Date) {
             DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
                     DateFormat.DEFAULT, Locale.CHINA);
             value = "'" + formatter.format(new Date()) + "'";
         }
-        else
-        {
-            if (obj != null)
-            {
+        else {
+            if (obj != null) {
                 value = obj.toString();
             }
-            else
-            {
+            else {
                 value = "";
             }
 
@@ -177,47 +166,39 @@ public class MybatisStatementInterceptor implements Interceptor {
     }
 
     // 进行？的替换
-    public static String showSql(Configuration configuration, BoundSql boundSql)
-    {
+    public static String showSql(Configuration configuration, BoundSql boundSql) {
         // 获取参数
         Object parameterObject = boundSql.getParameterObject();
         List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
         // sql语句中多个空格都用一个空格代替
 //        String sql = boundSql.getSql().replaceAll("[\\s]+", " ");
         String sql = boundSql.getSql();
-        if (CollectionUtil.isNotEmpty(parameterMappings) && parameterObject != null)
-        {
+        if (CollectionUtil.isNotEmpty(parameterMappings) && parameterObject != null) {
             // 获取类型处理器注册器，类型处理器的功能是进行java类型和数据库类型的转换
             TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
             // 如果根据parameterObject.getClass(）可以找到对应的类型，则替换
-            if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass()))
-            {
+            if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
                 sql = sql.replaceFirst("\\?",
                         Matcher.quoteReplacement(getParameterValue(parameterObject)));
 
             }
-            else
-            {
+            else {
                 // MetaObject主要是封装了originalObject对象，提供了get和set的方法用于获取和设置originalObject的属性值,主要支持对JavaBean、Collection、Map三种类型对象的操作
                 MetaObject metaObject = configuration.newMetaObject(parameterObject);
-                for (ParameterMapping parameterMapping : parameterMappings)
-                {
+                for (ParameterMapping parameterMapping : parameterMappings) {
                     String propertyName = parameterMapping.getProperty();
-                    if (metaObject.hasGetter(propertyName))
-                    {
+                    if (metaObject.hasGetter(propertyName)) {
                         Object obj = metaObject.getValue(propertyName);
                         sql = sql.replaceFirst("\\?",
                                 Matcher.quoteReplacement(getParameterValue(obj)));
                     }
-                    else if (boundSql.hasAdditionalParameter(propertyName))
-                    {
+                    else if (boundSql.hasAdditionalParameter(propertyName)) {
                         // 该分支是动态sql
                         Object obj = boundSql.getAdditionalParameter(propertyName);
                         sql = sql.replaceFirst("\\?",
                                 Matcher.quoteReplacement(getParameterValue(obj)));
                     }
-                    else
-                    {
+                    else {
                         // 打印出缺失，提醒该参数缺失并防止错位
                         sql = sql.replaceFirst("\\?", "缺失");
                     }
@@ -225,6 +206,37 @@ public class MybatisStatementInterceptor implements Interceptor {
             }
         }
         return sql;
+    }
+
+    public static Long getTenantId(BoundSql boundSql){
+        Long tenantId = null;
+        Object parameterObject = boundSql.getParameterObject();
+        //改装sql进行分表，直接传递给下一个拦截器处理
+        if (parameterObject instanceof HashMap<?,?>){
+            tenantId = (Long) ((HashMap<?, ?>) parameterObject).get("tenantId");
+        }else {
+            Class<?> clazz = parameterObject.getClass();
+            List<Method> methods = new ArrayList<>();
+            while (clazz != null){
+                methods.addAll(new ArrayList<>(Arrays.asList(clazz.getDeclaredMethods())));
+                clazz = clazz.getSuperclass();
+            }
+            Optional<Method> optionalMethod = methods.stream()
+                    .filter(method -> "getTenantId".equals(method.getName()))
+                    .findFirst();
+            if (optionalMethod.isPresent()) {
+                Method getTenantId = optionalMethod.get();
+                if (getTenantId.getReturnType().equals(Long.class)) {
+                    try {
+                        tenantId = (Long) getTenantId.invoke(parameterObject);
+                        // Use the retrieved tenantId...
+                    } catch (Exception e) {
+                        e.printStackTrace(); // Handle the exception according to your application's needs
+                    }
+                }
+            }
+        }
+        return tenantId;
     }
 
     private TableShard getTableShard(MappedStatement mappedStatement) throws ClassNotFoundException{
@@ -242,6 +254,23 @@ public class MybatisStatementInterceptor implements Interceptor {
             }
         }
         return tableShard;
+    }
+
+    private DataScope getDateScope(MappedStatement mappedStatement) throws ClassNotFoundException {
+        String id = mappedStatement.getId();
+        // 获取Class
+        String className = id.substring(0, id.lastIndexOf("."));
+        String methodName = id.substring(id.lastIndexOf("." )+ 1);
+        final Class<?> cls = Class.forName(className);
+        final Method[] method = cls.getMethods();
+        // 数据权限注解
+        DataScope dataScope = null;
+        for (Method me : method) {
+            if ((me.getName().equals(methodName) || me.getName().equals(methodName.split("_")[0]))  && me.isAnnotationPresent(TableShard.class)) {
+                dataScope = me.getAnnotation(DataScope.class);
+            }
+        }
+        return dataScope;
     }
 
     @Override

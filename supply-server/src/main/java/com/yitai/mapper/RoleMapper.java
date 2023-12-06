@@ -2,16 +2,17 @@ package com.yitai.mapper;
 
 
 import com.github.pagehelper.Page;
-import com.yitai.annotation.admin.AutoFill;
-import com.yitai.annotation.admin.TableShard;
 import com.yitai.admin.dto.role.RolePageQueryDTO;
 import com.yitai.admin.entity.MenuRole;
 import com.yitai.admin.entity.Role;
 import com.yitai.admin.entity.UserRole;
-import com.yitai.enumeration.OperationType;
-import com.yitai.enumeration.ShardType;
+import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.TableShard;
+import com.yitai.enumeration.OperationType;
+import com.yitai.enumeration.ShardType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -49,11 +50,13 @@ public interface RoleMapper {
     void assMenu(@Param("list") List<MenuRole> menuRoles, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
-    List<MenuVO> selectByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
-
+    Role getRoleById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
-    Role getRoleById(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+    List<MenuVO> selectByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<DepartmentVO> selectDeptByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
     List<UserVO> selectUserByRoleId(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
@@ -64,11 +67,12 @@ public interface RoleMapper {
 
     List<MenuVO> listMenu();
 
-    List<UserVO> list(Long tenantId);
-
     @TableShard(type = ShardType.TABLE)
     void emptyMenu(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
     void emptyUser(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<DepartmentVO> listDepartment(@Param("tenantId") Long tenantId);
 }

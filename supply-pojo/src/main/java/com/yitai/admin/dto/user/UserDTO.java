@@ -1,5 +1,6 @@
 package com.yitai.admin.dto.user;
 
+import com.yitai.annotation.excel.ExcelImport;
 import com.yitai.base.BaseBody;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,13 +20,22 @@ import java.util.List;
 @Data
 public class UserDTO extends BaseBody {
     private Long id;
-    private String realname;
+    @ExcelImport(value = "用户名")
     private String username;
+    @ExcelImport(value = "昵称(姓名)")
+    private String realname;
+    @ExcelImport(value = "身份证号")
     private String idNumber;
+    @ExcelImport(value = "手机号")
     private String phone;
+    @ExcelImport(value = "邮箱号")
     private String email;
+    @ExcelImport(value = "性别")
     private String sex;
+    @ExcelImport(value = "头像")
     private String avatar;
+    @ExcelImport(value = "关联部门")
     private List<Integer> deptIds;
+    @ExcelImport(value = "关联角色")
     private List<Integer> roleIds;
 }

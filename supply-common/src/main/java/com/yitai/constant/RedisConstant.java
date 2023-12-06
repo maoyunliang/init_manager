@@ -13,4 +13,5 @@ public class RedisConstant {
     public static final String USER_LOGIN = "user_cache:login_token:";
     public static final String USER_PERMISSION = "user_cache:perList:";
     public static final String VERIFY_CODE = "user_cache:verify_code:";
+    public static final String DATASCOPE = "user_cache:data_scope:";
 }

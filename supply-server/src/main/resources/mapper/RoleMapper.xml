@@ -66,15 +66,6 @@
         </where>
         order by create_time desc
     </select>
-    <select id="selectByRoleId" resultType="com.yitai.admin.vo.MenuVO">
-        select pm.id, menu_name, menu_path, menu_router, identify, menu_type, menu_pid,
-               icon, sort_no, status, visible, pm.create_user, pm.update_user,
-               pm.create_time, pm.update_time, pm.is_del
-        from role_menu_* rm1
-                 join public_menu pm on rm1.menu_id = pm.id
-        where role_id = #{roleId} and rm1.is_del = 0
-    </select>
-
     <update id="deleteMenuById">
         update role_menu_*
         <set>
@@ -97,13 +88,6 @@
         where id = #{roleId}
             and is_del = 0
     </select>
-    <select id="selectUserByRoleId" resultType="com.yitai.admin.vo.UserVO">
-        select pu.id, pu.openid, pu.username, pu.realname, pu.sex, pu.phone,
-               pu.email, pu.id_number, pu.status, pu.avatar
-        from user_role_* us1
-                 join public_user pu on us1.user_id = pu.id
-        where role_id = #{roleId} and us1.is_del = 0
-    </select>
     <select id="listMenu" resultType="com.yitai.admin.vo.MenuVO">
         select * from public_menu
         where is_del = 0
@@ -111,5 +95,38 @@
     <select id="list" resultType="com.yitai.admin.vo.UserVO">
         select * from public_user pu join public_user_tenant put on pu.id = put.user_id
         where pu.is_del = 0
+    </select>
+
+    <select id="selectByRoleId" resultType="com.yitai.admin.vo.MenuVO">
+        select pm.id, menu_name, menu_path, menu_router, identify, menu_type, menu_pid,
+               icon, sort_no, status, visible, pm.create_user, pm.update_user,
+               pm.create_time, pm.update_time, pm.is_del
+        from role_menu_* rm1
+                 join public_menu pm on rm1.menu_id = pm.id
+        where role_id = #{roleId} and rm1.is_del = 0
+    </select>
+
+    <select id="selectUserByRoleId" resultType="com.yitai.admin.vo.UserVO">
+        select pu.id, pu.openid, pu.username, pu.realname, pu.sex, pu.phone,
+               pu.email, pu.id_number, pu.status, pu.avatar
+        from user_role_* us1
+                 join public_user pu on us1.user_id = pu.id
+        where role_id = #{roleId} and us1.is_del = 0
+    </select>
+
+    <select id="selectDeptByRoleId" resultType="com.yitai.admin.vo.DepartmentVO">
+        select d.id, d.department_name, d.depart_no, d.remark, d.sort_no, d.status,
+               d.pid, d.leader, d.username, d.create_user, d.update_user,
+               d.create_time, d.update_time, d.is_del
+        from role_department_* rd
+        left join department_* d on d.id = rd.dept_id
+        where rd.role_id = #{roleId} and rd.is_del = 0 and d.is_del = 0
+    </select>
+    <select id="listDepartment" resultType="com.yitai.admin.vo.DepartmentVO">
+            select d.id, d.department_name, d.depart_no, d.remark, d.sort_no, d.status,
+                   d.pid, d.leader, d.username, d.create_user, d.update_user,
+                   d.create_time, d.update_time, d.is_del
+            from department_* d
+            where d.is_del = 0
     </select>
 </mapper>

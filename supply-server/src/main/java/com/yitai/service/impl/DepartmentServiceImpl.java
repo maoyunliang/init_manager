@@ -68,6 +68,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         departmentMapper.deleteById(deleteDepartmentDTO);
     }
 
+    /*
+     * 查看所有部门下的人员信息
+     */
     @Override
     public List<DepartmentVO> getUserByTree(Long tenantId) {
         List<DepartmentVO> departmentVOS = departmentMapper.deptList(tenantId);

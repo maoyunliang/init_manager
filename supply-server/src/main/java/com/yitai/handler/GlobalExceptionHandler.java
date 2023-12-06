@@ -1,10 +1,7 @@
 package com.yitai.handler;
 
 import com.yitai.constant.HttpStatusConstant;
-import com.yitai.exception.LoginOutException;
-import com.yitai.exception.NotAuthException;
-import com.yitai.exception.NotPermissionException;
-import com.yitai.exception.ServiceException;
+import com.yitai.exception.*;
 import com.yitai.result.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +50,16 @@ public class GlobalExceptionHandler {
     public Result<?> exceptionHandler(NotPermissionException ex, HttpServletRequest request){
         String requestURI = request.getRequestURI();
         log.error("请求地址:'{}', 权限异常信息：'{}'",requestURI, ex.getMessage());
+        return Result.error(ex.getMessage(), HttpStatusConstant.HTTP_FORBIDDEN);
+    }
+
+    /*
+     * 权限码异常
+     */
+    @ExceptionHandler(NotScopeRangeException.class)
+    public Result<?> exceptionHandler(NotScopeRangeException ex, HttpServletRequest request){
+        String requestURI = request.getRequestURI();
+        log.error("请求地址:'{}', 数据权限异常：'{}'",requestURI, ex.getMessage());
         return Result.error(ex.getMessage(), HttpStatusConstant.HTTP_FORBIDDEN);
     }
 

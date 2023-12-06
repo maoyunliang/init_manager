@@ -76,10 +76,10 @@
             <if  test="phone !=null and phone != ''">
                 and pu.phone like concat('%',#{phone},'%')
             </if>
-            <if test="departIds != null and departIds != ''">
-                <foreach collection="departIds" item="id"
-                         open="(" close=")" separator=",">
-                    where ud.dept_id in #{id}
+            <if test="deptIds != null and deptIds != ''">
+                and ud.dept_id in
+                <foreach collection="deptIds" item="id" open="(" close=")" separator=",">
+                     #{id}
                 </foreach>
             </if>
                 and pu.is_del = 0
@@ -158,5 +158,12 @@
         </where>
         group by pu.id, pu.create_time
         order by pu.create_time desc
+    </select>
+    <select id="hasScopeRange" resultType="java.lang.Long">
+        select rd.dept_id
+        from role_department_1 rd
+                 left join role_* r on rd.role_id = r.id
+            left join user_role_* ur on ur.role_id = r.id
+        where ur.user_id = #{id}
     </select>
 </mapper>

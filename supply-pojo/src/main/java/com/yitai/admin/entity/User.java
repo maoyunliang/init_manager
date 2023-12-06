@@ -1,11 +1,13 @@
 package com.yitai.admin.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * ClassName: User
@@ -34,6 +36,8 @@ public class User {
     private String phone;
     private String email;
     private Integer status;
+    @Schema(description = "关联部门")
+    private List<Long> deptIds;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
     private String createUser;

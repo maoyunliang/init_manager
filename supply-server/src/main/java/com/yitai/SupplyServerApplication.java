@@ -2,6 +2,7 @@ package com.yitai;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class SupplyServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SupplyServerApplication.class, args);
+        ApplicationContext context = SpringApplication.run(SupplyServerApplication.class, args);
     }
 
 }

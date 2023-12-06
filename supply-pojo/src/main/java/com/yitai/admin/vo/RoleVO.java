@@ -27,5 +27,5 @@ public class RoleVO {
     @Schema(description = "关联用户")
     private List<DepartmentVO> userVOS;
     @Schema(description = "关联部门")
-    private List<Long> deptIds;
+    private List<DepartmentVO> deptVOS;
 }

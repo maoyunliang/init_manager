@@ -16,13 +16,14 @@ public class MessageConstant {
 
     public static final String ACCOUNT_LOCKED = "账号被锁定";
 
-    public static final String SHOP_NOT_FIND = "商户未找到";
 
     public static final String TOKEN_NOT_FIND = "用户认证失败";
 
     public static final String LOG_ERROR = "日志处理异常结束";
 
     public static final String NOT_PERMISSION = "没有权限";
+
+    public static final String NOT_SCOPE = "没开通数据权限";
 
     public static final String ACCOUNT_ELSE = "账号在别处登录，请重新登录";
 }
