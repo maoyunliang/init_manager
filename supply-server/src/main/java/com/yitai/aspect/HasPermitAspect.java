@@ -9,6 +9,7 @@ import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.exception.NotAuthException;
 import com.yitai.exception.NotPermissionException;
+import com.yitai.exception.ServiceException;
 import com.yitai.properties.MangerProperties;
 import com.yitai.service.UserService;
 import com.yitai.utils.AspectUtil;
@@ -76,14 +77,20 @@ public class HasPermitAspect {
     private boolean hasPermitSession(String permission, Long tenantId, Long userId) {
 //        permission = mapPermissionToAuthority(permission);
         String key = RedisConstant.USER_PERMISSION.concat(userId.toString());
+        String dataScopeKey = RedisConstant.DATASCOPE.concat(userId.toString());
         if (tenantId == null){
-            return false;
+            throw new ServiceException("租户ID为空");
         }
         List<String> permits = (List<String>) redisTemplate.opsForHash().get(key, tenantId.toString());
         if(CollUtil.isEmpty(permits)){
             permits = userService.getPermiList(userId,tenantId);
         }
         log.info("权限列表：{}", permits);
+        List<Long> deptIds = (List<Long>) redisTemplate.opsForHash().get(dataScopeKey, tenantId.toString());
+        if(CollUtil.isEmpty(deptIds)){
+            userService.hasScopeRange(userId,tenantId);
+        }
+        log.info("数据范围：{}", deptIds);
         return permits != null && permits.contains(permission);
     }
 

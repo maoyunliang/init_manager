@@ -24,6 +24,10 @@ public @interface DataScope {
     String deptAlias() default "";
 
     /**
+     * 表字段
+     */
+    String value() default "";
+    /**
      * 用户表的别名
      */
     String userAlias() default "";

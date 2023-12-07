@@ -5,6 +5,7 @@ import com.yitai.exception.*;
 import com.yitai.result.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MultipartException;
@@ -91,4 +92,10 @@ public class GlobalExceptionHandler {
         return Result.error("未知异常", HttpStatusConstant.SYS_ERROR);
     }
 
+    @ExceptionHandler(MyBatisSystemException.class)
+    public Result<?> exceptionHandler(MyBatisSystemException ex, HttpServletRequest request){
+        String requestURI = request.getRequestURI();
+        log.error("请求地址:'{}', 发生Mybatis异常：",requestURI, ex);
+        return Result.error("Mybatis异常", HttpStatusConstant.SYS_ERROR);
+    }
 }

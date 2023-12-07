@@ -73,7 +73,9 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     @Override
     public List<DepartmentVO> getUserByTree(Long tenantId) {
-        List<DepartmentVO> departmentVOS = departmentMapper.deptList(tenantId);
+        DepartmentListDTO departmentListDTO = new DepartmentListDTO();
+        departmentListDTO.setTenantId(tenantId);
+        List<DepartmentVO> departmentVOS = departmentMapper.list(departmentListDTO);
         //查看部门下的人员和人员信息id
         List<DepartmentUserDTO> result =departmentMapper.getDeptUser(tenantId);
         Map<Long, List<DepartmentUserDTO>> usermap = result.stream().

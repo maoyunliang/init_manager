@@ -11,6 +11,7 @@ import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.UserVO;
 import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.DataScope;
 import com.yitai.annotation.admin.TableShard;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
@@ -32,6 +33,7 @@ import java.util.List;
 public interface RoleMapper {
 
     @TableShard(type = ShardType.TABLE)
+    @DataScope(deptAlias = "rd", value = "dept_id")
     Page<Role> pageQuery(RolePageQueryDTO pageQueryDTO);
 
     @AutoFill(value = OperationType.INSERT)
@@ -74,11 +76,15 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     void emptyUser(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
+    @TableShard(type = ShardType.TABLE)
     void emptyDept(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
+    @DataScope(deptAlias = "d")
     List<DepartmentVO> listDepartment(@Param("tenantId") Long tenantId);
 
+    @TableShard(type = ShardType.TABLE)
+    @AutoFill(value = OperationType.INSERT)
     void assDept(@Param("list") List<RoleDepartment> roleDepartments, @Param("tenantId") Long tenantId);
 
 }

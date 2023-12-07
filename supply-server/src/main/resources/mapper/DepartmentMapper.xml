@@ -48,12 +48,6 @@
         </where>
         order by create_time desc
     </select>
-    <select id="deptList" resultType="com.yitai.admin.vo.DepartmentVO">
-        select *
-        from department_*
-        where is_del = 0
-        order by create_time desc
-    </select>
     <select id="getDeptUser" resultType="com.yitai.admin.dto.department.DepartmentUserDTO">
         select dept_id as deptId, pu.id, username, pu.phone
         from user_department_* ud

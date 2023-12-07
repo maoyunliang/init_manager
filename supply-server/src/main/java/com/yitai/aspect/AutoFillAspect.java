@@ -49,7 +49,6 @@ public class AutoFillAspect {
      */
     @Before("autoFillPointCut()")
     public void autoFill(JoinPoint joinPoint) {
-        log.info("开始进行公共字段自动填充..");
         //获取当前被拦截方法的操作类型
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         AutoFill autoFill = methodSignature.getMethod().getAnnotation(AutoFill.class);
@@ -66,8 +65,10 @@ public class AutoFillAspect {
             for(Object item : collection){
                 startFill(item, operationType);
             }
+            log.info("批量自动填充公共字段完成...");
         }else {
             startFill(entity,operationType);
+            log.info("自动填充公共字段完成...");
         }
 
     }
@@ -93,7 +94,6 @@ public class AutoFillAspect {
                 setUpdateTime.invoke(entity, now);
                 setUpdateUser.invoke(entity, user.getUsername());
                 setIsDel.invoke(entity, 0);
-                log.info("插入公共字段自动填充完成..");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -106,7 +106,6 @@ public class AutoFillAspect {
                         getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, String.class);
                 setUpdateTime.invoke(entity, now);
                 setUpdateUser.invoke(entity, user.getUsername());
-                log.info("更新公共字段自动填充完成..");
             } catch (Exception e) {
                 e.printStackTrace();
             }

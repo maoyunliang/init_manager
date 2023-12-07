@@ -7,10 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yitai.admin.dto.user.*;
-import com.yitai.admin.entity.Tenant;
-import com.yitai.admin.entity.User;
-import com.yitai.admin.entity.UserRole;
-import com.yitai.admin.entity.UserTenant;
+import com.yitai.admin.entity.*;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.UserVO;
 import com.yitai.constant.MessageConstant;
@@ -159,9 +156,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(UserDTO userDTO) {
-        if(StrUtil.isBlank(userDTO.getUsername())) {
-            throw new ServiceException("请输入正确的账号");
-        }
         //账号、手机号不能重名
         if(checkUser(userDTO)) {
             User user = new User();
@@ -177,7 +171,22 @@ public class UserServiceImpl implements UserService {
                 userMapper.insertUserTenant(UserTenant.builder().userId(user.getId()).
                         tenantId(userDTO.getTenantId()).build());
             }
-            //TODO 关联相关角色
+            //关联相关部门
+            if(!CollectionUtil.isEmpty(userDTO.getDeptIds())){
+                List<UserDepartment> userDepartments = userDTO.getDeptIds().stream()
+                        .map(e -> UserDepartment.builder()
+                                .deptId(e).userId(userDTO.getId())
+                                .build()).collect(Collectors.toList());
+                userMapper.insertUserDept(userDepartments, userDTO.getTenantId());
+            }
+            //关联相关角色
+            if(!CollectionUtil.isEmpty(userDTO.getRoleIds())){
+                List<UserRole> userRoles = userDTO.getRoleIds().stream()
+                        .map(roleId -> UserRole.builder()
+                                .roleId(roleId).userId(userDTO.getId())
+                                .build()).collect(Collectors.toList());
+                userMapper.insertUserRole(userRoles, userDTO.getTenantId());
+            }
         }
     }
 
@@ -277,6 +286,9 @@ public class UserServiceImpl implements UserService {
         }
     }
     public boolean checkUser(UserDTO userDTO){
+        if(StrUtil.isBlank(userDTO.getUsername())) {
+            throw new ServiceException("请输入正确的账号");
+        }
         if(!ObjectUtil.isNull(userMapper.getByUsername(userDTO.getUsername()))){
             throw new ServiceException("账号已存在");
         }

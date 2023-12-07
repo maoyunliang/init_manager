@@ -2,6 +2,7 @@ package com.yitai.interceptor;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.yitai.admin.entity.User;
 import com.yitai.annotation.admin.DataScope;
 import com.yitai.annotation.admin.TableShard;
@@ -115,7 +116,12 @@ public class MybatisStatementInterceptor implements Interceptor {
                 String deptIdsString = deptIds.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(","));
-                String params = " " + dataScope.deptAlias()+ ".id in ("+ deptIdsString +") and \n";
+                String params = null;
+                if (!StrUtil.isEmpty(dataScope.value())){
+                     params = " " + dataScope.deptAlias()+ "."+ dataScope.value()+" in ("+ deptIdsString +") and \n";
+                }else {
+                     params = " " + dataScope.deptAlias()+ ".id in ("+ deptIdsString +") and \n";
+                }
                 String originSql = boundSql.getSql();
                 //统一转换小写，作对比
                 int post = originSql.toLowerCase().indexOf("where");
