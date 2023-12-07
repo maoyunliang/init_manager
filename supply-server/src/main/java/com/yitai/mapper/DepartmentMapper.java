@@ -47,9 +47,6 @@ public interface DepartmentMapper {
     void deleteById(DepartmentDTO deleteDepartmentDTO);
 
     @TableShard(type = ShardType.TABLE)
-    List<DepartmentVO> deptList(@Param("tenantId") Long tenantId);
-
-    @TableShard(type = ShardType.TABLE)
     List<DepartmentUserDTO> getDeptUser(@Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)

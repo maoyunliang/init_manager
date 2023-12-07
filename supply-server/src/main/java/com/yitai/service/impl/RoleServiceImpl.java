@@ -52,15 +52,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public PageResult pageQuery(RolePageQueryDTO pageQueryDTO) {
-        try {
-            PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
-            Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
-            long total = page.getTotal();
-            List<Role> records = page.getResult();
-            return new PageResult(total,records);
-        }catch (Exception e){
-            throw new ServiceException("请携带正确的租户id参数");
-        }
+        PageHelper.startPage(pageQueryDTO.getPage(),pageQueryDTO.getPageSize());
+        Page<Role> page = roleMapper.pageQuery(pageQueryDTO);
+        long total = page.getTotal();
+        List<Role> records = page.getResult();
+        return new PageResult(total,records);
     }
 
     @Override
@@ -213,7 +209,7 @@ public class RoleServiceImpl implements RoleService {
                 e.setUsers(users.stream().map(userVO -> hasUserMap.getOrDefault(userVO.getId(), userVO)).toList());
             });
         }
-        roleVO.setUserVOS(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid));
+        roleVO.setUserVOS(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid, DepartmentVO::getSortNo));
         return roleVO;
     }
 
@@ -240,15 +236,15 @@ public class RoleServiceImpl implements RoleService {
                     }));
             // 遍历所有菜单，如果菜单在menuMap中存在，则表示拥有，带有标识
             allMenus = allMenus.stream().map(menu -> menuMap.getOrDefault(menu.getId(), menu))
-                    .toList();
+                    .collect(Collectors.toList());
         }
         //获取当前用户是否是超级管理员
         User user = BaseContext.getCurrentUser();
         //如果是普通用户
         if (!mangerProperties.getUserId().contains(user.getId())){
-            allMenus = allMenus.stream().filter(e-> e.getVisible() == 1).toList();
+            allMenus = allMenus.stream().filter(e-> e.getVisible() == 1).collect(Collectors.toList());
         };
-        roleVO.setMenuVOS(TreeUtil.buildTree(allMenus, MenuVO::getMenuPid));
+        roleVO.setMenuVOS(TreeUtil.buildTree(allMenus, MenuVO::getMenuPid, MenuVO::getSortNo));
         return roleVO;
     }
 
@@ -271,9 +267,9 @@ public class RoleServiceImpl implements RoleService {
                         return departmentVO;
                     }));
             listAll = listAll.stream().map(dept -> deptMap.getOrDefault(dept.getId(), dept))
-                    .toList();
+                    .collect(Collectors.toList());
         }
-        roleVO.setDeptVOS(TreeUtil.buildTree(listAll, DepartmentVO::getPid));
+        roleVO.setDeptVOS(TreeUtil.buildTree(listAll, DepartmentVO::getPid, DepartmentVO::getSortNo));
         return roleVO;
     }
 }

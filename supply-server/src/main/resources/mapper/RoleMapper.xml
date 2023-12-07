@@ -20,11 +20,11 @@
             </foreach>
     </insert>
     <insert id="assDept">
-        insert into role_department_*(id, user_id, role_id, create_user, update_user, create_time, update_time, is_del)
+        insert into role_department_*(id, role_id, dept_id, create_user, update_user, create_time, update_time, is_del)
         VALUES
         <foreach collection="list" separator="," item="item">
-            (#{item.id},#{item.userId},#{item.roleId}, #{item.createUser}, #{item.updateUser},
-            #{item.createTime}, #{item.updateTime},  #{item.isDel})
+            (#{item.id},#{item.roleId},#{item.deptId},#{item.createUser}, #{item.updateUser},
+            #{item.createTime}, #{item.updateTime},#{item.isDel})
         </foreach>
     </insert>
     <insert id="save" useGeneratedKeys="true" keyProperty="role.id">
@@ -61,8 +61,11 @@
         where role_id = #{roleId}
     </delete>
     <select id="pageQuery" resultType="com.yitai.admin.entity.Role">
-        select *
-        from role_*
+        select r.id, r.role_name, r.identity, r.role_type, r.role_desc,
+        r.status, r.create_user, r.update_user, r.create_time, r.update_time,
+        r.is_del, group_concat( rd.dept_id) as deptIds
+        from role_* r
+        left join role_department_* rd on rd.role_id = r.id
         <where>
             <if test="roleName != null and roleName != ''">
                 and role_name like concat('%', #{roleName}, '%')
@@ -73,9 +76,10 @@
             <if test="status != null">
                 and status = #{status}
             </if>
-                and is_del = 0
+                and r.is_del = 0
         </where>
-        order by create_time desc
+        group by r.id, r.create_time
+        order by r.create_time desc
     </select>
     <update id="deleteMenuById">
         update role_menu_*

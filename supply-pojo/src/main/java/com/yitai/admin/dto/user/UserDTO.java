@@ -35,7 +35,7 @@ public class UserDTO extends BaseBody {
     @ExcelImport(value = "头像")
     private String avatar;
     @ExcelImport(value = "关联部门")
-    private List<Integer> deptIds;
+    private List<Long> deptIds;
     @ExcelImport(value = "关联角色")
-    private List<Integer> roleIds;
+    private List<Long> roleIds;
 }

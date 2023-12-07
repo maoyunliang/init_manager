@@ -24,6 +24,22 @@
         values (#{id}, #{userId}, #{tenantId}, #{createTime}, #{updateTime}, #{createUser},
                 #{updateUser}, #{isDel})
     </insert>
+    <insert id="insertUserDept">
+        insert into user_department_*(id, user_id, dept_id, create_user, update_user, create_time, update_time, is_del)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{item.id}, #{item.userId},#{item.deptId},#{item.createTime},
+            #{item.updateTime}, #{item.createUser}, #{item.updateUser}, #{item.isDel})
+        </foreach>
+    </insert>
+    <insert id="insertUserRole">
+        insert into user_role_*(id, user_id, role_id, create_user, update_user, create_time, update_time, is_del)
+        VALUES
+            <foreach collection="list" separator="," item="item">
+                (#{item.id}, #{item.userId},#{item.roleId},#{item.createTime},
+                #{item.updateTime}, #{item.createUser}, #{item.updateUser}, #{item.isDel})
+            </foreach>
+    </insert>
 
     <update id="update" parameterType="com.yitai.admin.entity.User">
         update public_user
@@ -88,7 +104,7 @@
         order by pu.create_time desc
     </select>
     <select id="pageMenu" resultType="com.yitai.admin.vo.MenuVO">
-        select distinct m.id, m.menu_name, m.menu_type, m.menu_path,
+        select distinct m.id, m.menu_name, m.menu_type, m.menu_path,m.icon,
                         m.menu_router, m.identify,m.visible, m.menu_pid, m.sort_no
         from public_menu m
         join role_menu_* rm on m.id = rm.menu_id
@@ -160,8 +176,8 @@
         order by pu.create_time desc
     </select>
     <select id="hasScopeRange" resultType="java.lang.Long">
-        select rd.dept_id
-        from role_department_1 rd
+        select distinct rd.dept_id
+        from role_department_* rd
                  left join role_* r on rd.role_id = r.id
             left join user_role_* ur on ur.role_id = r.id
         where ur.user_id = #{id}

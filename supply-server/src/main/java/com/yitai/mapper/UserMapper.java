@@ -2,10 +2,7 @@ package com.yitai.mapper;
 
 import com.github.pagehelper.Page;
 import com.yitai.admin.dto.user.UserPageQueryDTO;
-import com.yitai.admin.entity.Tenant;
-import com.yitai.admin.entity.User;
-import com.yitai.admin.entity.UserRole;
-import com.yitai.admin.entity.UserTenant;
+import com.yitai.admin.entity.*;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.UserVO;
 import com.yitai.annotation.admin.AutoFill;
@@ -82,4 +79,12 @@ public interface UserMapper {
 
     @TableShard(type = ShardType.TABLE)
     List<Long> hasScopeRange(@Param("id") Long id,  @Param("tenantId") Long tenantId);
+
+    @AutoFill(value = OperationType.INSERT)
+    @TableShard(type = ShardType.TABLE)
+    void insertUserRole(@Param("list") List<UserRole> userRoles, @Param("tenantId") Long tenantId);
+
+    @AutoFill(value = OperationType.INSERT)
+    @TableShard(type = ShardType.TABLE)
+    void insertUserDept(@Param("list") List<UserDepartment> userDepartments, @Param("tenantId") Long tenantId);
 }
