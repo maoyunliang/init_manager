@@ -10,6 +10,7 @@ import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.enumeration.ShardType;
 import com.yitai.properties.MangerProperties;
+import com.yitai.utils.MybatisUtil;
 import com.yitai.utils.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -69,8 +70,8 @@ public class MybatisStatementInterceptor implements Interceptor {
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
         // 获取分表注解
-        TableShard tableShard = getTableShard(mappedStatement);
-        DataScope dataScope = getDateScope(mappedStatement);
+        TableShard tableShard = MybatisUtil.getAnnotation(mappedStatement, TableShard.class);
+        DataScope dataScope = MybatisUtil.getAnnotation(mappedStatement, DataScope.class);
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = getSql(configuration, boundSql, mappedStatement.getId());
         if(tableShard != null && tableShard.type() == ShardType.TABLE){
@@ -186,7 +187,6 @@ public class MybatisStatementInterceptor implements Interceptor {
             if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
                 sql = sql.replaceFirst("\\?",
                         Matcher.quoteReplacement(getParameterValue(parameterObject)));
-
             }
             else {
                 // MetaObject主要是封装了originalObject对象，提供了get和set的方法用于获取和设置originalObject的属性值,主要支持对JavaBean、Collection、Map三种类型对象的操作
@@ -245,39 +245,6 @@ public class MybatisStatementInterceptor implements Interceptor {
         return tenantId;
     }
 
-    private TableShard getTableShard(MappedStatement mappedStatement) throws ClassNotFoundException{
-        String id = mappedStatement.getId();
-        // 获取Class
-        String className = id.substring(0, id.lastIndexOf("."));
-        String methodName = id.substring(id.lastIndexOf("." )+ 1);
-        final Class<?> cls = Class.forName(className);
-        final Method[] method = cls.getMethods();
-        // 分表注解
-        TableShard tableShard = null;
-        for (Method me : method) {
-            if ((me.getName().equals(methodName) || me.getName().equals(methodName.split("_")[0]))  && me.isAnnotationPresent(TableShard.class)) {
-                tableShard = me.getAnnotation(TableShard.class);
-            }
-        }
-        return tableShard;
-    }
-
-    private DataScope getDateScope(MappedStatement mappedStatement) throws ClassNotFoundException {
-        String id = mappedStatement.getId();
-        // 获取Class
-        String className = id.substring(0, id.lastIndexOf("."));
-        String methodName = id.substring(id.lastIndexOf("." )+ 1);
-        final Class<?> cls = Class.forName(className);
-        final Method[] method = cls.getMethods();
-        // 数据权限注解
-        DataScope dataScope = null;
-        for (Method me : method) {
-            if ((me.getName().equals(methodName) || me.getName().equals(methodName.split("_")[0]))  && me.isAnnotationPresent(TableShard.class)) {
-                dataScope = me.getAnnotation(DataScope.class);
-            }
-        }
-        return dataScope;
-    }
 
     @Override
     public Object plugin(Object target) {
