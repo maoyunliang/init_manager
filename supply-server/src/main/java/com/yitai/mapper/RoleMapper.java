@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.yitai.admin.dto.role.RolePageQueryDTO;
 import com.yitai.admin.entity.MenuRole;
 import com.yitai.admin.entity.Role;
+import com.yitai.admin.entity.RoleDepartment;
 import com.yitai.admin.entity.UserRole;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.MenuVO;
@@ -73,6 +74,11 @@ public interface RoleMapper {
     @TableShard(type = ShardType.TABLE)
     void emptyUser(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
 
+    void emptyDept(@Param("roleId") Long roleId, @Param("tenantId") Long tenantId);
+
     @TableShard(type = ShardType.TABLE)
     List<DepartmentVO> listDepartment(@Param("tenantId") Long tenantId);
+
+    void assDept(@Param("list") List<RoleDepartment> roleDepartments, @Param("tenantId") Long tenantId);
+
 }

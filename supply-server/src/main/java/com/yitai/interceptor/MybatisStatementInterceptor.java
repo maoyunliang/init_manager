@@ -75,10 +75,10 @@ public class MybatisStatementInterceptor implements Interceptor {
         if(tableShard != null && tableShard.type() == ShardType.TABLE){
             Long tenantId = getTenantId(boundSql);
             if(tenantId!= null){
-                rewriteTableSql(boundSql, tenantId, mappedStatement);
                 if(dataScope != null){
                     getDataRange(boundSql,tenantId,dataScope);
                 }
+                rewriteTableSql(boundSql, tenantId, mappedStatement);
             }
         }else {
             log.info("=======执行sql语句=======\n{}", sql);
@@ -107,7 +107,7 @@ public class MybatisStatementInterceptor implements Interceptor {
         MangerProperties mangerProperties = SpringUtils.getBean(MangerProperties.class);
         User user = BaseContext.getCurrentUser();
         if (!mangerProperties.getUserId().contains(user.getId())){
-            log.info("======企业用户数据权限======");
+            log.info("======需要数据权限======");
             String key = RedisConstant.DATASCOPE.concat(user.getId().toString());
             List<Long> deptIds = (List<Long>) redisTemplate.opsForHash().get(key, tenantId.toString());
             if(!CollectionUtil.isEmpty(deptIds)){

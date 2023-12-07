@@ -36,7 +36,7 @@
     </update>
     <select id="list" resultType="com.yitai.admin.vo.DepartmentVO">
         select *
-        from department_*
+        from department_* d
         <where>
             <if test="departmentName != null and departmentName != ''">
                 and department_name like concat('%', #{departmentName}, '%')

@@ -99,6 +99,16 @@ public class RoleController {
         return Result.success();
     }
 
+    @Operation(summary = "分配数据权限")
+    @PostMapping("/assDept")
+    @HasPermit(permission = "sys:role:assDept")
+    @AutoLog(operation = "给角色分配数据权限", type = LogType.ASSIGN)
+    public Result<?> assDept(@RequestBody RoleAssDTO roleDeptDTO){
+        log.info("分配用户：{}", roleDeptDTO);
+        roleService.assDept(roleDeptDTO);
+        return Result.success();
+    }
+
     @Operation(summary = "菜单权限按钮-->关联菜单接口列表")
     @HasPermit(permission = "sys:role:assMenu")
     @PostMapping("/getMenu")

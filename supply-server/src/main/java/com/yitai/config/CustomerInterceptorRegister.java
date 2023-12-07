@@ -1,16 +1,5 @@
 package com.yitai.config;
 
-import com.yitai.interceptor.MybatisStatementInterceptor;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-
-import java.util.List;
-
 /**
  * ClassName: CustomerInterceptorRegister
  * Package: com.yitai.config
@@ -27,38 +16,38 @@ import java.util.List;
  */
 // ioc容器加载处理完相应的bean之后 使用ApplicationListener<ContextRefreshedEvent>监听器注册自定义的Bean
 //@Component
-public class CustomerInterceptorRegister implements ApplicationListener<ContextRefreshedEvent> {
-
-    @Autowired
-    private List<SqlSessionFactory> sqlSessionFactoryList;
-
-    @Override
-    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
-        for (SqlSessionFactory sqlSessionFactory : sqlSessionFactoryList) {
-            Configuration configuration = sqlSessionFactory.getConfiguration();
-            MybatisStatementInterceptor mybatisStatementInterceptor = new MybatisStatementInterceptor();
-            if (!containsInterceptor(configuration, mybatisStatementInterceptor)) {
-                    configuration.addInterceptor(mybatisStatementInterceptor);
-            }
-        }
-
-    }
-
-    /**
-     * 是否已经存在相同的拦截器
-     *
-     * @param configuration 配置类
-     * @param interceptor   拦截器
-     * @return 是否存在
-     */
-    private boolean containsInterceptor(Configuration configuration, Interceptor interceptor) {
-        try {
-            // getInterceptors since 3.2.2
-            return configuration.getInterceptors().stream().anyMatch(config
-                    -> interceptor.getClass().isAssignableFrom(config.getClass()));
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-}
+//public class CustomerInterceptorRegister implements ApplicationListener<ContextRefreshedEvent> {
+//
+//    @Autowired
+//    private List<SqlSessionFactory> sqlSessionFactoryList;
+//
+//    @Override
+//    public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
+//        for (SqlSessionFactory sqlSessionFactory : sqlSessionFactoryList) {
+//            Configuration configuration = sqlSessionFactory.getConfiguration();
+//            MybatisStatementInterceptor mybatisStatementInterceptor = new MybatisStatementInterceptor();
+//            if (!containsInterceptor(configuration, mybatisStatementInterceptor)) {
+//                    configuration.addInterceptor(mybatisStatementInterceptor);
+//            }
+//        }
+//
+//    }
+//
+//    /**
+//     * 是否已经存在相同的拦截器
+//     *
+//     * @param configuration 配置类
+//     * @param interceptor   拦截器
+//     * @return 是否存在
+//     */
+//    private boolean containsInterceptor(Configuration configuration, Interceptor interceptor) {
+//        try {
+//            // getInterceptors since 3.2.2
+//            return configuration.getInterceptors().stream().anyMatch(config
+//                    -> interceptor.getClass().isAssignableFrom(config.getClass()));
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+//
+//}

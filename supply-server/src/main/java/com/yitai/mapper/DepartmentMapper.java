@@ -1,6 +1,7 @@
 package com.yitai.mapper;
 
 import com.yitai.annotation.admin.AutoFill;
+import com.yitai.annotation.admin.DataScope;
 import com.yitai.annotation.admin.TableShard;
 import com.yitai.admin.dto.department.DepartmentDTO;
 import com.yitai.admin.dto.department.DepartmentListDTO;
@@ -28,6 +29,7 @@ import java.util.List;
 public interface DepartmentMapper {
 
     @TableShard(type = ShardType.TABLE)
+    @DataScope(deptAlias = "d")
     List<DepartmentVO> list(DepartmentListDTO departmentListDTO);
 
     @AutoFill(value = OperationType.INSERT)

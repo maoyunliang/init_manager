@@ -7,10 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.yitai.admin.dto.role.RoleAssDTO;
 import com.yitai.admin.dto.role.RoleDTO;
 import com.yitai.admin.dto.role.RolePageQueryDTO;
-import com.yitai.admin.entity.MenuRole;
-import com.yitai.admin.entity.Role;
-import com.yitai.admin.entity.User;
-import com.yitai.admin.entity.UserRole;
+import com.yitai.admin.entity.*;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.MenuVO;
 import com.yitai.admin.vo.RoleVO;
@@ -113,7 +110,6 @@ public class RoleServiceImpl implements RoleService {
             throw new ServiceException("角色id不存在");
         }
     }
-
     /**
      * 给角色分配菜单
      */
@@ -131,16 +127,48 @@ public class RoleServiceImpl implements RoleService {
             roleMapper.assMenu(menuRoles, tenantId);
         }
         // 菜单重新分配后，查询角色关联用户、删除redis用户相关缓存
+        deleteCache(RedisConstant.USER_PERMISSION, roleId, tenantId);
+//        List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
+//        List<String> userKey = users.stream().
+//                map(e -> RedisConstant.USER_PERMISSION
+//                        .concat(e.getId().toString())).toList();
+//        redisTemplate.delete(userKey);
+//        Role role = new Role();
+//        role.setId(roleId);
+//        //角色操作记录更新
+//        roleMapper.update(role, tenantId);
+    }
+
+    @Override
+    public void assDept(RoleAssDTO roleDeptDTO) {
+        Long tenantId = roleDeptDTO.getTenantId();
+        Long roleId = roleDeptDTO.getRoleId();
+        //清除之前关联的部门
+        roleMapper.emptyDept(roleId, tenantId);
+
+        if(!CollectionUtil.isEmpty(roleDeptDTO.getDeptIds())){
+            List<RoleDepartment> roleDepartments = roleDeptDTO.getDeptIds()
+                    .stream()
+                    .map(e -> RoleDepartment.builder().deptId(e).roleId(roleId).build())
+                    .collect(Collectors.toList());
+            roleMapper.assDept(roleDepartments, tenantId);
+        }
+
+        // 数据权限重新分配后，查询角色关联用户、删除redis用户相关缓存
+        deleteCache(RedisConstant.DATASCOPE, roleId, tenantId);
+    }
+
+    public void deleteCache(String sign, Long roleId, Long tenantId){
         List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
         List<String> userKey = users.stream().
-                map(e -> RedisConstant.USER_PERMISSION
-                        .concat(e.getId().toString())).toList();
+                map(e -> sign.concat(e.getId().toString())).toList();
         redisTemplate.delete(userKey);
         Role role = new Role();
         role.setId(roleId);
         //角色操作记录更新
         roleMapper.update(role, tenantId);
     }
+
     /*
      * 分配用户
      */
@@ -157,6 +185,7 @@ public class RoleServiceImpl implements RoleService {
             roleMapper.assUser(userRoles,roleUserDTO.getTenantId());
         }
     }
+
 
     @Override
     public RoleVO getUser(RoleDTO roleInfoDTO, List<DepartmentVO> departmentVOS) {

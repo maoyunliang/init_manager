@@ -19,7 +19,14 @@
                  #{item.createTime}, #{item.updateTime},  #{item.isDel})
             </foreach>
     </insert>
-
+    <insert id="assDept">
+        insert into role_department_*(id, user_id, role_id, create_user, update_user, create_time, update_time, is_del)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{item.id},#{item.userId},#{item.roleId}, #{item.createUser}, #{item.updateUser},
+            #{item.createTime}, #{item.updateTime},  #{item.isDel})
+        </foreach>
+    </insert>
     <insert id="save" useGeneratedKeys="true" keyProperty="role.id">
         insert into role_*(id, role_name, role_type, identity, role_desc,
                            status, create_time, update_time, create_user,
@@ -47,6 +54,10 @@
     </delete>
     <delete id="emptyUser">
         delete from user_role_*
+        where role_id = #{roleId}
+    </delete>
+    <delete id="emptyDept">
+        delete from role_department_*
         where role_id = #{roleId}
     </delete>
     <select id="pageQuery" resultType="com.yitai.admin.entity.Role">

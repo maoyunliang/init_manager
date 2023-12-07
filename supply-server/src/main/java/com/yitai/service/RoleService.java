@@ -31,9 +31,12 @@ public interface RoleService {
 
     void assUser(RoleAssDTO roleUserDTO);
 
+    void assDept(RoleAssDTO roleDeptDTO);
+
     RoleVO getDept(RoleDTO roleDTO);
 
     RoleVO getUser(RoleDTO roleInfoDTO, List<DepartmentVO> departmentVOS);
 
     RoleVO getMenu(RoleDTO roleInfoDTO);
+
 }
