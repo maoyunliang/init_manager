@@ -11,7 +11,6 @@ import com.yitai.exception.NotAuthException;
 import com.yitai.exception.NotPermissionException;
 import com.yitai.exception.ServiceException;
 import com.yitai.properties.MangerProperties;
-import com.yitai.service.LoginService;
 import com.yitai.service.UserService;
 import com.yitai.utils.AspectUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -40,9 +38,9 @@ import java.util.List;
 @Component
 @Slf4j
 public class HasPermitAspect {
-    @Resource
-    LoginService loginService;
-    @Resource
+    @Autowired
+    UserService userService;
+    @Autowired
     private RedisTemplate<String, List<String>> redisTemplate;
     @Autowired
     private MangerProperties mangerProperties;
@@ -84,12 +82,12 @@ public class HasPermitAspect {
         }
         List<String> permits = (List<String>) redisTemplate.opsForHash().get(key, tenantId.toString());
         if(CollUtil.isEmpty(permits)){
-            permits = loginService.getPermiList(userId,tenantId);
+            permits = userService.getPermiList(userId,tenantId);
         }
         log.info("权限列表：{}", permits);
         List<Long> deptIds = (List<Long>) redisTemplate.opsForHash().get(dataScopeKey, tenantId.toString());
         if(CollUtil.isEmpty(deptIds)){
-            loginService.hasScopeRange(userId,tenantId);
+            userService.hasScopeRange(userId,tenantId);
         }
         log.info("数据范围：{}", deptIds);
         return permits != null && permits.contains(permission);
