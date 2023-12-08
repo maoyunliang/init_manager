@@ -67,12 +67,13 @@ public class UserController {
         return Result.success();
     }
 
-//    @Operation(summary = "根据id查询用户信息")
-//    @GetMapping("/{id}")
-//    public Result<UserVO> getById(@PathVariable Long id){
-//        UserVO userVO = userService.getById(id);
-//        return Result.success(userVO);
-//    }
+    @Operation(summary = "删除用户")
+    @GetMapping("/delete/{id}")
+    public Result<?> delete(@PathVariable Long id){
+        log.info("删除用户");
+        userService.delete(id);
+        return Result.success();
+    }
 
     @Operation(summary = "编辑用户信息")
     @PostMapping("/update")
@@ -102,6 +103,15 @@ public class UserController {
     public void export(@PathVariable Long tenantId, HttpServletResponse response){
         log.info("用户导出");
         List<UserVO> list = userService.list(tenantId);
+        ExcelUtils.export(response,"用户导出表", list, UserVO.class);
+    }
+
+    @Operation(summary = "用户导出")
+    @HasPermit(permission = "sys:user:export")
+    @PostMapping ("/export1")
+    public void export1(@RequestBody UserDTO userDTO, HttpServletResponse response){
+        log.info("用户导出");
+        List<UserVO> list = userService.list(userDTO.getTenantId());
         ExcelUtils.export(response,"用户导出表", list, UserVO.class);
     }
 

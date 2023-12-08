@@ -1,13 +1,11 @@
 package com.yitai.service;
 
-import com.yitai.admin.dto.user.*;
-import com.yitai.admin.entity.Tenant;
-import com.yitai.admin.entity.User;
-import com.yitai.result.PageResult;
-import com.yitai.admin.vo.MenuVO;
+import com.yitai.admin.dto.user.UserDTO;
+import com.yitai.admin.dto.user.UserPageQueryDTO;
+import com.yitai.admin.dto.user.UserRoleDTO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.result.PageResult;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,13 +18,6 @@ import java.util.List;
  * @Version: 1.0
  */
 public interface UserService {
-    User login(UserLoginDTO userLoginDTO);
-
-    User login(LoginMessageDTO loginMessageDTO);
-
-    UserVO getInfo(Long tenantId);
-
-    void logOut();
 
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
 
@@ -38,20 +29,13 @@ public interface UserService {
 
     void startOrStop(Integer status, Long id);
 
-    ArrayList<MenuVO> getRouter(Long id, Long tenantId);
-
     void assRole(UserRoleDTO userRoleDTO);
 
     List<String> getPermiList(Long id, Long tenantId);
 
-    boolean sendMsg(String phoneNumber);
-
-    List<Tenant> getTenant();
-
-    void modifyPassword(UserPasswordDTO userPasswordDTO);
-
-
     void saveBatch(List<UserDTO> userDTOS);
 
     void hasScopeRange(Long id, Long tenantId);
+
+    void delete(Long id);
 }

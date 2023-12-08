@@ -2,15 +2,15 @@ package com.yitai.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import com.yitai.mapper.DepartmentMapper;
 import com.yitai.admin.dto.department.DepartmentDTO;
 import com.yitai.admin.dto.department.DepartmentListDTO;
 import com.yitai.admin.dto.department.DepartmentUserDTO;
 import com.yitai.admin.entity.Department;
-import com.yitai.exception.ServiceException;
-import com.yitai.service.DepartmentService;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.exception.ServiceException;
+import com.yitai.mapper.DepartmentMapper;
+import com.yitai.service.DepartmentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

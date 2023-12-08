@@ -32,6 +32,8 @@ public class UserDTO extends BaseBody {
     private String email;
     @ExcelImport(value = "性别")
     private String sex;
+    @ExcelImport(value = "用户状态")
+    private Integer status;
     @ExcelImport(value = "头像")
     private String avatar;
     @ExcelImport(value = "关联部门")

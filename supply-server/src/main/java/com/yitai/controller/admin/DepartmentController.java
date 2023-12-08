@@ -77,6 +77,6 @@ public class DepartmentController {
     public Result<?> getUserByTree(@RequestBody BaseBody baseBody){
         log.info("获取部门树和关联人员信息:");
         List<DepartmentVO> departmentVOS = departmentService.getUserByTree(baseBody.getTenantId());
-        return Result.success(TreeUtil.buildTree(departmentVOS,0,DepartmentVO::getPid));
+        return Result.success(TreeUtil.buildTree(departmentVOS,DepartmentVO::getPid));
     }
 }

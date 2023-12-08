@@ -64,11 +64,12 @@ public class UserVO {
     @ExcelExport(value = "关联部门")
     @Schema(description = "关联部门")
     private List<String> departments;
+    private List<String>  deptIds;
 
     @ExcelExport(value = "关联角色")
     @Schema(description = "关联角色")
     private List<String> roles;
-
+    private List<String> roleIds;
     @Schema(description = "状态")
     private Integer status;
 

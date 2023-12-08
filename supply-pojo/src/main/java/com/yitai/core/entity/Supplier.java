@@ -21,4 +21,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Supplier {
     //TODO 供应商表实体创建
+    private Long id;
 }

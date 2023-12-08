@@ -208,6 +208,7 @@ public class RoleServiceImpl implements RoleService {
                 //创建新的users
                 e.setUsers(users.stream().map(userVO -> hasUserMap.getOrDefault(userVO.getId(), userVO)).toList());
             });
+//            redisTemplate.opsForHash().delete(RedisConstant.DATASCOPE)
         }
         roleVO.setUserVOS(TreeUtil.buildTree(departmentVOS, DepartmentVO::getPid, DepartmentVO::getSortNo));
         return roleVO;

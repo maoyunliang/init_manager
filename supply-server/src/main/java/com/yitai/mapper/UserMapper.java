@@ -87,4 +87,12 @@ public interface UserMapper {
     @AutoFill(value = OperationType.INSERT)
     @TableShard(type = ShardType.TABLE)
     void insertUserDept(@Param("list") List<UserDepartment> userDepartments, @Param("tenantId") Long tenantId);
+
+    void deleteById(Long id);
+
+    @TableShard(type = ShardType.TABLE)
+    void emptyRole(@Param("id") Long id, @Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    void emptyDept(@Param("id") Long id, @Param("tenantId") Long tenantId);
 }
