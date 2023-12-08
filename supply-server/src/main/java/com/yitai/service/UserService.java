@@ -31,11 +31,7 @@ public interface UserService {
 
     void assRole(UserRoleDTO userRoleDTO);
 
-    List<String> getPermiList(Long id, Long tenantId);
-
     void saveBatch(List<UserDTO> userDTOS);
-
-    void hasScopeRange(Long id, Long tenantId);
 
     void delete(Long id);
 }

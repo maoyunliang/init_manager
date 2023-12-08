@@ -11,6 +11,7 @@ import com.yitai.exception.NotAuthException;
 import com.yitai.exception.NotPermissionException;
 import com.yitai.exception.ServiceException;
 import com.yitai.properties.MangerProperties;
+import com.yitai.service.LoginService;
 import com.yitai.service.UserService;
 import com.yitai.utils.AspectUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ import java.util.List;
 @Slf4j
 public class HasPermitAspect {
     @Resource
-    UserService userService;
+    LoginService loginService;
     @Resource
     private RedisTemplate<String, List<String>> redisTemplate;
     @Autowired
@@ -83,12 +84,12 @@ public class HasPermitAspect {
         }
         List<String> permits = (List<String>) redisTemplate.opsForHash().get(key, tenantId.toString());
         if(CollUtil.isEmpty(permits)){
-            permits = userService.getPermiList(userId,tenantId);
+            permits = loginService.getPermiList(userId,tenantId);
         }
         log.info("权限列表：{}", permits);
         List<Long> deptIds = (List<Long>) redisTemplate.opsForHash().get(dataScopeKey, tenantId.toString());
         if(CollUtil.isEmpty(deptIds)){
-            userService.hasScopeRange(userId,tenantId);
+            loginService.hasScopeRange(userId,tenantId);
         }
         log.info("数据范围：{}", deptIds);
         return permits != null && permits.contains(permission);

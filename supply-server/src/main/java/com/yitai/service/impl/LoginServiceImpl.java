@@ -1,6 +1,7 @@
 package com.yitai.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.yitai.admin.dto.user.LoginMessageDTO;
 import com.yitai.admin.dto.user.UserLoginDTO;
@@ -13,6 +14,7 @@ import com.yitai.constant.MessageConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.constant.StatusConstant;
 import com.yitai.context.BaseContext;
+import com.yitai.exception.NotScopeRangeException;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.UserMapper;
 import com.yitai.properties.MangerProperties;
@@ -28,6 +30,7 @@ import org.springframework.util.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -165,5 +168,34 @@ public class LoginServiceImpl implements LoginService {
         userVO.setRoles(roleName);
 //        user.setPassword("******");
         return userVO;
+    }
+
+    @Override
+    public List<String> getPermiList(Long id, Long tenantId) {
+        List<MenuVO> menuList = mangerProperties.getUserId().contains(id) ? userMapper.
+                pageAllMenu(Collections.singletonList("B")) : userMapper.
+                pageMenu(id, Collections.singletonList("B"), tenantId)
+                .stream().filter(e -> e.getVisible() == 1).toList();
+        List<String> permissionList = menuList.stream().map(MenuVO::getIdentify)
+                .filter(permission -> permission.contains(":")).collect(Collectors.toList());
+        String key = RedisConstant.USER_PERMISSION.concat(id.toString());
+//        map.put(tenantId, permissionList);
+        redisTemplate.opsForHash().put(key, tenantId.toString(), permissionList);
+        return permissionList;
+    }
+
+    /*
+     * 查看用户的数据权限
+     */
+    public void hasScopeRange(Long userId, Long tenantId){
+        List<Long> deptIds = mangerProperties.getUserId().contains(userId) ?
+                null : userMapper.hasScopeRange(userId, tenantId);
+        String key = RedisConstant.DATASCOPE.concat(userId.toString());
+        if(deptIds != null){
+            if(CollectionUtil.isEmpty(deptIds)){
+                throw new NotScopeRangeException("没有开通数据权限");
+            }
+            redisTemplate.opsForHash().put(key, tenantId.toString(), deptIds);
+        }
     }
 }

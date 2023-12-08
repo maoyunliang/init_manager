@@ -36,4 +36,8 @@ public interface LoginService {
     ArrayList<MenuVO> getRouter(Long id, Long tenantId);
 
     List<Tenant> getTenant();
+
+    List<String> getPermiList(Long id, Long tenantId);
+
+    void hasScopeRange(Long id, Long tenantId);
 }
