@@ -5,12 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
  * ClassName: Supplier
  * Package: com.yitai.core.entity
  * Description:
  *
- * @Author: 毛云亮
+ * @Author: yujunchun
  * @Create: 2023/12/7 17:29
  * @Version: 1.0
  */
@@ -20,6 +23,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Supplier {
-    //TODO 供应商表实体创建
     private Long id;
+    private String supplierName;
+    private String phone;
+    private String contact;
+    private String bankNo;
+    private String bankAccount;
+    private String foodLicenseNo;
+    private Date foodLicenseStartDate;
+    private Date foodLicenseEndDate;
+    private String businessLicenseNo;
+    private Date businessLicenseStartDate;
+    private Date businessLicenseEndDate;
+    private String businessScope;
+    private String address;
+    private String remark;
+    private Integer status;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+    private String createBy;
+    private String updateBy;
 }

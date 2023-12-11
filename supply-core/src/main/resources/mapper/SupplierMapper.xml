@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.SupplierMapper">
+    <resultMap id="BaseResultMap" type="com.yitai.core.entity.Supplier">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="supplier_name" jdbcType="VARCHAR" property="supplierName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="contact" jdbcType="BIGINT" property="contact"/>
+        <result column="bank_no" jdbcType="VARCHAR" property="bankNo"/>
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="food_license_no" jdbcType="VARCHAR" property="foodLicenseNo"/>
+        <result column="food_license_start_date" jdbcType="DATE" property="foodLicenseStartDate"/>
+        <result column="food_license_end_date" jdbcType="DATE" property="foodLicenseEndDate"/>
+        <result column="bussiness_license_no" jdbcType="VARCHAR" property="businessLicenseNo"/>
+        <result column="bussiness_license_start_date" jdbcType="DATE" property="businessLicenseStartDate"/>
+        <result column="bussiness_license_end_date" jdbcType="DATE" property="businessLicenseEndDate"/>
+        <result column="bussiness_scope" jdbcType="VARCHAR" property="businessScope"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into t_supplier_* (id, supplier_name, phone, contact, bank_no, bank_account,food_license_no,
+            food_license_start_date,food_license_end_date,bussiness_license_no,bussiness_license_start_date,
+            bussiness_license_end_date,bussiness_scope,address,remark,status)
+        values (#{entity.id}, #{entity.supplierName}, #{entity.phone}, #{entity.contact},
+                #{entity.bankNo}, #{entity.bankAccount}, #{entity.foodLicenseNo},#{entity.foodLicenseStartDate},
+            #{entity.foodLicenseEndDate},#{entity.businessLicenseNo},#{entity.businessLicenseStartDate},
+            #{entity.businessLicenseEndDate},#{entity.businessScope},#{entity.address},#{entity.remark},#{entity.status})
+    </insert>
+
+    <select id="queryById" resultMap="BaseResultMap">
+        select *
+        from t_supplier_*
+        where id = #{id}
+          and is_del = 0
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select *
+        from t_supplier_*
+        <where>
+            <if test="req.supplierName != null and req.supplierName != ''">
+                supplier_name like CONCAT('%',req.supplierName,'%') and
+            </if>
+            <if test="req.supplierName != null and req.supplierName != ''">
+                supplier_name like CONCAT('%',req.supplierName,'%') and
+            </if>
+            <if test="req.contact != null and req.contact != ''">
+                contact like CONCAT('%',req.contact,'%') and
+            </if>
+            <if test="req.bankNo != null and req.bankNo != ''">
+                bank_no like CONCAT('%',req.bankNo,'%') and
+            </if>
+            <if test="req.businessLicenseNo != null and req.businessLicenseNo != ''">
+                business_license_no like CONCAT('%',req.businessLicenseNo,'%') and
+            </if>
+            <if test="req.businessScope != null and req.businessScope != ''">
+                business_scope like CONCAT('%',req.businessScope,'%') and
+            </if>
+            <if test="req.status != null and req.status != ''">
+                status = req.status and
+            </if>
+            is_del = 0
+        </where>
+    </select>
+
+    <select id="removeById" resultMap="BaseResultMap">
+        update t_supplier_* set is_del = 1
+        where id = #{id}
+        and is_del = 0
+    </select>
+
+</mapper>

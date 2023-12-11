@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.CommodityMapper">
+    <resultMap id="BaseResultMap" type="com.yitai.core.entity.Commodity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="commodity_name" jdbcType="VARCHAR" property="commodityName"/>
+        <result column="commodity_no" jdbcType="VARCHAR" property="commodityNo"/>
+        <result column="category_id" jdbcType="BIGINT" property="categoryId"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="status" jdbcType="BIGINT" property="status"/>
+        <result column="is_del" jdbcType="TINYINT" property="isDel"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+    </resultMap>
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into t_commodity_* (id, commodity_name, commodity_no, category_id, unit,remark,
+            status)
+        values (#{entity.id}, #{entity.commodityName}, #{entity.commodityNo}, #{entity.categoryId}, #{entity.unit}, #{entity.remark}, #{entity.status})
+    </insert>
+
+    <select id="list" resultMap="BaseResultMap">
+        select *
+        from t_commodity_* m inner join t_category_* c on m.category_id = c.id
+        <where>
+            <if test="req.status != null">
+                m.status == #{req.status} and
+            </if>
+            <if test="req.commodityName !=null and req.commodityName != '' ">
+                m.commodity_name = #{req.commodityName} and
+            </if>
+            <if test="req.commodityNo != null and req.commodityNo != '' ">
+                m.commodity_no = #{req.commodityNo} and
+            </if>
+            <if test="req.categoryName != null and req.categoryName != '' ">
+                c.category_name like concat('%',#{req.categoryName},'%') and
+            </if>
+            c.is_del = 0 and m.is_del = 0
+        </where>
+    </select>
+
+    <update id="update" >
+        update t_commodity_* m
+        <set>
+            <if test="req.status != null">
+                status = #{req.status},
+            </if>
+            <if test="req.updateBy != null">
+                update_by = #{req.updateBy},
+            </if>
+            <if test="req.categoryId != null">
+                category_id = #{req.categoryId},
+            </if>
+        </set>
+        where m.id in
+        <foreach collection="req.ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        and m.is_del = 0
+    </update>
+
+    <update id="removeByIds" >
+        update t_commodity_* m set is_del = 1
+        where m.id in
+        <foreach collection="req.ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        and m.is_del = 0
+    </update>
+</mapper>

@@ -1,9 +1,9 @@
 package com.yitai.service;
 
 import com.yitai.core.dto.CommodityDTO;
-import com.yitai.core.entity.Commodity;
+import com.yitai.core.entity.Supplier;
 import com.yitai.core.req.CommodityReq;
-import com.yitai.core.req.CommoditySaveReq;
+import com.yitai.core.req.SupplierReq;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import java.util.List;
  * @Create: 2023/11/29 14:30
  * @Version: 1.0
  */
-public interface CommodityService {
-    List<CommodityDTO> list(CommodityReq req);
+public interface SupplierService {
+    List<Supplier> list(SupplierReq req);
 
-    void removeBatchIds(List<Long> ids);
+    void remove(Long id);
 
-    void save(CommoditySaveReq save);
+    void save(Supplier supplier);
 }
