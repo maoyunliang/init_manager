@@ -1,16 +1,16 @@
 package com.yitai.controller;
 
-import cn.hutool.core.util.StrUtil;
+import com.yitai.context.UploadStrategyContext;
 import com.yitai.result.Result;
-import com.yitai.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.UUID;
 
 /**
  * ClassName: FileController
@@ -23,23 +23,27 @@ import java.util.UUID;
  */
 
 @Tag(name = "文件管理相关接口")
-@RequestMapping("/upload")
+@RequestMapping("/file")
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class FileController {
-    @Autowired
-    FileService fileService;
+    private final UploadStrategyContext uploadStrategyContext;
     // 头像文件上传
-    @PostMapping("/avatar/{location}")
+    @PostMapping("/upload")
     @Operation(summary = "文件上传")
-    public Result<?> upload(@PathVariable String location, @RequestParam("image") MultipartFile multipartFile){
+    public Result<?> upload(@RequestParam("location") String location,
+                            @RequestParam("file") MultipartFile multipartFile){
         log.info("文件:{} 上传位置:{}", multipartFile.getOriginalFilename(), location);
-        String filename = UUID.randomUUID().toString()
-                .replaceAll("-","")+"."+
-                StrUtil.subAfter(multipartFile.getOriginalFilename(),
-                ".",true);
-        filename = "images/"+location+"/" + filename;
-        String result = fileService.upload(multipartFile, filename);
+//        String filename = location+"/"+UUID.randomUUID().toString()
+//                .replaceAll("-","")+"."+
+//                StrUtil.subAfter(multipartFile.getOriginalFilename(),
+//                ".",true);
+        location = location+"/";
+        // 可以根据类型来做判断使用什么上传
+        String result = uploadStrategyContext
+                .executeUploadStrategy(multipartFile,location,"localUploadStrategyImpl");
         return Result.success(result);
     }
+
 }

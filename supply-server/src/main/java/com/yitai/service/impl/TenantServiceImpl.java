@@ -2,11 +2,14 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yitai.mapper.TenantMapper;
 import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.tenant.TenantListDTO;
 import com.yitai.admin.entity.Department;
 import com.yitai.admin.entity.Tenant;
+import com.yitai.admin.entity.User;
+import com.yitai.context.BaseContext;
+import com.yitai.mapper.TenantMapper;
+import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.TenantService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +34,15 @@ public class TenantServiceImpl implements TenantService {
     @Autowired
     TenantMapper tenantMapper;
 
+    @Autowired
+    MangerProperties mangerProperties;
     @Override
     public PageResult page(TenantListDTO tenantListDTO) {
+        User user = BaseContext.getCurrentUser();
+
         PageHelper.startPage(tenantListDTO.getPage(), tenantListDTO.getPageSize());
-        Page<Tenant> page = tenantMapper.pageQuery(tenantListDTO);
+        Page<Tenant> page = mangerProperties.getUserId().contains(user.getId()) ? tenantMapper.
+                pageQueryAll(tenantListDTO) : tenantMapper.pageQuery(tenantListDTO);
         long total = page.getTotal();
         List<Tenant> records = page.getResult();
         return new PageResult(total, records);
@@ -45,12 +53,14 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
         int records = tenantMapper.save(tenant);
-        Department department = Department.builder()
-                .departmentName(tenant.getTenantName())
-                .status(1)
-                .build();
-        //新建父部门
-        tenantMapper.insertDept(department, tenant.getId());
+        if(records >0){
+            Department department = Department.builder()
+                    .departmentName(tenant.getTenantName())
+                    .status(1)
+                    .build();
+            //新建父部门
+            tenantMapper.insertDept(department, tenant.getId());
+        }
     }
 
     @Override

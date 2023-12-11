@@ -1,12 +1,10 @@
 package com.yitai.service.impl;
 
 
-import com.yitai.mapper.CommodityMapper;
 import com.yitai.quartz.dto.JobDTO;
 import com.yitai.quartz.entity.SysJob;
 import com.yitai.service.CommodityService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +21,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class CommodityServiceImpl implements CommodityService {
-    @Autowired
-    private CommodityMapper commodityMapper;
+//    @Autowired
+//    private CommodityMapper commodityMapper;
 
 
     @Override
@@ -34,6 +32,6 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public void removeBatchIds(List<Integer> ids) {
-        commodityMapper.removeBatchIds(ids);
+//        commodityMapper.removeBatchIds(ids);
     }
 }

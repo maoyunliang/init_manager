@@ -8,7 +8,6 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.yitai.exception.ServiceException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,11 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Component
 public class KodoUtil {
-    @Value("${qingniu.accesskey}")
-    private String accessKey;
+    private static final String accessKey = "3iOb1ZZZ24XqeFn9R_yQYYep-IhQOYshyVEI2O73";
 
-    @Value("${qingniu.secretkey}")
-    private String secretkey;
+    private static final String secretkey = "QE9Lc9FP926-XlEqECstUCTfYtlhrBYUIyzZTuDU";
 
     private static final String URL = "http://cdn.yitaitech.cn/";
 

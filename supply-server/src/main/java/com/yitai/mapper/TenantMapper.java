@@ -24,6 +24,8 @@ import org.apache.ibatis.annotations.Param;
 public interface TenantMapper {
     Page<Tenant> pageQuery(TenantListDTO tenantListDTO);
 
+    Page<Tenant> pageQueryAll(TenantListDTO tenantListDTO);
+
     @AutoFill(value = OperationType.INSERT)
     int save(Tenant tenant);
 

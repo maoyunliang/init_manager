@@ -36,6 +36,24 @@
         where id = #{id}
     </update>
 
+    <select id="pageQueryAll" resultType="com.yitai.admin.entity.Tenant">
+        select *
+        from public_tenant
+        <where>
+            <if test="tenantName != null and tenantName != ''">
+                and tenant_name like concat('%', #{tenantName}, '%')
+            </if>
+            <if test="contact != null and contact != ''">
+                and contact like concat('%', #{contact}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            and is_del = 0
+        </where>
+        order by create_time desc
+    </select>
+
     <select id="pageQuery" resultType="com.yitai.admin.entity.Tenant">
         select *
         from public_tenant
@@ -48,6 +66,9 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+            <if test="tenantId != null">
+                and id = #{tenantId}
             </if>
             and is_del = 0
         </where>

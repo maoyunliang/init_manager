@@ -61,8 +61,8 @@ public class UserController {
 
     @Operation(summary = "账号启用或停用")
     @PostMapping("/status/{status}")
-    public Result<?> startOrStop(@PathVariable Integer status, Long id){
-        log.info("启用或禁用账号：{}， {}", status,id);
+    public Result<?> startOrStop(@PathVariable Integer status,@RequestParam("id") Long id){
+        log.info("启用或禁用账号：{}， {}", status, id);
         userService.startOrStop(status,id);
         return Result.success();
     }

@@ -19,6 +19,7 @@ public class TenantDTO {
     private String location;
     private String address;
     private String qualification;
+    private String tenantLogo;
     private String remark;
     private Integer status;
 }

@@ -1,6 +1,8 @@
 package com.yitai.admin.dto.tenant;
 
+import com.yitai.base.BaseBody;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * ClassName: TenantListDTO
@@ -11,8 +13,9 @@ import lombok.Data;
  * @Create: 2023/11/21 16:14
  * @Version: 1.0
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class TenantListDTO {
+public class TenantListDTO extends BaseBody {
     private Long id;
     private String tenantName;
     private String contact;
