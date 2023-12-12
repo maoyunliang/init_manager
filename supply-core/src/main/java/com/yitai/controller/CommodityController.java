@@ -1,26 +1,25 @@
 package com.yitai.controller;
 
-
+import com.yitai.service.CommodityService;
 import com.yitai.core.dto.CommodityDTO;
 import com.yitai.core.req.CommodityReq;
 import com.yitai.annotation.admin.HasPermit;
 import com.yitai.core.req.CommoditySaveReq;
 import com.yitai.result.Result;
-import com.yitai.service.CommodityService;
+import com.yitai.utils.ExcelUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "商品管理接口")
-@RequestMapping("admin/commodity")
-@RestController
+@RequestMapping("/admin/commodity")
+@Controller
 @Slf4j
 public class CommodityController {
 
@@ -45,4 +44,14 @@ public class CommodityController {
         return Result.success();
     }
 
+
+    @Operation(summary = "商品导出")
+    @HasPermit(permission = "sys:commodity:export")
+    @PostMapping(value = "/export/{tenantId}")
+    public void export1(HttpServletResponse response, @PathVariable Long tenantId,
+                        @RequestBody CommodityReq req) {
+        log.info("用户导出");
+        List<CommodityDTO> list = commodityService.list(req);
+        ExcelUtils.export(response, "商品导出表", list, CommodityDTO.class);
+    }
 }

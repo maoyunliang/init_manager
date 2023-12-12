@@ -16,14 +16,18 @@
         <result column="create_by" jdbcType="BIGINT" property="createBy"/>
         <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
     </resultMap>
+
+    <resultMap id="FullResultMap" type="com.yitai.core.dto.CommodityDTO" extends="BaseResultMap">
+        <result column="category_name" jdbcType="VARCHAR" property="categoryName"/>
+    </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
         insert into t_commodity_* (id, commodity_name, commodity_no, category_id, unit,remark,
             status)
         values (#{entity.id}, #{entity.commodityName}, #{entity.commodityNo}, #{entity.categoryId}, #{entity.unit}, #{entity.remark}, #{entity.status})
     </insert>
 
-    <select id="list" resultMap="BaseResultMap">
-        select *
+    <select id="list" resultMap="FullResultMap">
+        select m.*,c.category_name
         from t_commodity_* m inner join t_category_* c on m.category_id = c.id
         <where>
             <if test="req.status != null">
@@ -55,11 +59,18 @@
                 category_id = #{req.categoryId},
             </if>
         </set>
-        where m.id in
-        <foreach collection="req.ids" item="id" separator="," open="(" close=")">
-            #{id}
-        </foreach>
-        and m.is_del = 0
+        <where>
+            <if test="req.ids != null and req.ids.size() > 0 and req.id == null ">
+                m.id in
+                <foreach collection="req.ids" item="id" separator="," open="(" close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="req.id != null">
+                m.id == req.id
+            </if>
+            and m.is_del = 0
+        </where>
     </update>
 
     <update id="removeByIds" >
