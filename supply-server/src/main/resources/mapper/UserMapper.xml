@@ -194,6 +194,33 @@
             left join user_role_* ur on ur.role_id = r.id
         where ur.user_id = #{id}
     </select>
+    <select id="list" resultType="com.yitai.admin.vo.UserVO">
+        select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
+        pu.id_number, pu.status, avatar,
+        GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,
+        GROUP_CONCAT(distinct r.role_name order by r.id) as roles
+        from public_user pu
+        left join public_user_tenant put on pu.id = put.user_id
+        left join user_department_* ud on pu.id = ud.user_id
+        left join department_* d on ud.dept_id = d.id
+        left join user_role_* ur on pu.id = ur.user_id
+        left join role_* r on r.id = ur.role_id
+        <where>
+            <if test="tenantId !=null and tenantId != ''">
+                and put.tenant_id =  #{tenantId}
+            </if>
+            <if test="list !=null and list != ''">
+                and pu.id in
+                <foreach collection="list" item="item"
+                         open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and pu.is_del = 0
+        </where>
+        group by pu.id, pu.create_time
+        order by pu.create_time desc
+    </select>
     <update id="deleteById">
         update public_user
         set is_del = 1

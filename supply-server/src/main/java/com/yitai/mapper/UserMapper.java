@@ -78,6 +78,9 @@ public interface UserMapper {
     List<UserVO> listAll(@Param("tenantId") Long tenantId);
 
     @TableShard(type = ShardType.TABLE)
+    List<UserVO> list(@Param("tenantId") Long tenantId,@Param("list") List<Long> idList);
+
+    @TableShard(type = ShardType.TABLE)
     List<Long> hasScopeRange(@Param("id") Long id,  @Param("tenantId") Long tenantId);
 
     @AutoFill(value = OperationType.INSERT)
@@ -95,4 +98,5 @@ public interface UserMapper {
 
     @TableShard(type = ShardType.TABLE)
     void emptyDept(@Param("id") Long id, @Param("tenantId") Long tenantId);
+
 }

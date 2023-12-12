@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.yitai.exception.ServiceException;
 import com.yitai.properties.ObjectStoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ import java.net.UnknownHostException;
  * @Version: 1.0
  */
 
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 @Data
 @RequiredArgsConstructor

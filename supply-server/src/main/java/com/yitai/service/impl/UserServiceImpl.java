@@ -203,7 +203,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserVO> list(Long tenantId) {
+    public List<UserVO> list(Long tenantId, List<Long> idList) {
+        System.out.println(idList);
+        return userMapper.list(tenantId, idList);
+    }
+
+    @Override
+    public List<UserVO> listAll(Long tenantId) {
         return userMapper.listAll(tenantId);
     }
 

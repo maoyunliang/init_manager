@@ -4,7 +4,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.tenant.TenantListDTO;
-import com.yitai.admin.entity.Department;
 import com.yitai.admin.entity.Tenant;
 import com.yitai.admin.entity.User;
 import com.yitai.context.BaseContext;
@@ -53,14 +52,14 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
         int records = tenantMapper.save(tenant);
-        if(records >0){
-            Department department = Department.builder()
-                    .departmentName(tenant.getTenantName())
-                    .status(1)
-                    .build();
-            //新建父部门
-            tenantMapper.insertDept(department, tenant.getId());
-        }
+//        if(records >0){
+//            Department department = Department.builder()
+//                    .departmentName(tenant.getTenantName())
+//                    .status(1)
+//                    .build();
+//            //新建父部门
+//            tenantMapper.insertDept(department, tenant.getId());
+//        }
     }
 
     @Override

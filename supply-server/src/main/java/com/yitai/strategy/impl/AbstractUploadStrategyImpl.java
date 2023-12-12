@@ -3,7 +3,6 @@ package com.yitai.strategy.impl;
 import com.yitai.exception.ServiceException;
 import com.yitai.strategy.UploadStrategy;
 import com.yitai.utils.FileUtils;
-import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,7 +16,6 @@ import java.io.IOException;
  * @Create: 2023/12/11 14:12
  * @Version: 1.0
  */
-@Data
 public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
     @Override
     public String uploadFile(MultipartFile file, String filePath) {

@@ -46,7 +46,9 @@ public interface UserService {
 
     PageResult pageQuery(UserPageQueryDTO userPageQueryDTO);
 
-    List<UserVO> list(Long tenantId);
+    List<UserVO> list(Long tenantId, List<Long> idList);
+
+    List<UserVO> listAll(Long tenantId);
 
     void save(UserDTO userDTO);
 

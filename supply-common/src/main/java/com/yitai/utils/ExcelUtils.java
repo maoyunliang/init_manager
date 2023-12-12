@@ -3,7 +3,6 @@ package com.yitai.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yitai.annotation.excel.*;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
@@ -147,20 +146,33 @@ public class ExcelUtils {
      * @param fileName 文件名称
      */
     private static void export(HttpServletResponse response, Workbook workbook, String fileName) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
+            fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            response.setCharacterEncoding("UTF-8");
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding("utf-8");
-//            String name = fileName+ExcelType.XLSX;
-            fileName= URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-//            String name = new String(fileName.getBytes("GBK"), "ISO8859_1") + ExcelType.XLSX;
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName +".xlsx");
-            ServletOutputStream out = response.getOutputStream();
-            workbook.write(out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
+            workbook.write(response.getOutputStream());
+            workbook.write(os);
+            os.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
+//        try {
+////            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//            response.setContentType("application/vnd.ms-excel");
+//            response.setCharacterEncoding("utf-8");
+////            String name = fileName+ExcelType.XLSX;
+//            fileName= URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+////            String name = new String(fileName.getBytes("GBK"), "ISO8859_1") + ExcelType.XLSX;
+//            response.setHeader("Content-Disposition", "attachment;filename=" + fileName +".xlsx");
+//            ServletOutputStream out = response.getOutputStream();
+//            workbook.write(out);
+//            out.flush();
+//            out.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**

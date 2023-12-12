@@ -60,14 +60,18 @@ public class UserController {
     }
 
     @Operation(summary = "账号启用或停用")
+    @HasPermit(permission = "sys:user:update")
+    @AutoLog(operation = "编辑用户信息", type = LogType.UPDATE)
     @PostMapping("/status/{status}")
-    public Result<?> startOrStop(@PathVariable Integer status,@RequestParam("id") Long id){
+    public Result<?> startOrStop(@PathVariable Integer status, @RequestParam("id") Long id){
         log.info("启用或禁用账号：{}， {}", status, id);
         userService.startOrStop(status,id);
         return Result.success();
     }
 
     @Operation(summary = "删除用户")
+    @HasPermit(permission = "sys:user:delete")
+    @AutoLog(operation = "编辑用户信息", type = LogType.DELETE)
     @GetMapping("/delete/{id}")
     public Result<?> delete(@PathVariable Long id){
         log.info("删除用户");
@@ -96,22 +100,13 @@ public class UserController {
         return Result.success();
     }
 
-
     @Operation(summary = "用户导出")
     @HasPermit(permission = "sys:user:export")
-    @GetMapping("/export/{tenantId}")
-    public void export(@PathVariable Long tenantId, HttpServletResponse response){
+    @PostMapping (value = "/export/{tenantId}")
+    public void export1(HttpServletResponse response,@PathVariable Long tenantId,
+                        @RequestParam(value = "list" ,required = false) List<Long> idList){
         log.info("用户导出");
-        List<UserVO> list = userService.list(tenantId);
-        ExcelUtils.export(response,"用户导出表", list, UserVO.class);
-    }
-
-    @Operation(summary = "用户导出")
-    @HasPermit(permission = "sys:user:export")
-    @PostMapping ("/export1")
-    public void export1(@RequestBody UserDTO userDTO, HttpServletResponse response){
-        log.info("用户导出");
-        List<UserVO> list = userService.list(userDTO.getTenantId());
+        List<UserVO> list = userService.list(tenantId, idList);
         ExcelUtils.export(response,"用户导出表", list, UserVO.class);
     }
 
