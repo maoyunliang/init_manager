@@ -154,7 +154,7 @@
             left join user_role_* ur on ur.role_id = r.id
         where ur.user_id = #{id}
     </select>
-    <select id="list" resultType="com.yitai.admin.vo.UserVO">
+    <select id="list" resultMap="pageQueryResultMap">
         select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
         pu.id_number, pu.status, avatar,
         GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,
@@ -181,7 +181,7 @@
         group by pu.id, pu.create_time
         order by pu.create_time desc
     </select>
-    <select id="getInfo" resultType="com.yitai.admin.vo.UserVO">
+    <select id="getInfo" resultMap="pageQueryResultMap">
         select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
                pu.id_number, pu.status, avatar,
                GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,

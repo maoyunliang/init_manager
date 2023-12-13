@@ -1,13 +1,20 @@
 package com.yitai.controller;
 
 import com.yitai.annotation.admin.HasPermit;
+import com.yitai.core.dto.TenderDTO;
+import com.yitai.core.vo.TenderVO;
+import com.yitai.result.PageResult;
 import com.yitai.result.Result;
+import com.yitai.service.TenderService;
+import com.yitai.utils.ExcelUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * ClassName: TenderController
@@ -19,15 +26,31 @@ import org.springframework.web.bind.annotation.RestController;
  * @Version: 1.0
  */
 @Tag(name = "招采管理接口")
-@RequestMapping("/tender")
+@RequestMapping("admin/tender")
 @RestController
 @Slf4j
 public class TenderController {
+
+    @Autowired
+    TenderService tenderService;
+
     // 定时任务接口(租户级别)
-    @GetMapping ("/list")
-    @Operation(summary = "定时任务列表")
-    @HasPermit(permission = "run:job:list")
-    public Result<?> list(){
-        return Result.success("list");
+    @PostMapping("/list")
+    @Operation(summary = "招标询价列表")
+    @HasPermit(permission = "tender:inquiry:list")
+    public Result<PageResult> list(@RequestBody TenderDTO tenderDTO){
+        PageResult pageResult = tenderService.page(tenderDTO);
+        return Result.success(pageResult);
+    }
+
+
+    // 定时任务接口(租户级别)
+    @PostMapping("/export/{tenantId}")
+    @Operation(summary = "招标询价导出")
+    @HasPermit(permission = "tender:inquiry:export")
+    public void export(@PathVariable Long tenantId, @RequestParam(value = "list" ,required = false)
+    List<Long> idList, HttpServletResponse response){
+        List<TenderVO> list = tenderService.list(tenantId, idList);
+        ExcelUtils.export(response,"招标询价列表", list, TenderVO.class,null);
     }
 }

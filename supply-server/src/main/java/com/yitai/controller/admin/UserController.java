@@ -133,7 +133,7 @@ public class UserController {
     @Operation(summary = "用户导出")
     @HasPermit(permission = "sys:user:export")
     @PostMapping (value = "/export/{tenantId}")
-    public void export1(HttpServletResponse response,@PathVariable Long tenantId,
+    public void export1(HttpServletResponse response, @PathVariable Long tenantId,
                         @RequestParam(value = "list" ,required = false) List<Long> idList){
         log.info("用户导出");
         List<UserVO> list = userService.list(tenantId, idList);

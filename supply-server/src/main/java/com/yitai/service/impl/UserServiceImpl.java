@@ -330,7 +330,7 @@ public class UserServiceImpl implements UserService {
     public void delete(UserDTO userDTO) {
         //1.删除用户
         userMapper.deleteById(userDTO.getId());
-        //TODO 2.删除关联部门、删除关联角色
+        //2.删除关联部门、删除关联角色
         userMapper.emptyDept(userDTO.getId(), userDTO.getTenantId());
         userMapper.emptyRole(userDTO.getId(), userDTO.getTenantId());
         redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userDTO.getId().toString()));

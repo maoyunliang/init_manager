@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yitai.mapper.TenderMapper">
+
+    <resultMap id="pageQueryResultMap" type="com.yitai.core.vo.TenderVO">
+        <id property="id" column="id"/>
+        <result property="tenderNo" column="tender_no"/>
+        <result property="deptNames" column="deptNames" typeHandler="com.yitai.handler.StringToListTypeHandler" />
+        <result property="suppliers" column="suppliers" typeHandler="com.yitai.handler.StringToMapTypeHandler"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="tenderList" column="tender_list"/>
+        <result property="status" column="status"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <select id="page" resultMap="pageQueryResultMap">
+        select t.id, tender_no, tender_name,
+        (select group_concat(d.department_name)
+        from tender_department_* td
+        join department_* d on td.dept_id = d.id
+        where td.tender_id = t.id) as deptNames,
+        (select group_concat(concat(ts.supplier_id, ':', ts.quoted))
+        from tender_supplier_* ts) as suppliers,
+        begin_time, end_time, tender_list, status, create_user, create_time
+        from tender_* t
+        <where>
+            <if test="tenderNo != null and tenderNo != ''">
+                and tender_no like concat('%', #{tenderNo}, '%')
+            </if>
+            <if test="tenderName != null and tenderName != ''">
+                and tender_name like concat('%', #{tenderName}, '%')
+            </if>
+            and t.is_del = 0
+        </where>
+        group by t.id
+    </select>
+    <select id="list" resultMap="pageQueryResultMap">
+        select t.id, tender_no, tender_name,
+        (select group_concat(d.department_name)
+        from tender_department_* td
+        join department_* d on td.dept_id = d.id
+        where td.tender_id = t.id) as deptNames,
+        (select group_concat(concat(ts.supplier_id, ':', ts.quoted))
+        from tender_supplier_* ts) as suppliers,
+        begin_time, end_time, tender_list, status, create_user, create_time
+        from tender_* t
+        <where>
+            <if test="list !=null and list != ''">
+                and pu.id in
+                <foreach collection="list" item="item"
+                         open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            and t.is_del = 0
+        </where>
+        group by t.id
+    </select>
+</mapper>

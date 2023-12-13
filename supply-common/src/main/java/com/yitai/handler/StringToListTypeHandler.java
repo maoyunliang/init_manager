@@ -12,11 +12,11 @@ import java.util.List;
 
 /**
  * ClassName: StringToListTypeHandler
- * Package: com.yitai.handler
+ * Package: com.yitai.handler.StringToListTyperHandler
  * Description:
  *
  * @Author: 毛云亮
- * @Create: 2023/11/20 12:11
+ * @Create: 2023/12/13 16:08
  * @Version: 1.0
  */
 public class StringToListTypeHandler implements TypeHandler<List<String>> {
@@ -55,4 +55,3 @@ public class StringToListTypeHandler implements TypeHandler<List<String>> {
         }
     }
 }
-

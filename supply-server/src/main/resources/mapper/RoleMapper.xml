@@ -63,7 +63,7 @@
     <select id="pageQuery" resultType="com.yitai.admin.entity.Role">
         select r.id, r.role_name, r.identity, r.role_type, r.role_desc,
         r.status, r.create_user, r.update_user, r.create_time, r.update_time,
-        r.is_del, group_concat( rd.dept_id) as deptIds
+        r.is_del
         from role_* r
         left join role_department_* rd on rd.role_id = r.id
         <where>
