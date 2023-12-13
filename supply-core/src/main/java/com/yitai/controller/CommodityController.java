@@ -19,7 +19,7 @@ import java.util.List;
 
 @Tag(name = "商品管理接口")
 @RequestMapping("admin/commodity")
-@Controller
+@RestController
 @Slf4j
 public class CommodityController {
     @Autowired
