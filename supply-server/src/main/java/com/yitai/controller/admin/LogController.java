@@ -63,7 +63,7 @@ public class LogController {
     public void selectByPage(@PathVariable Long tenantId, HttpServletResponse response){
         log.info("操作日志导出");
         List<OperationLog> list = logService.list(tenantId);
-        ExcelUtils.export(response,"操作日志表", list, OperationLog.class);
+        ExcelUtils.export(response,"操作日志表", list, OperationLog.class,null);
     }
     /**
      * 批量删除信息

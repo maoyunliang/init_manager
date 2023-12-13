@@ -17,37 +17,44 @@
         <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
     </resultMap>
 
-    <resultMap id="FullResultMap" type="com.yitai.core.dto.CommodityDTO" extends="BaseResultMap">
+    <resultMap id="FullResultMap" type="com.yitai.core.dto.CommodityDTO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="commodity_name" jdbcType="VARCHAR" property="commodityName"/>
+        <result column="commodity_no" jdbcType="VARCHAR" property="commodityNo"/>
+        <result column="category_id" jdbcType="BIGINT" property="categoryId"/>
+        <result column="unit" jdbcType="VARCHAR" property="unit"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="status" jdbcType="BIGINT" property="status"/>
         <result column="category_name" jdbcType="VARCHAR" property="categoryName"/>
     </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into t_commodity_* (id, commodity_name, commodity_no, category_id, unit,remark,
+        insert into commodity_* (id, commodity_name, commodity_no, category_id, unit,remark,
             status)
         values (#{entity.id}, #{entity.commodityName}, #{entity.commodityNo}, #{entity.categoryId}, #{entity.unit}, #{entity.remark}, #{entity.status})
     </insert>
 
     <select id="list" resultMap="FullResultMap">
         select m.*,c.category_name
-        from t_commodity_* m inner join t_category_* c on m.category_id = c.id
+        from commodity_* m inner join category_* c on m.category_id = c.id
         <where>
-            <if test="req.status != null">
+            <if test="status != null">
                 m.status == #{req.status} and
             </if>
-            <if test="req.commodityName !=null and req.commodityName != '' ">
-                m.commodity_name = #{req.commodityName} and
+            <if test="commodityName !=null and commodityName != '' ">
+                m.commodity_name = #{commodityName} and
             </if>
-            <if test="req.commodityNo != null and req.commodityNo != '' ">
-                m.commodity_no = #{req.commodityNo} and
+            <if test="commodityNo != null and commodityNo != '' ">
+                m.commodity_no = #{commodityNo} and
             </if>
-            <if test="req.categoryName != null and req.categoryName != '' ">
-                c.category_name like concat('%',#{req.categoryName},'%') and
+            <if test="categoryName != null and categoryName != '' ">
+                c.category_name like concat('%',#{categoryName},'%') and
             </if>
             c.is_del = 0 and m.is_del = 0
         </where>
     </select>
 
     <update id="update" >
-        update t_commodity_* m
+        update commodity_* m
         <set>
             <if test="req.status != null">
                 status = #{req.status},
@@ -74,7 +81,7 @@
     </update>
 
     <update id="removeByIds" >
-        update t_commodity_* m set is_del = 1
+        update commodity_* m set is_del = 1
         where m.id in
         <foreach collection="req.ids" item="id" separator="," open="(" close=")">
             #{id}

@@ -1,5 +1,6 @@
 package com.yitai.utils;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yitai.annotation.excel.*;
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetBackgroundPicture;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorksheet;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -95,7 +97,7 @@ public class ExcelUtils {
      */
     public static <T> void export(File file, List<T> list, Class<T> c) {
         checkExportFile(file);
-        ExportWorkBook myWorkBook = getExportWorkBook(file.getName(), list, c);
+        ExportWorkBook myWorkBook = getExportWorkBook(file.getName(), list, c,null);
         Workbook xssfWorkbook = getExportXSSFWorkbook(myWorkBook);
         export(xssfWorkbook, file);
     }
@@ -109,11 +111,11 @@ public class ExcelUtils {
      * @param c    泛型类
      * @param <T>  泛型
      */
-    public static <T> void export(HttpServletResponse response, String fileName, List<T> list, Class<T> c) {
+    public static <T> void export(HttpServletResponse response, String fileName, List<T> list, Class<T> c,List<String> filteredFields) {
         if (isEmpty(fileName)) {
             fileName = String.valueOf(System.currentTimeMillis());
         }
-        ExportWorkBook myWorkBook = getExportWorkBook(fileName, list, c);
+        ExportWorkBook myWorkBook = getExportWorkBook(fileName, list, c,filteredFields);
         Workbook xssfWorkbook = getExportXSSFWorkbook(myWorkBook);
         export(response, xssfWorkbook, fileName);
     }
@@ -184,7 +186,7 @@ public class ExcelUtils {
      * @param <T>      泛型
      * @return ExportWorkBook
      */
-    private static <T> ExportWorkBook getExportWorkBook(String fileName, List<T> list, Class<T> c) {
+    private static <T> ExportWorkBook getExportWorkBook(String fileName, List<T> list, Class<T> c,List<String> filteredFields) {
         // ExportSheet
         List<ExportSheet> sheets = new ArrayList<>();
         ExportSheet sheet = ExportSheetFactory.createExportSheet(list, c);
@@ -1339,6 +1341,40 @@ public class ExcelUtils {
             List<ExportClassField> excelImportClassFields = new ArrayList<>();
             List<Field> allClassFields = ExcelUtils.getAllFields(c);
             for (Field field : allClassFields) {
+                ExcelExport ex = field.getAnnotation(ExcelExport.class);
+                if (Objects.nonNull(ex)) {
+                    field.setAccessible(true);
+                    ExportClassField exportField = new ExportClassField();
+                    exportField.setClassFieldName(field.getName());
+                    String name = ex.name();
+                    if (ExcelUtils.isEmpty(name)) {
+                        name = ex.value();
+                    }
+                    exportField.setColumnName(name);
+                    exportField.setColumnIndex(ex.columnIndex());
+                    exportField.setColumnWidth(ex.columnWidth());
+                    exportField.setDateFormat(ex.dateFormat());
+                    exportField.setComment(ex.comment());
+                    LinkedHashMap<String, String> kvMap = new LinkedHashMap<>();
+                    KV[] kvs = ex.kvs();
+                    for (KV kv : kvs) {
+                        kvMap.put(kv.k(), kv.v());
+                    }
+                    exportField.setKvMap(kvMap);
+                    exportField.setField(field);
+                    excelImportClassFields.add(exportField);
+                }
+            }
+            return excelImportClassFields;
+        }
+
+        private static List<ExportClassField> filterExportFields(Class<?> c,List<String> filtedFields) {
+            List<ExportClassField> excelImportClassFields = new ArrayList<>();
+            List<Field> allClassFields = ExcelUtils.getAllFields(c);
+            for (Field field : allClassFields) {
+                if (!CollectionUtils.isEmpty(filtedFields) && !filtedFields.contains(field.getName())){
+                    continue;
+                }
                 ExcelExport ex = field.getAnnotation(ExcelExport.class);
                 if (Objects.nonNull(ex)) {
                     field.setAccessible(true);

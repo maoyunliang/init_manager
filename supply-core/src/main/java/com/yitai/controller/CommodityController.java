@@ -18,27 +18,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(name = "商品管理接口")
-@RequestMapping("/admin/commodity")
+@RequestMapping("admin/commodity")
 @Controller
 @Slf4j
 public class CommodityController {
-
     @Autowired
     private CommodityService commodityService;
 
     // 定时任务接口(租户级别)
     @PostMapping("/list")
     @Operation(summary = "商品列表")
-    @HasPermit(permission = "")
-    public Result<?> list(@RequestBody CommodityReq req) {
+//    @HasPermit(permission = "core:commodity:list")
+    public Result<List<CommodityDTO>> list(@RequestBody CommodityReq req) {
         List<CommodityDTO> list = commodityService.list(req);
         return Result.success(list);
     }
 
     @PostMapping("/save")
-
     @Operation(summary = "保存商品")
-    @HasPermit(permission = "")
+    @HasPermit(permission = "core:commodity:save")
     public Result<?> save(@RequestBody CommoditySaveReq req) {
         commodityService.save(req);
         return Result.success();
@@ -46,12 +44,12 @@ public class CommodityController {
 
 
     @Operation(summary = "商品导出")
-    @HasPermit(permission = "sys:commodity:export")
-    @PostMapping(value = "/export/{tenantId}")
-    public void export1(HttpServletResponse response, @PathVariable Long tenantId,
+    @HasPermit(permission = "core:commodity:export")
+    @PostMapping(value = "/export")
+    public void export(HttpServletResponse response,
                         @RequestBody CommodityReq req) {
-        log.info("用户导出");
+        log.info("商品导出");
         List<CommodityDTO> list = commodityService.list(req);
-        ExcelUtils.export(response, "商品导出表", list, CommodityDTO.class);
+        ExcelUtils.export(response, "商品导出表", list, CommodityDTO.class,req.getExportFields());
     }
 }

@@ -137,7 +137,7 @@ public class UserController {
                         @RequestParam(value = "list" ,required = false) List<Long> idList){
         log.info("用户导出");
         List<UserVO> list = userService.list(tenantId, idList);
-        ExcelUtils.export(response,"用户导出表", list, UserVO.class);
+        ExcelUtils.export(response,"用户导出表", list, UserVO.class,null);
     }
 
     @Operation(summary = "用户导入")

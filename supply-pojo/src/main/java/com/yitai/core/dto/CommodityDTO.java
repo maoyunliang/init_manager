@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.time.LocalDateTime;
+
 /**
  * Classdescription: DepartmentDTO
  * Package: com.yitai.dto.department
@@ -30,9 +32,14 @@ public class CommodityDTO extends BaseBody {
     @Schema(description = "类目id")
     private Long categoryId;
     @Schema(description = "类目名称")
-    private Long categoryName;
+    private String categoryName;
     @Schema(description = "单位")
     private String unit;
     @Schema(description = "部门状态")
     private Integer status;
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
+    private String createBy;
+    private String updateBy;
+    private Integer isDel;
 }

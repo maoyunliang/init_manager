@@ -23,4 +23,7 @@ public class CommodityReq extends BaseBody {
 
     @Schema(description = "ids")
     private List<Long> ids;
+
+    @Schema(description = "exportFields")
+    private List<String> exportFields;
 }
