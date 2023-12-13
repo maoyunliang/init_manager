@@ -1,5 +1,8 @@
 package com.yitai.core.dto;
 
+import com.yitai.annotation.excel.ExcelExport;
+import com.yitai.annotation.excel.ExcelSheet;
+import com.yitai.annotation.excel.Watermark;
 import com.yitai.base.BaseBody;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,21 +21,26 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ExcelSheet
 public class CommodityDTO extends BaseBody {
     @Schema(description = "主键")
     private Long id;
-    @Schema(description = "商品名称")
-    private String CommodityName;
-    @Schema(description = "商品编码")
-    private String CommodityNo;
+    @ExcelExport(value = "货品名称")
+    @Schema(description = "货品名称")
+    private String commodityName;
+    @ExcelExport(value = "货品编码")
+    @Schema(description = "货品编码")
+    private String commodityNo;
     @Schema(description = "供应商id")
     private Long supplyId;
     @Schema(description = "备注")
     private String remark;
     @Schema(description = "类目id")
     private Long categoryId;
+    @ExcelExport(value = "货品类别")
     @Schema(description = "类目名称")
     private String categoryName;
+    @ExcelExport(value = "单位")
     @Schema(description = "单位")
     private String unit;
     @Schema(description = "部门状态")

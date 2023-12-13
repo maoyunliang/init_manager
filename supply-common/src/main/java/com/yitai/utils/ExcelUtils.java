@@ -189,7 +189,7 @@ public class ExcelUtils {
     private static <T> ExportWorkBook getExportWorkBook(String fileName, List<T> list, Class<T> c,List<String> filteredFields) {
         // ExportSheet
         List<ExportSheet> sheets = new ArrayList<>();
-        ExportSheet sheet = ExportSheetFactory.createExportSheet(list, c);
+        ExportSheet sheet = ExportSheetFactory.createExportSheet(list, c,filteredFields);
         if (isEmpty(sheet.getName())) {
             sheet.setName(getFileName(fileName));
         }
@@ -1291,7 +1291,7 @@ public class ExcelUtils {
     }
 
     public static class ExportSheetFactory {
-        public static <T> ExportSheet createExportSheet(List<T> list, Class<T> c) {
+        public static <T> ExportSheet createExportSheet(List<T> list, Class<T> c,List<String> filteredFields) {
             // 类名注解
             ExcelSheet excelSheet = c.getAnnotation(ExcelSheet.class);
             String name = "";
@@ -1311,7 +1311,7 @@ public class ExcelUtils {
                 columnWidth = excelSheet.columnWidth();
             }
             // 属性注解
-            List<ExportClassField> exportFields = filterExportFields(c);
+            List<ExportClassField> exportFields = filterExportFields(c,filteredFields);
             Map<Integer, Integer> columnIndexWidthMap = getSheetColumnIndexWidthMap(exportFields);
             List<ExportRow> rows = getSheetRows(exportFields, list);
             List<ExportComment> comments = getSheetComments(exportFields);

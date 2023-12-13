@@ -44,12 +44,14 @@ public class CommodityController {
 
 
     @Operation(summary = "商品导出")
-    @HasPermit(permission = "core:commodity:export")
+//    @HasPermit(permission = "core:commodity:export")
     @PostMapping(value = "/export")
-    public void export(HttpServletResponse response,
-                        @RequestBody CommodityReq req) {
+    public void export(HttpServletResponse response,@RequestParam("tenantId") Long tenantId,
+                       @RequestParam(value = "exportFields" ,required = false) List<String> exportFields) {
         log.info("商品导出");
+        CommodityReq req = new CommodityReq();
+        req.setTenantId(tenantId);
         List<CommodityDTO> list = commodityService.list(req);
-        ExcelUtils.export(response, "商品导出表", list, CommodityDTO.class,req.getExportFields());
+        ExcelUtils.export(response, "商品导出表", list, CommodityDTO.class,exportFields);
     }
 }
