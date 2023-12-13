@@ -159,15 +159,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO getInfo(Long tenantId) {
         User user = BaseContext.getCurrentUser();
-        user = userMapper.getById(user.getId());
         if (ObjectUtil.isNull(user)){
-            throw  new ServiceException(MessageConstant.TOKEN_NOT_FIND);
+            throw new ServiceException(MessageConstant.TOKEN_NOT_FIND);
         }
         UserVO userVO = new UserVO();
-        BeanUtils.copyProperties(user, userVO);
-        List<String> roleName = userMapper.getRole(user.getId(), tenantId);
-        userVO.setRoles(roleName);
-//        user.setPassword("******");
+        if(!mangerProperties.getUserId().contains(user.getId())) {
+            userVO = userMapper.getInfo(user.getId(), tenantId);
+        }else {
+            User user1 = userMapper.getById(user.getId());
+            BeanUtils.copyProperties(user1, userVO);
+            userVO.setDepartments(List.of("所有部门"));
+            userVO.setRoles(List.of("超级管理员"));
+        }
         return userVO;
     }
 
@@ -204,13 +207,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> list(Long tenantId, List<Long> idList) {
-        System.out.println(idList);
         return userMapper.list(tenantId, idList);
-    }
-
-    @Override
-    public List<UserVO> listAll(Long tenantId) {
-        return userMapper.listAll(tenantId);
     }
 
     @Override
@@ -239,8 +236,10 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         //对象属性拷贝
         BeanUtils.copyProperties(userDTO, user);
-        //设置账号的状态
-        user.setStatus(StatusConstant.ENABLE);
+//        设置账号的状态
+//        user.setStatus(StatusConstant.ENABLE);
+        //设置默认头像
+        user.setAvatar("http://172.30.117.161:8855/assets/c6d0bcb248708a2577369d6ccb5a410b.jpg");
         //设置默认密码
         user.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         int records = userMapper.insert(user);
@@ -305,8 +304,8 @@ public class UserServiceImpl implements UserService {
         //update
         userMapper.update(user);
         //用户修改之后，删除相关缓存权限
-        redisTemplate.opsForHash().delete(RedisConstant.DATASCOPE.concat(user.getId().toString()));
-        redisTemplate.opsForHash().delete(RedisConstant.USER_PERMISSION.concat(user.getId().toString()));
+        redisTemplate.delete(RedisConstant.DATASCOPE.concat(user.getId().toString()));
+        redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(user.getId().toString()));
     }
 
     @Override
@@ -328,7 +327,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long id) {
-        userMapper.deleteById(id);
+    public void delete(UserDTO userDTO) {
+        //1.删除用户
+        userMapper.deleteById(userDTO.getId());
+        //TODO 2.删除关联部门、删除关联角色
+        userMapper.emptyDept(userDTO.getId(), userDTO.getTenantId());
+        userMapper.emptyRole(userDTO.getId(), userDTO.getTenantId());
+        redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userDTO.getId().toString()));
+        redisTemplate.delete(RedisConstant.DATASCOPE.concat(userDTO.getId().toString()));
+        redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(userDTO.getId().toString()));
     }
 }

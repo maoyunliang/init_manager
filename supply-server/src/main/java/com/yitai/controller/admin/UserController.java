@@ -7,10 +7,12 @@ import com.yitai.admin.vo.UserVO;
 import com.yitai.annotation.admin.AutoLog;
 import com.yitai.annotation.admin.HasPermit;
 import com.yitai.enumeration.LogType;
+import com.yitai.exception.ServiceException;
 import com.yitai.result.PageResult;
 import com.yitai.result.Result;
 import com.yitai.service.UserService;
 import com.yitai.utils.ExcelUtils;
+import com.yitai.utils.RegularUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,6 +48,19 @@ public class UserController {
     @AutoLog(operation = "新增用户接口", type = LogType.ADD)
     public Result<String> save(@RequestBody UserDTO userDTO){
         log.info("新增用户:{}", userDTO);
+        if(!RegularUtil.checkPhoneNumber(userDTO.getPhone())){
+            throw new ServiceException("手机号格式不正确");
+        }
+        if(userDTO.getIdNumber() != null){
+            if(!RegularUtil.checkIdNumber(userDTO.getIdNumber())){
+                throw new ServiceException("身份证号格式不正确");
+            }
+        }
+        if(userDTO.getEmail() != null){
+            if(!RegularUtil.checkEmail(userDTO.getEmail())){
+                throw new ServiceException("邮箱格式不正确");
+            }
+        }
         userService.save(userDTO);
         return Result.success();
     }
@@ -71,11 +86,11 @@ public class UserController {
 
     @Operation(summary = "删除用户")
     @HasPermit(permission = "sys:user:delete")
-    @AutoLog(operation = "编辑用户信息", type = LogType.DELETE)
-    @GetMapping("/delete/{id}")
-    public Result<?> delete(@PathVariable Long id){
+    @AutoLog(operation = "删除用户", type = LogType.DELETE)
+    @PostMapping("/delete")
+    public Result<?> delete(@RequestBody UserDTO userDTO){
         log.info("删除用户");
-        userService.delete(id);
+        userService.delete(userDTO);
         return Result.success();
     }
 
@@ -85,6 +100,21 @@ public class UserController {
     @AutoLog(operation = "编辑用户信息", type = LogType.UPDATE)
     public Result<Void> update(@RequestBody UserDTO userDTO){
         log.info("编辑用户信息：{}", userDTO);
+        if(userDTO.getPhone() != null) {
+            if (!RegularUtil.checkPhoneNumber(userDTO.getPhone())) {
+                throw new ServiceException("手机号格式不正确");
+            }
+        }
+        if(userDTO.getIdNumber() != null && !userDTO.getIdNumber().equals("")){
+            if(!RegularUtil.checkIdNumber(userDTO.getIdNumber())){
+                throw new ServiceException("身份证号格式不正确");
+            }
+        }
+        if(userDTO.getEmail() != null && !userDTO.getEmail().equals("")){
+            if(!RegularUtil.checkEmail(userDTO.getEmail())){
+                throw new ServiceException("邮箱格式不正确");
+            }
+        }
         userService.update(userDTO);
         return Result.success();
     }

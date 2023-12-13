@@ -49,6 +49,7 @@
             <if test="password != null">password = #{password},</if>
             <if test="phone != null">phone = #{phone},</if>
             <if test="email != null">email = #{email},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
             <if test="sex != null">sex = #{sex},</if>
             <if test="idNumber != null">id_number = #{idNumber},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
@@ -57,14 +58,6 @@
         </set>
         where id = #{id}
     </update>
-    <delete id="emptyRole">
-        delete from user_role_*
-        where user_id = #{id}
-    </delete>
-    <delete id="emptyDept">
-        delete from user_department_*
-        where user_id = #{id}
-    </delete>
     <resultMap id="pageQueryResultMap" type="com.yitai.admin.vo.UserVO">
         <id property="id" column="id"/>
         <result property="username" column="username"/>
@@ -99,16 +92,14 @@
                 and pu.username like concat('%',#{username},'%')
             </if>
             <if test="tenantId !=null and tenantId != ''">
-                and put.tenant_id =  #{tenantId}
+                and put.tenant_id = #{tenantId}
             </if>
             <if  test="phone !=null and phone != ''">
                 and pu.phone like concat('%',#{phone},'%')
             </if>
             <if test="deptIds != null and deptIds != ''">
                 and ud.dept_id in
-                <foreach collection="deptIds" item="id" open="(" close=")" separator=",">
-                     #{id}
-                </foreach>
+                <foreach collection="deptIds" item="id" open="(" close=")" separator=",">#{id}</foreach>
             </if>
                 and pu.is_del = 0
         </where>
@@ -126,9 +117,7 @@
             <if test="typeList !=null and typeList != ''">
                 and m.menu_type in
                     <foreach collection="typeList" item="item"
-                             open="(" close=")" separator=",">
-                        #{item}
-                    </foreach>
+                             open="(" close=")" separator=",">#{item}</foreach>
             </if>
             and m.is_del = 0
         </where>
@@ -141,9 +130,7 @@
             <if test="typeList !=null and typeList != ''">
                 and menu_type in
                 <foreach collection="typeList" item="item"
-                         open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
+                         open="(" close=")" separator=",">#{item}</foreach>
             </if>
             and is_del = 0
         </where>
@@ -159,33 +146,6 @@
             </if>
                 and public_tenant.is_del = 0
         </where>
-    </select>
-    <select id="getRole" resultType="java.lang.String">
-        select r.role_name
-        from role_* r
-                 join user_role_* ur on r.id = ur.role_id
-        where ur.user_id = #{id}
-    </select>
-
-    <select id="listAll" resultMap="pageQueryResultMap">
-        select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
-        pu.id_number, pu.status, avatar,
-        GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,
-        GROUP_CONCAT(distinct r.role_name order by r.id) as roles
-        from public_user pu
-        left join public_user_tenant put on pu.id = put.user_id
-        left join user_department_* ud on pu.id = ud.user_id
-        left join department_* d on ud.dept_id = d.id
-        left join user_role_* ur on pu.id = ur.user_id
-        left join role_* r on r.id = ur.role_id
-        <where>
-            <if test="tenantId !=null and tenantId != ''">
-                and put.tenant_id =  #{tenantId}
-            </if>
-            and pu.is_del = 0
-        </where>
-        group by pu.id, pu.create_time
-        order by pu.create_time desc
     </select>
     <select id="hasScopeRange" resultType="java.lang.Long">
         select distinct rd.dept_id
@@ -221,10 +181,36 @@
         group by pu.id, pu.create_time
         order by pu.create_time desc
     </select>
+    <select id="getInfo" resultType="com.yitai.admin.vo.UserVO">
+        select pu.id, pu.username, pu.realname, pu.sex, pu.openid, pu.phone, pu.email,
+               pu.id_number, pu.status, avatar,
+               GROUP_CONCAT(distinct d.department_name order by ud.dept_id) as departments,
+               GROUP_CONCAT(distinct r.role_name order by r.id) as roles
+        from public_user pu
+                 left join public_user_tenant put on pu.id = put.user_id
+                 left join user_department_* ud on pu.id = ud.user_id
+            left join department_* d on ud.dept_id = d.id
+            left join user_role_* ur on pu.id = ur.user_id
+            left join role_* r on r.id = ur.role_id
+        <where>
+                put.tenant_id =  #{tenantId}
+                and pu.id = #{id}
+                and pu.is_del = 0
+        </where>
+        group by pu.id, pu.create_time
+        order by pu.create_time desc
+    </select>
     <update id="deleteById">
         update public_user
         set is_del = 1
         where id = #{id}
     </update>
-
+    <delete id="emptyRole">
+        delete from user_role_*
+        where user_id = #{id}
+    </delete>
+    <delete id="emptyDept">
+        delete from user_department_*
+        where user_id = #{id}
+    </delete>
 </mapper>

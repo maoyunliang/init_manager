@@ -77,7 +77,7 @@ yitai:
     user-ttl: 604800000
     user-token-name: token
   manger:
-    user-id: [888, 894]
+    user-id: [888, 894, 889]
     role: root账号
 
 # mybatis配置源
@@ -98,7 +98,7 @@ springdoc:
   api-docs:
     path: /v3/api-docs
     enabled: true
-  packages-to-scan: com.yitai.controller,
+  packages-to-scan: com.yitai.controller
   show-actuator: true
 
 knife4j:

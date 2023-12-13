@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class WebController {
     @GetMapping("/info")
     @Operation(summary = "获取服务系统信息")
-    public Result<?> batchDelete(){
+    public Result<?> getServer(){
         log.info("获取服务系统信息");
         ServerVO serverVO = ServerVO.builder().cpuInfo(HardWareUtil.getCpuInfo()).
                 memoryInfo(HardWareUtil.getMemoryInfo(SizeEnum.GB)).

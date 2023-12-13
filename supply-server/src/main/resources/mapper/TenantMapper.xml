@@ -30,6 +30,8 @@
             <if test="tenantLogo != null">tenant_logo = #{tenantLogo},</if>
             <if test="address != null">address = #{address},</if>
             <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="qualification != null">qualification = #{qualification},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="updateUser != null">update_user = #{updateUser}</if>
         </set>

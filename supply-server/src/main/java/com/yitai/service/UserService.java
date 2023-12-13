@@ -48,8 +48,6 @@ public interface UserService {
 
     List<UserVO> list(Long tenantId, List<Long> idList);
 
-    List<UserVO> listAll(Long tenantId);
-
     void save(UserDTO userDTO);
 
     void update(UserDTO userDTO);
@@ -60,5 +58,5 @@ public interface UserService {
 
     void saveBatch(List<UserDTO> userDTOS);
 
-    void delete(Long id);
+    void delete(UserDTO userDTO);
 }

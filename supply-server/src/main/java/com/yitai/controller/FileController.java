@@ -39,10 +39,9 @@ public class FileController {
 //                .replaceAll("-","")+"."+
 //                StrUtil.subAfter(multipartFile.getOriginalFilename(),
 //                ".",true);
-        location = location+"/";
         // 可以根据类型来做判断使用什么上传
         String result = uploadStrategyContext
-                .executeUploadStrategy(multipartFile,location,"localUploadStrategyImpl");
+                .executeUploadStrategy(multipartFile,location+"/","localUploadStrategyImpl");
         return Result.success(result);
     }
 
