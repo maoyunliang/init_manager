@@ -65,6 +65,7 @@
                 <foreach collection="ids" item="id" separator="," open="(" close=")">
                     #{id}
                 </foreach>
+            and
             </if>
             c.is_del = 0 and m.is_del = 0
         </where>
