@@ -48,6 +48,14 @@ public class CommodityController {
         return Result.success();
     }
 
+    @PostMapping("/update")
+    @Operation(summary = "修改货品")
+    @HasPermit(permission = "core:commodity:update")
+    public Result<?> update(@RequestBody CommoditySaveReq req) {
+        commodityService.save(req);
+        return Result.success();
+    }
+
 
     @Operation(summary = "货品导出")
 //    @HasPermit(permission = "core:commodity:export")

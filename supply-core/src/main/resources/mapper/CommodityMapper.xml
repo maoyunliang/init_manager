@@ -49,7 +49,7 @@
         from commodity_* m inner join category_* c on m.category_id = c.id
         <where>
             <if test="status != null">
-                m.status == #{status} and
+                m.status = #{status} and
             </if>
             <if test="commodityName !=null and commodityName != '' ">
                 m.commodity_name = #{commodityName} and
@@ -69,7 +69,7 @@
             </if>
             c.is_del = 0 and m.is_del = 0
         </where>
-        order by update_time desc
+        order by m.update_time desc
     </select>
 
     <update id="update" >

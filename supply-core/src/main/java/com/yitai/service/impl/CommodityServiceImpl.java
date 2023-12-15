@@ -61,7 +61,7 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public void save(CommoditySaveReq req) {
-        if (req.getId() == null) {
+        if (req.getId() == null && CollectionUtil.isEmpty(req.getIds())) {
             Commodity commodity = new Commodity();
             BeanUtil.copyProperties(req, commodity);
             commodityMapper.save(commodity);

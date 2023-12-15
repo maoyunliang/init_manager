@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -38,4 +40,6 @@ public class CommoditySaveReq extends BaseBody {
 
     @Schema(description = "备注")
     private String remark;
+
+    private List<Long> ids;
 }
