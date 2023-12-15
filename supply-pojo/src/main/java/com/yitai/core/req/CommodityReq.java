@@ -26,4 +26,7 @@ public class CommodityReq extends BaseBody {
 
     @Schema(description = "exportFields")
     private List<String> exportFields;
+
+    private Integer page;
+    private Integer pageSize;
 }

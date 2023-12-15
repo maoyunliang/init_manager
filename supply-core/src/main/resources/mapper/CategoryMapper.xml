@@ -16,33 +16,42 @@
         <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
     </resultMap>
     <insert id="save" useGeneratedKeys="true" keyProperty="id">
-        insert into t_commodity_* (id, commodity_name, commodity_no, category_id, unit,remark,
-            status)
-        values (#{entity.id}, #{entity.commodityName}, #{entity.commodityNo}, #{entity.categoryId}, #{entity.unit}, #{entity.remark}, #{entity.status})
+        insert into t_category_* (id, category_name, sort_no, pid, remark,
+            status ,create_time,update_time,create_user,update_user,is_del)
+        values (#{id}, #{categoryName}, #{sortNo}, #{pid}, #{remark}, #{status}, #{createTime}, #{upateTime}, #{createUser}, #{createUser}, #{isDel} )
     </insert>
 
     <select id="list" resultMap="BaseResultMap">
-        select *
-        from t_commodity_* m inner join t_category_* c on m.category_id = c.id
+        select * from category_*
         <where>
-            <if test="req.status != null">
-                m.status == #{req.status} and
+            <if test="ids != null and ids.size() > 0 and id == null">
+                id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+                and
             </if>
-            <if test="req.commodityName !=null and req.commodityName != '' ">
-                m.commodity_name = #{req.commodityName} and
+            <if test="categoryNames != null and categoryNames.size() > 0 ">
+                category_name in
+                <foreach collection="categoryNames" item="categoryName" open="(" close=")" separator=",">
+                    #{categoryName}
+                </foreach>
+                and
             </if>
-            <if test="req.commodityNo != null and req.commodityNo != '' ">
-                m.commodity_no = #{req.commodityNo} and
+
+            <if test="createUser != null and createUser != '' ">
+                create_user like concat('%',#{createUser}.'%') and
             </if>
-            <if test="req.categoryName != null and req.categoryName != '' ">
-                c.category_name like concat('%',#{req.categoryName},'%') and
+            <if test="status != null">
+                status = #{status} and
             </if>
-            c.is_del = 0 and m.is_del = 0
+            is_del = 0
         </where>
+        order by update_time desc
     </select>
 
     <update id="update" >
-        update t_commodity_* m
+        update category_* m
         <set>
             <if test="req.status != null">
                 status = #{req.status},
@@ -62,7 +71,7 @@
     </update>
 
     <update id="removeByIds" >
-        update t_commodity_* m set is_del = 1
+        update category_* m set is_del = 1
         where m.id in
         <foreach collection="req.ids" item="id" separator="," open="(" close=")">
             #{id}
@@ -71,7 +80,7 @@
     </update>
 
     <update id="deleteById" >
-        update t_commodity_* m
+        update category_* m
         set is_del = 1
         where m.id = #{id}
           and m.is_del = 0

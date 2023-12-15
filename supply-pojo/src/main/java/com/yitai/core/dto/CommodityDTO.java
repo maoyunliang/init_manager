@@ -40,8 +40,8 @@ public class CommodityDTO extends BaseBody {
     @ExcelExport(value = "货品类别")
     @Schema(description = "类目名称")
     private String categoryName;
-    @ExcelExport(value = "单位")
-    @Schema(description = "单位")
+    @ExcelExport(value = "规格单位")
+    @Schema(description = "规格单位")
     private String unit;
     @Schema(description = "部门状态")
     private Integer status;

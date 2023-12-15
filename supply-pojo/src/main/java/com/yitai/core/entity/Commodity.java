@@ -22,7 +22,8 @@ public class Commodity {
     private Integer status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
-    private String createBy;
-    private String updateBy;
+    private String createUser;
+    private String updateUser;
     private Integer isDel;
+    private Long tenantId;
 }
