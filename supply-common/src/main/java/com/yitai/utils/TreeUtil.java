@@ -1,6 +1,7 @@
 package com.yitai.utils;
 
 import com.yitai.exception.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,13 +21,15 @@ import java.util.function.Predicate;
  * @Create: 2023/10/20 15:07
  * @Version: 1.0
  */
+@Slf4j
 public class TreeUtil {
 
     public static <T> ArrayList<T> buildTree(List<T> list, Function<T, ?> getParentId, Function<T, ?> getSortNo){
         ArrayList<T> trees = new ArrayList<>();
         ArrayList<T> parents = new ArrayList<>();
         //对初始列表做排序
-        list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        //list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        list.sort(Comparator.comparing(e ->  (String)getSortNo.apply(e)));
         //寻找顶级父部门
         for (T item : list) {
             T parent = buildParent(item,list,getParentId);
@@ -34,7 +37,8 @@ public class TreeUtil {
                 parents.add(parent);
             }
         }
-        parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        //parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        parents.sort(Comparator.comparing(e -> (String) getSortNo.apply(e)));
         //构建部门树
         for (T parent: parents){
             T tree = buildTrees(parent, list, getParentId);
@@ -82,12 +86,13 @@ public class TreeUtil {
             T parent = item;
             for(T items: list) {
                 Method getIdMethod = items.getClass().getMethod("getId");
-                if (getParentId.apply(item).equals(getIdMethod.invoke(items))){
+                if (getParentId.apply(item)!= null && getParentId.apply(item).equals(getIdMethod.invoke(items))){
                     parent = buildParent(items, list, getParentId);
                 }
             }
             return parent;
         } catch (Exception e) {
+            log.error("build tree error",e);
             throw new ServiceException("方法失效");
         }
             //如果存在，递归往上找父部门

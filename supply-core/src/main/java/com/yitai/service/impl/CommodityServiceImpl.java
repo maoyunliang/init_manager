@@ -61,9 +61,13 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public void save(CommoditySaveReq req) {
-        Commodity commodity = new Commodity();
-        BeanUtil.copyProperties(req, commodity);
-        commodityMapper.save(commodity);
+        if (req.getId() == null) {
+            Commodity commodity = new Commodity();
+            BeanUtil.copyProperties(req, commodity);
+            commodityMapper.save(commodity);
+        } else {
+            commodityMapper.update(req);
+        }
     }
 
     @Override

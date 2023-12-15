@@ -6,6 +6,7 @@ import com.yitai.core.dto.CommodityDTO;
 import com.yitai.core.entity.Commodity;
 import com.yitai.core.req.CommodityReq;
 import com.yitai.annotation.admin.AutoFill;
+import com.yitai.core.req.CommoditySaveReq;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,7 +29,7 @@ public interface CommodityMapper {
 
     @TableShard(type = ShardType.TABLE)
     @AutoFill(value = OperationType.UPDATE)
-    int update(CommodityReq req);
+    int update(CommoditySaveReq req);
 
     @TableShard(type = ShardType.TABLE)
     void removeByIds(List<Long> ids);
