@@ -29,14 +29,34 @@ public class CategoryController {
     private CategoryService categoryService;
 
     // 定时任务接口(租户级别)
-    @PostMapping("/list")
+    @PostMapping("/tree")
     @Operation(summary = "类目列表")
-//    @HasPermit(permission = "core:category:list")
-    public Result<List<CategoryDTO>> list(@RequestBody CategoryReq req) {
+//    @HasPermit(permission = "core:category:tree")
+    public Result<List<CategoryDTO>> tree(@RequestBody CategoryReq req) {
         List<Category> list = categoryService.list(req);
         List<CategoryDTO> categoryDTOS = BeanUtil.copyToList(list, CategoryDTO.class);
         ArrayList<CategoryDTO> categories = TreeUtil.buildTree(categoryDTOS, CategoryDTO::getPid, CategoryDTO::getSortNo);
         return Result.success(categories);
+    }
+
+
+    @PostMapping("/list")
+    @Operation(summary = "类目列表")
+//    @HasPermit(permission = "core:category:list")
+    public Result<List<Category>> list(@RequestBody CategoryReq req) {
+        List<Category> list = categoryService.list(req);
+
+        return Result.success(list);
+    }
+
+    @PostMapping("/save")
+    @Operation(summary = "类目保存")
+//    @HasPermit(permission = "core:category:list")
+    public Result<Category> save(@RequestBody CategoryReq req) {
+
+        categoryService.save(req);
+
+        return Result.success();
     }
 
 }

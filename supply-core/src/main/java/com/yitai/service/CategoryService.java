@@ -13,7 +13,7 @@ public interface CategoryService {
 
     void removeBatchIds(List<Long> ids);
 
-    void save(Category entity);
+    void save(CategoryReq entity);
 
     void batchSave(List<Category> list);
 

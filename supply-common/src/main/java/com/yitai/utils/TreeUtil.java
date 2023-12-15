@@ -28,8 +28,13 @@ public class TreeUtil {
         ArrayList<T> trees = new ArrayList<>();
         ArrayList<T> parents = new ArrayList<>();
         //对初始列表做排序
-        //list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
-        list.sort(Comparator.comparing(e ->  (String)getSortNo.apply(e)));
+        Object sortNo = getSortNo.apply(list.get(0));
+        if (sortNo instanceof String ){
+            list.sort(Comparator.comparing(e ->  (String)getSortNo.apply(e)));
+        }else{
+            list.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        }
+
         //寻找顶级父部门
         for (T item : list) {
             T parent = buildParent(item,list,getParentId);
@@ -37,8 +42,12 @@ public class TreeUtil {
                 parents.add(parent);
             }
         }
-        //parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
-        parents.sort(Comparator.comparing(e -> (String) getSortNo.apply(e)));
+        if (sortNo instanceof String){
+            parents.sort(Comparator.comparing(e -> (String) getSortNo.apply(e)));
+        }else{
+            parents.sort(Comparator.comparingLong(e -> (long) getSortNo.apply(e)));
+        }
+
         //构建部门树
         for (T parent: parents){
             T tree = buildTrees(parent, list, getParentId);

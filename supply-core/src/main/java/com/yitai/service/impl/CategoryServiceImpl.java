@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void save(Category entity) {
+    public void save(CategoryReq entity) {
 
     }
 
