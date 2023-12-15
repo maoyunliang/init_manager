@@ -95,4 +95,7 @@ public interface UserMapper {
 
     @TableShard(type = ShardType.TABLE)
     void emptyDept(@Param("id") Long id, @Param("tenantId") Long tenantId);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void modifyTenant(Tenant tenant);
 }

@@ -1,6 +1,5 @@
 package com.yitai.utils;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yitai.annotation.excel.*;
@@ -1337,36 +1336,36 @@ public class ExcelUtils {
             return columnIndexWidthMap;
         }
 
-        private static List<ExportClassField> filterExportFields(Class<?> c) {
-            List<ExportClassField> excelImportClassFields = new ArrayList<>();
-            List<Field> allClassFields = ExcelUtils.getAllFields(c);
-            for (Field field : allClassFields) {
-                ExcelExport ex = field.getAnnotation(ExcelExport.class);
-                if (Objects.nonNull(ex)) {
-                    field.setAccessible(true);
-                    ExportClassField exportField = new ExportClassField();
-                    exportField.setClassFieldName(field.getName());
-                    String name = ex.name();
-                    if (ExcelUtils.isEmpty(name)) {
-                        name = ex.value();
-                    }
-                    exportField.setColumnName(name);
-                    exportField.setColumnIndex(ex.columnIndex());
-                    exportField.setColumnWidth(ex.columnWidth());
-                    exportField.setDateFormat(ex.dateFormat());
-                    exportField.setComment(ex.comment());
-                    LinkedHashMap<String, String> kvMap = new LinkedHashMap<>();
-                    KV[] kvs = ex.kvs();
-                    for (KV kv : kvs) {
-                        kvMap.put(kv.k(), kv.v());
-                    }
-                    exportField.setKvMap(kvMap);
-                    exportField.setField(field);
-                    excelImportClassFields.add(exportField);
-                }
-            }
-            return excelImportClassFields;
-        }
+//        private static List<ExportClassField> filterExportFields(Class<?> c) {
+//            List<ExportClassField> excelImportClassFields = new ArrayList<>();
+//            List<Field> allClassFields = ExcelUtils.getAllFields(c);
+//            for (Field field : allClassFields) {
+//                ExcelExport ex = field.getAnnotation(ExcelExport.class);
+//                if (Objects.nonNull(ex)) {
+//                    field.setAccessible(true);
+//                    ExportClassField exportField = new ExportClassField();
+//                    exportField.setClassFieldName(field.getName());
+//                    String name = ex.name();
+//                    if (ExcelUtils.isEmpty(name)) {
+//                        name = ex.value();
+//                    }
+//                    exportField.setColumnName(name);
+//                    exportField.setColumnIndex(ex.columnIndex());
+//                    exportField.setColumnWidth(ex.columnWidth());
+//                    exportField.setDateFormat(ex.dateFormat());
+//                    exportField.setComment(ex.comment());
+//                    LinkedHashMap<String, String> kvMap = new LinkedHashMap<>();
+//                    KV[] kvs = ex.kvs();
+//                    for (KV kv : kvs) {
+//                        kvMap.put(kv.k(), kv.v());
+//                    }
+//                    exportField.setKvMap(kvMap);
+//                    exportField.setField(field);
+//                    excelImportClassFields.add(exportField);
+//                }
+//            }
+//            return excelImportClassFields;
+//        }
 
         private static List<ExportClassField> filterExportFields(Class<?> c,List<String> filtedFields) {
             List<ExportClassField> excelImportClassFields = new ArrayList<>();
@@ -1511,7 +1510,7 @@ public class ExcelUtils {
         /**
          * 当type=1时：src为文字内容，如：xxx科技有效公司
          * 当type=2时：src为本地文件路径，如：D:\img\icon.png
-         * 当type=3时：src为网络图片水印，如：https://profile-avatar.csdnimg.cn/624a0ef43e224cb2bf5ffbcca1211e51_sunnyzyq.jpg
+         * 当type=3时：src为网络图片水印，如：
          */
         private String src;
 

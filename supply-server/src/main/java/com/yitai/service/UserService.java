@@ -1,5 +1,6 @@
 package com.yitai.service;
 
+import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.user.*;
 import com.yitai.admin.entity.Tenant;
 import com.yitai.admin.entity.User;
@@ -59,4 +60,9 @@ public interface UserService {
     void saveBatch(List<UserDTO> userDTOS);
 
     void delete(UserDTO userDTO);
+
+    //修改个人信息
+    void modifyInfo(UserDTO userDTO);
+
+    void modifyTenant(TenantDTO tenantDTO);
 }

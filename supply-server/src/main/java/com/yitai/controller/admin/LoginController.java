@@ -1,21 +1,27 @@
 package com.yitai.controller.admin;
 
+import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.user.LoginMessageDTO;
+import com.yitai.admin.dto.user.UserDTO;
 import com.yitai.admin.dto.user.UserLoginDTO;
 import com.yitai.admin.dto.user.UserPasswordDTO;
 import com.yitai.admin.entity.Tenant;
 import com.yitai.admin.entity.User;
 import com.yitai.admin.vo.*;
+import com.yitai.annotation.admin.AutoLog;
+import com.yitai.annotation.admin.HasPermit;
 import com.yitai.annotation.admin.LoginLog;
 import com.yitai.base.BaseBody;
 import com.yitai.constant.JwtClaimsConstant;
 import com.yitai.constant.RedisConstant;
 import com.yitai.context.BaseContext;
 import com.yitai.enumeration.LogType;
+import com.yitai.exception.ServiceException;
 import com.yitai.properties.JwtProperties;
 import com.yitai.result.Result;
 import com.yitai.service.UserService;
 import com.yitai.utils.JwtUtil;
+import com.yitai.utils.RegularUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -131,9 +137,44 @@ public class LoginController {
 
     @Operation(summary = "修改密码")
     @PostMapping ("/modify")
+    @AutoLog(operation = "修改个人密码", type = LogType.UPDATE)
     public Result<?> modify(@RequestBody UserPasswordDTO userPasswordDTO){
         log.info("修改密码{}", userPasswordDTO);
         userService.modifyPassword(userPasswordDTO);
+        return Result.success();
+    }
+    @Operation(summary = "修改个人信息")
+    @PostMapping ("/modifyInfo")
+    @HasPermit(permission = "user:info:update")
+    @AutoLog(operation = "修改个人信息", type = LogType.UPDATE)
+    public Result<?> modifyInfo(@RequestBody UserDTO userDTO){
+        log.info("修改个人信息：{}", userDTO);
+        if(userDTO.getPhone() != null) {
+            if (!RegularUtil.checkPhoneNumber(userDTO.getPhone())) {
+                throw new ServiceException("手机号格式不正确");
+            }
+        }
+        if(userDTO.getIdNumber() != null && !userDTO.getIdNumber().equals("")){
+            if(!RegularUtil.checkIdNumber(userDTO.getIdNumber())){
+                throw new ServiceException("身份证号格式不正确");
+            }
+        }
+        if(userDTO.getEmail() != null && !userDTO.getEmail().equals("")){
+            if(!RegularUtil.checkEmail(userDTO.getEmail())){
+                throw new ServiceException("邮箱格式不正确");
+            }
+        }
+        userService.modifyInfo(userDTO);
+        return Result.success();
+    }
+
+    @Operation(summary = "修改企业信息")
+    @PostMapping ("/modifyTenant")
+    @HasPermit(permission = "user:tenant:update")
+    @AutoLog(operation = "修改企业信息", type = LogType.UPDATE)
+    public Result<?> modifyTenant(@RequestBody TenantDTO tenantDTO){
+        log.info("修改企业信息:{}", tenantDTO);
+        userService.modifyTenant(tenantDTO);
         return Result.success();
     }
 

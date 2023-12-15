@@ -2,18 +2,24 @@ package com.yitai.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.constant.RedisConstant;
 import com.yitai.core.dto.TenderDTO;
+import com.yitai.core.entity.Tender;
 import com.yitai.core.vo.TenderVO;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.TenderMapper;
 import com.yitai.result.PageResult;
 import com.yitai.service.TenderService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +36,9 @@ import java.util.stream.Collectors;
 public class TenderServiceImpl implements TenderService {
     @Autowired
     TenderMapper tenderMapper;
+
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public PageResult page(TenderDTO tenderDTO) {
@@ -56,5 +65,19 @@ public class TenderServiceImpl implements TenderService {
     @Override
     public List<TenderVO> list(Long tenantId, List<Long> idList) {
         return tenderMapper.list(tenantId, idList);
+    }
+
+    @Override
+    public void save(TenderDTO tenderDTO) {
+        Tender tender = new Tender();
+        BeanUtils.copyProperties(tenderDTO, tender);
+        String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        String key = RedisConstant.TENDER_COUNT+tenderDTO.getTenantId()+":"
+                +today;
+        Long value = redisTemplate.opsForValue().increment(key);
+        redisTemplate.expire(key,2, TimeUnit.DAYS);
+        String number = String.format("%03d", value);
+        tender.setTenderNo(today+number);
+        //TODO 关联部门，关联供应商
     }
 }

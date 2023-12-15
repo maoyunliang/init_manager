@@ -35,23 +35,11 @@ import java.util.stream.Collectors;
 public class MenuServiceImpl implements MenuService {
     @Autowired
     private MenuMapper menuMapper;
-
     @Autowired
     private RedisTemplate redisTemplate;
-
     @Autowired
     MangerProperties mangerProperties;
-    /*
-     * 菜单分页查询
-     */
-//    @Override
-//    public PageResult pageQuery(MenuPageQueryDTO menuPageQueryDTO) {
-//        PageHelper.startPage(menuPageQueryDTO.getPage(),menuPageQueryDTO.getPageSize());
-//        Page<Menu> page = menuMapper.pageQuery(menuPageQueryDTO);
-//        long total = page.getTotal();
-//        List<Menu> records = page.getResult();
-//        return new PageResult(total, records);
-//    }
+
     /*
      * 菜单列表
      */
@@ -63,8 +51,7 @@ public class MenuServiceImpl implements MenuService {
         //如果是普通用户
         if (!mangerProperties.getUserId().contains(user.getId())){
             menuList = menuList.stream().filter(e-> e.getVisible() == 1).collect(Collectors.toList());
-        };
-
+        }
         return menuList;
     }
 
@@ -78,10 +65,12 @@ public class MenuServiceImpl implements MenuService {
         User user = BaseContext.getCurrentUser();
         //返回记录行数
         int records = menuMapper.save(menu);
-        //每次新增菜单（超级管理员） 删除缓存
-        if(menu.getMenuType().equals("B")){
-            redisTemplate.delete(RedisConstant.USER_PERMISSION
-                    .concat(user.getId().toString()));
+        if (records>0){
+            //每次新增菜单（超级管理员） 删除缓存
+            if(menu.getMenuType().equals("B")){
+                redisTemplate.delete(RedisConstant.USER_PERMISSION
+                        .concat(user.getId().toString()));
+            }
         }
     }
 

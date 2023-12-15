@@ -19,4 +19,6 @@ public interface TenderService {
     PageResult page(TenderDTO tenantDTO);
 
     List<TenderVO> list(Long tenantId, List<Long> idList);
+
+    void save(TenderDTO tenderDTO);
 }
