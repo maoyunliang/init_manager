@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ public class TenderController {
     @Autowired
     TenderService tenderService;
 
-    // 定时任务接口(租户级别)
+    // 招标询价列表(租户级别)
     @PostMapping("/list")
     @Operation(summary = "招标询价列表")
     @HasPermit(permission = "tender:inquiry:list")
@@ -44,13 +46,26 @@ public class TenderController {
     }
 
 
-    // 定时任务接口(租户级别)
+    // 招标询价导出(租户级别)
     @PostMapping("/export/{tenantId}")
     @Operation(summary = "招标询价导出")
     @HasPermit(permission = "tender:inquiry:export")
-    public void export(@PathVariable Long tenantId, @RequestParam(value = "list" ,required = false)
-    List<Long> idList, HttpServletResponse response){
+    public void export(@PathVariable Long tenantId,
+                       @RequestParam(value = "list" ,required = false)  List<Long> idList,
+                       @RequestParam(value = "fieldList")  List<String> fieldList , HttpServletResponse response){
         List<TenderVO> list = tenderService.list(tenantId, idList);
-        ExcelUtils.export(response,"招标询价列表", list, TenderVO.class,null);
+        String fileName = "招标清单"+ LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+        if (list != null && list.size() == 1){
+            fileName = list.get(0).getTenderName()+"-".concat(fileName);
+        }
+        ExcelUtils.export(response, fileName, list, TenderVO.class, fieldList);
+    }
+
+    @PostMapping("/save")
+    @Operation(summary = "新建招标")
+    @HasPermit(permission = "tender:inquiry:add")
+    public Result<?> save(@RequestBody TenderDTO tenderDTO){
+        tenderService.save(tenderDTO);
+        return Result.success();
     }
 }

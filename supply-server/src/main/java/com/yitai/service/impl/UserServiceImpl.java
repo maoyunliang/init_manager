@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.user.*;
 import com.yitai.admin.entity.*;
 import com.yitai.admin.vo.MenuVO;
@@ -336,5 +337,31 @@ public class UserServiceImpl implements UserService {
         redisTemplate.delete(RedisConstant.USER_LOGIN.concat(userDTO.getId().toString()));
         redisTemplate.delete(RedisConstant.DATASCOPE.concat(userDTO.getId().toString()));
         redisTemplate.delete(RedisConstant.USER_PERMISSION.concat(userDTO.getId().toString()));
+    }
+
+    @Override
+    public void modifyInfo(UserDTO userDTO) {
+        User user = BaseContext.getCurrentUser();
+        User checkUser = userMapper.getByPhone(userDTO.getPhone());
+        if(!Objects.equals(userDTO.getId(), user.getId())){
+            throw new ServiceException("用户id错误");
+        }
+        if(checkUser != null && !Objects.equals(checkUser.getId(), user.getId())){
+            throw new ServiceException("手机号以被注册");
+        }
+        BeanUtils.copyProperties(userDTO, user);
+        userMapper.update(user);
+    }
+
+    @Override
+    public void modifyTenant(TenantDTO tenantDTO) {
+        Tenant tenant = new Tenant();
+        BeanUtils.copyProperties(tenantDTO, tenant);
+        List<Tenant> tenants =getTenant();
+        List<Long> ids = tenants.stream().map(Tenant::getId).toList();
+        if(!ids.contains(tenant.getId())){
+            throw new ServiceException("企业修改异常");
+        }
+        userMapper.modifyTenant(tenant);
     }
 }

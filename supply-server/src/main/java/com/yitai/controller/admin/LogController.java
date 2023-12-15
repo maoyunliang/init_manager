@@ -30,7 +30,6 @@ import java.util.List;
 @RequestMapping("admin/log")
 @Slf4j
 public class LogController {
-
     @Autowired
     LogService logService;
 

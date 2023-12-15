@@ -26,8 +26,6 @@ public class TenderDTO extends BaseBody {
     private List<Long> deptIds;
     @Schema(description = "邀请供应商列表")
     private List<Long> supplierIds;
-    @Schema(description = "已报价供应商")
-    private List<Long> quotedIds;
     @Schema(description = "招标开始时间")
     private LocalDateTime beginTime;
     @Schema(description = "招标截止时间")

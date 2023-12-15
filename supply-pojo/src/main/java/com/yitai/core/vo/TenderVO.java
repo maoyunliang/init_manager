@@ -44,7 +44,6 @@ public class TenderVO {
     @ExcelExport(value = "招标截止时间")
     @Schema(description = "招标截止时间")
     private LocalDateTime endTime;
-    @ExcelExport(value = "邀请供应商列表")
     @Schema(description = "邀请供应商列表")
     private Map<String, Integer> suppliers;
     @ExcelExport(value = "邀请供应商数量")

@@ -49,7 +49,7 @@
         from tender_* t
         <where>
             <if test="list !=null and list != ''">
-                and pu.id in
+                and t.id in
                 <foreach collection="list" item="item"
                          open="(" close=")" separator=",">
                     #{item}

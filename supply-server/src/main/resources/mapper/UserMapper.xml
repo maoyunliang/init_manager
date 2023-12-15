@@ -137,14 +137,15 @@
     </select>
 
     <select id="getTenant" resultType="com.yitai.admin.entity.Tenant">
-        select public_tenant.id, public_tenant.tenant_no, public_tenant.tenant_name, public_tenant.tenant_logo
-        from public_user_tenant
-        join public_tenant on public_tenant.id = public_user_tenant.tenant_id
+        select pt.id, pt.tenant_no, pt.tenant_name, pt.tenant_logo, pt.location, pt.contact, pt.address, pt.qualification, pt.remark, pt.status,
+        pt.create_user, pt.update_user, pt.create_time, pt.update_time, pt.is_del
+        from public_tenant pt
+        join public_user_tenant put on pt.id = put.tenant_id
         <where>
             <if test="userId !=null and userId != ''">
-                and public_user_tenant.user_id = #{userId}
+                and put.user_id = #{userId}
             </if>
-                and public_tenant.is_del = 0
+                and pt.is_del = 0
         </where>
     </select>
     <select id="hasScopeRange" resultType="java.lang.Long">
@@ -203,6 +204,22 @@
     <update id="deleteById">
         update public_user
         set is_del = 1
+        where id = #{id}
+    </update>
+    <update id="modifyTenant">
+        update public_tenant
+        <set>
+            <if test="tenantName != null">tenant_name = #{tenantName},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="tenantLogo != null">tenant_logo = #{tenantLogo},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="qualification != null">qualification = #{qualification},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser}</if>
+        </set>
         where id = #{id}
     </update>
     <delete id="emptyRole">
