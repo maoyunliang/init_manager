@@ -51,7 +51,7 @@ public class TenderController {
     @Operation(summary = "招标询价导出")
     @HasPermit(permission = "tender:inquiry:export")
     public void export(@PathVariable Long tenantId,
-                       @RequestParam(value = "list" ,required = false)  List<Long> idList,
+                       @RequestParam(value = "idList" ,required = false)  List<Long> idList,
                        @RequestParam(value = "fieldList")  List<String> fieldList , HttpServletResponse response){
         List<TenderVO> list = tenderService.list(tenantId, idList);
         String fileName = "招标清单"+ LocalDate.now().format(DateTimeFormatter.ISO_DATE);
@@ -68,4 +68,5 @@ public class TenderController {
         tenderService.save(tenderDTO);
         return Result.success();
     }
+
 }

@@ -271,7 +271,7 @@ public class ExcelUtils {
         PackageRelationship packageRelationship = xssfSheet.getPackagePart().addRelationship(ppn, TargetMode.INTERNAL, XSSFRelation.IMAGES.getRelation(), null);
         CTWorksheet ctWorksheet = xssfSheet.getCTWorksheet();
         CTSheetBackgroundPicture backgroundPicture = ctWorksheet.addNewPicture();
-        System.out.println(packageRelationship.getId());
+//        System.out.println(packageRelationship.getId());
         backgroundPicture.setId(packageRelationship.getId());
     }
 
