@@ -63,6 +63,7 @@ public class RoleServiceImpl implements RoleService {
     public void save(RoleDTO roleDTO) {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
+        role.setRoleType("01");
         int record = roleMapper.save(role, roleDTO.getTenantId());
         Long roleId = role.getId();
         //判断是否关联菜单
@@ -81,9 +82,11 @@ public class RoleServiceImpl implements RoleService {
         Long roleId = deleteRoleDTO.getId();
         Long tenantId = deleteRoleDTO.getTenantId();
         // 查询是否存在该角色
-        if(ObjectUtil.isNull(roleMapper.getRoleById(roleId, tenantId))){
+        if(ObjectUtil.isNull(roleMapper.getRoleById(roleId,tenantId))){
             throw new ServiceException("请输入正确的角色");
         }
+        // 是否可以被删除
+        isSysRole(roleId, tenantId);
         // 查询角色是否关联用户
         List<UserVO> userList = roleMapper.selectUserByRoleId(roleId, tenantId);
         if(!CollectionUtil.isEmpty(userList)){
@@ -99,12 +102,16 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void update(RoleDTO roleDTO) {
+        Long roleId = roleDTO.getId();
+        Long tenantId = roleDTO.getTenantId();
+        if(ObjectUtil.isNull(roleMapper.getRoleById(roleId,tenantId))){
+            throw new ServiceException("角色id不存在");
+        }
+        //判断是否是系统管理员（平台级别用户无法操作系统管理员）
+        isSysRole(roleId, tenantId);
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         roleMapper.update(role, roleDTO.getTenantId());
-        if(ObjectUtil.isNull(roleMapper.getRoleById(roleDTO.getId(),roleDTO.getTenantId()))){
-            throw new ServiceException("角色id不存在");
-        }
     }
     /**
      * 给角色分配菜单
@@ -113,6 +120,8 @@ public class RoleServiceImpl implements RoleService {
     public void assMenu(RoleAssDTO roleMenuDTO) {
         Long roleId = roleMenuDTO.getRoleId();
         Long tenantId = roleMenuDTO.getTenantId();
+        //判断是否是系统管理员（平台级别用户无法操作系统管理员）
+        isSysRole(roleId, tenantId);
         // 删除原有的菜单
         roleMapper.emptyMenu(roleId, tenantId);
         if(!CollectionUtil.isEmpty(roleMenuDTO.getMenuIds())){
@@ -124,24 +133,16 @@ public class RoleServiceImpl implements RoleService {
         }
         // 菜单重新分配后，查询角色关联用户、删除redis用户相关缓存
         deleteCache(RedisConstant.USER_PERMISSION, roleId, tenantId);
-//        List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
-//        List<String> userKey = users.stream().
-//                map(e -> RedisConstant.USER_PERMISSION
-//                        .concat(e.getId().toString())).toList();
-//        redisTemplate.delete(userKey);
-//        Role role = new Role();
-//        role.setId(roleId);
-//        //角色操作记录更新
-//        roleMapper.update(role, tenantId);
     }
 
     @Override
     public void assDept(RoleAssDTO roleDeptDTO) {
         Long tenantId = roleDeptDTO.getTenantId();
         Long roleId = roleDeptDTO.getRoleId();
+        //判断是否是系统管理员（平台级别用户无法操作系统管理员）
+        isSysRole(roleId, tenantId);
         //清除之前关联的部门
         roleMapper.emptyDept(roleId, tenantId);
-
         if(!CollectionUtil.isEmpty(roleDeptDTO.getDeptIds())){
             List<RoleDepartment> roleDepartments = roleDeptDTO.getDeptIds()
                     .stream()
@@ -154,17 +155,6 @@ public class RoleServiceImpl implements RoleService {
         deleteCache(RedisConstant.DATASCOPE, roleId, tenantId);
     }
 
-    public void deleteCache(String sign, Long roleId, Long tenantId){
-        List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
-        List<String> userKey = users.stream().
-                map(e -> sign.concat(e.getId().toString())).toList();
-        redisTemplate.delete(userKey);
-        Role role = new Role();
-        role.setId(roleId);
-        //角色操作记录更新
-        roleMapper.update(role, tenantId);
-    }
-
     /*
      * 分配用户
      */
@@ -172,9 +162,9 @@ public class RoleServiceImpl implements RoleService {
     public void assUser(RoleAssDTO roleUserDTO) {
         Long tenantId = roleUserDTO.getTenantId();
         Long roleId = roleUserDTO.getRoleId();
+        isSysRole(roleId, tenantId);
         //清除之前的用户
         roleMapper.emptyUser(roleId, tenantId);
-
         if(!CollectionUtil.isEmpty(roleUserDTO.getUserIds())){
             List<UserRole> userRoles = roleUserDTO.getUserIds().stream()
                     .map(userId -> UserRole.builder().userId(userId).roleId(roleId).build()).toList();
@@ -182,6 +172,26 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
+    public void isSysRole(Long roleId, Long tenantId){
+        Role role = roleMapper.getRoleById(roleId, tenantId);
+        User user = BaseContext.getCurrentUser();
+        //平台用户无法修改系统管理员权限
+        if(!mangerProperties.getUserId().contains(user.getId())){
+            if(role.getRoleType().equals("00")){
+                throw new ServiceException("无法修改系统管理员");
+            }
+        }
+    }
+    public void deleteCache(String key, Long roleId, Long tenantId){
+        List<UserVO> users = roleMapper.selectUserByRoleId(roleId,tenantId);
+        List<String> userKey = users.stream().
+                map(e -> key.concat(e.getId().toString())).toList();
+        redisTemplate.delete(userKey);
+        Role role = new Role();
+        role.setId(roleId);
+        //角色操作记录更新
+        roleMapper.update(role, tenantId);
+    }
 
     @Override
     public RoleVO getUser(RoleDTO roleInfoDTO, List<DepartmentVO> departmentVOS) {

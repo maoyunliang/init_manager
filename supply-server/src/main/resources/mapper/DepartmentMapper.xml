@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC ".//mybatis.org//DTO Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yitai.mapper.DepartmentMapper">
-    <insert id="save">
+    <insert id="save" useGeneratedKeys="true" keyProperty="department.id">
         INSERT INTO department_* (id, department_name, depart_no, remark, sort_no,
                                   status, pid, leader, username, create_user, update_user,
                                   create_time, update_time, is_del)
@@ -67,5 +67,22 @@
                  join user_department_* d on d.user_id = pu.id
         where d.dept_id = #{id}
           and pu.is_del = 0
+    </select>
+    <insert id="insertScope">
+        insert into role_department_*(id, role_id, dept_id, create_user, update_user,
+                                      create_time, update_time, is_del)
+        VALUES (id,#{roleDepartment.roleId}, #{roleDepartment.deptId},
+            #{roleDepartment.createUser}, #{roleDepartment.updateUser},
+            #{roleDepartment.createTime}, #{roleDepartment.updateTime}, #{roleDepartment.isDel})
+    </insert>
+    <select id="selectSysRole" resultType="com.yitai.admin.entity.Role">
+        select id, role_name, identity, role_type, role_desc, status, create_user, update_user, create_time, update_time, is_del
+        from role_*
+        where role_type = '00'
+    </select>
+    <select id="selectSysUser" resultType="com.yitai.admin.entity.User">
+        select pu.*
+        from public_user pu join user_role_* ur on pu.id = ur.user_id
+        where ur.role_id = #{roleId}
     </select>
 </mapper>
