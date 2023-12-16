@@ -19,10 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SendMsgUtil {
 
-    private static final String ALIBABA_CLOUD_ACCESS_KEY_ID = "LTAI5tMfMiXSw4pNZZJesJbD";
-    private static final String ALIBABA_CLOUD_ACCESS_KEY_SECRET ="IQ1b7Nb9M5Ymrjq28nPvYyql4cuBvz";
-    private static final String TEMPLATE_CODE = "SMS_463630814";
-    private static final String SIGN_NAME = "江西以太科技";
+    private static final String ALIBABA_CLOUD_ACCESS_KEY_ID = "xxxxx";
+    private static final String ALIBABA_CLOUD_ACCESS_KEY_SECRET ="xxxxx";
+    private static final String TEMPLATE_CODE = "xxxxx";
+    private static final String SIGN_NAME = "xxxxx";
 
     public static boolean sendMsg(String phone, String verifyCode) {
         try {
