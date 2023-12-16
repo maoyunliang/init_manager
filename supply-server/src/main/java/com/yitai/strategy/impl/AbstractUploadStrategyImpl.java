@@ -5,6 +5,7 @@ import com.yitai.strategy.UploadStrategy;
 import com.yitai.utils.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -37,7 +38,7 @@ public abstract class AbstractUploadStrategyImpl implements UploadStrategy {
     /**
      * 初始化客户端
      */
-    public abstract void initClient();
+    public abstract void initClient() throws FileNotFoundException;
 
     /**
      * 检查文件是否已经存在（文件MD5值唯一）

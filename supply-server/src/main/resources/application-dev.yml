@@ -17,5 +17,7 @@ yitai:
       bucket: yitai-supply
       endpoint: null
     local:
-      domainUrl: null
+      #测试环境
+#      domainUrl: http://47.98.152.72:8855/
+      domainUrl: http://172.31.12.161:8855/
       endpoint: null

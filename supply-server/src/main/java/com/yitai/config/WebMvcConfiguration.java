@@ -36,6 +36,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     @Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
+
     /**
      * 注册自定义拦截器
      *
@@ -73,6 +74,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/4.18.1/");
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/upload/**")
+                .addResourceLocations("file:upload/");
     }
 
     /**

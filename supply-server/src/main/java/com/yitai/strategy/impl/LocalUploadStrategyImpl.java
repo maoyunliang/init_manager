@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -40,7 +39,6 @@ public class LocalUploadStrategyImpl extends AbstractUploadStrategyImpl {
     /**
      * 前置路径 ip/域名
      */
-
     private String prefixUrl;
     /**
      * 构造器注入bean
@@ -48,13 +46,10 @@ public class LocalUploadStrategyImpl extends AbstractUploadStrategyImpl {
     private final ObjectStoreProperties properties;
 
     @Override
-    public void initClient() {
-        try {
-            prefixUrl = ResourceUtils.getURL("classpath:").getPath() + "static/";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new ServiceException("文件不存在");
-        }
+    public void initClient() throws FileNotFoundException {
+//        prefixUrl = ResourceUtils.getURL("classpath:").getPath() + "static/";
+        //jar包上传需要存放至本地
+        prefixUrl =  System.getProperty("user.dir") + "/";
         log.info("本地上传初始化完成...");
     }
 
@@ -95,6 +90,7 @@ public class LocalUploadStrategyImpl extends AbstractUploadStrategyImpl {
      */
     private File checkFolderIsExisted(String fileRelativePath) {
         File rootPath = new File(prefixUrl + fileRelativePath);
+        log.info("目标路径{}",rootPath);
         if (!rootPath.exists()) {
             if (!rootPath.mkdirs()) {
                 throw new ServiceException("文件夹创建失败");

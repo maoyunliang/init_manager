@@ -41,7 +41,7 @@ public class FileController {
 //                ".",true);
         // 可以根据类型来做判断使用什么上传
         String result = uploadStrategyContext
-                .executeUploadStrategy(multipartFile,location+"/","localUploadStrategyImpl");
+                .executeUploadStrategy(multipartFile,"upload/"+location+"/","localUploadStrategyImpl");
         return Result.success(result);
     }
 
