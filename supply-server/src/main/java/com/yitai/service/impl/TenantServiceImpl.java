@@ -4,18 +4,23 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yitai.admin.dto.tenant.TenantDTO;
 import com.yitai.admin.dto.tenant.TenantListDTO;
+import com.yitai.admin.entity.Department;
 import com.yitai.admin.entity.Tenant;
 import com.yitai.admin.entity.User;
 import com.yitai.context.BaseContext;
+import com.yitai.exception.ServiceException;
 import com.yitai.mapper.TenantMapper;
 import com.yitai.properties.MangerProperties;
 import com.yitai.result.PageResult;
 import com.yitai.service.TenantService;
+import com.yitai.utils.ExecSqlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,14 +57,23 @@ public class TenantServiceImpl implements TenantService {
         Tenant tenant = new Tenant();
         BeanUtils.copyProperties(tenantDTO, tenant);
         int records = tenantMapper.save(tenant);
-//        if(records >0){
-//            Department department = Department.builder()
-//                    .departmentName(tenant.getTenantName())
-//                    .status(1)
-//                    .build();
-//            //新建父部门
-//            tenantMapper.insertDept(department, tenant.getId());
-//        }
+        if(records >0){
+            // 执行sql脚本创建表
+            try {
+                ExecSqlUtil.execSql("create-tenant",
+                        Collections.singletonMap("${tenantId}", tenant.getId().toString()));
+            }catch (SQLException sqlException){
+                throw new ServiceException("创建失败");
+            }
+
+            Department department = Department.builder()
+                    .departmentName(tenant.getTenantName())
+                    .status(1)
+                    .build();
+            //新建父部门
+            tenantMapper.insertDept(department, tenant.getId());
+            //TODO 设置系统管理员角色
+        }
     }
 
     @Override
