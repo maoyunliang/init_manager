@@ -37,7 +37,7 @@ public class TenantController {
         PageResult tenantVOS = tenantService.page(tenantListDTO);
         return Result.success(tenantVOS);
     }
-
+    //TODO 对租户进行修改时，需要实时刷新！
     @Operation(summary = "新增租户")
     @HasPermit(permission = "sys:tenant:add")
     @PostMapping("/save")

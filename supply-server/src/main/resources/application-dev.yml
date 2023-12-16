@@ -7,7 +7,7 @@ yitai:
   redis:
     host: 8.130.8.127
     port: 6379
-    database: 0
+    database: 1
     password: yitai
   store:
     kodo:
@@ -19,5 +19,5 @@ yitai:
     local:
       #测试环境
 #      domainUrl: http://47.98.152.72:8855/
-      domainUrl: http://172.31.12.161:8855/
+      domainUrl: http://172.30.117.161:8855/
       endpoint: null
