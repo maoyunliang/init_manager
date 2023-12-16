@@ -6,13 +6,18 @@ import com.yitai.admin.dto.department.DepartmentDTO;
 import com.yitai.admin.dto.department.DepartmentListDTO;
 import com.yitai.admin.dto.department.DepartmentUserDTO;
 import com.yitai.admin.entity.Department;
+import com.yitai.admin.entity.Role;
+import com.yitai.admin.entity.RoleDepartment;
+import com.yitai.admin.entity.User;
 import com.yitai.admin.vo.DepartmentVO;
 import com.yitai.admin.vo.UserVO;
+import com.yitai.constant.RedisConstant;
 import com.yitai.exception.ServiceException;
 import com.yitai.mapper.DepartmentMapper;
 import com.yitai.service.DepartmentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -33,6 +38,8 @@ import java.util.stream.Collectors;
 public class DepartmentServiceImpl implements DepartmentService {
     @Autowired
     DepartmentMapper departmentMapper;
+    @Autowired
+    RedisTemplate redisTemplate;
     @Override
     public List<DepartmentVO> list(DepartmentListDTO departmentListDTO) {
         return departmentMapper.list(departmentListDTO);
@@ -42,8 +49,23 @@ public class DepartmentServiceImpl implements DepartmentService {
     public void save(DepartmentDTO departmentDTO) {
         Department department = new Department();
         BeanUtils.copyProperties(departmentDTO, department);
-        departmentMapper.save(department, departmentDTO.getTenantId());
+        int record = departmentMapper.save(department, departmentDTO.getTenantId());
+        if (record > 0) {
+            //新增部门之后，增加平台系统管理员部门权限
+            //TODO 是否增加当前用户的管理员权限需要确认
+            Role role = departmentMapper.selectSysRole(departmentDTO.getTenantId());
+            RoleDepartment roleDepartment = RoleDepartment.builder().roleId(role.getId()).deptId(department.getId()).build();
+            departmentMapper.insertScope(roleDepartment, departmentDTO.getTenantId());
+            //查询关联系统管理员用户
+            List<User> users = departmentMapper.selectSysUser(role.getId(),departmentDTO.getTenantId());
+            //删除系统管理员缓存
+            users.forEach(e->{
+                redisTemplate.delete(RedisConstant.DATASCOPE.concat(e.getId().toString()));
+                }
+            );
+        }
     }
+
 
     @Override
     public void update(DepartmentDTO departmentDTO) {

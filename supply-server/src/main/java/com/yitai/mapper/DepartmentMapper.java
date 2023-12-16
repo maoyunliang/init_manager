@@ -1,5 +1,7 @@
 package com.yitai.mapper;
 
+import com.yitai.admin.entity.RoleDepartment;
+import com.yitai.admin.entity.User;
 import com.yitai.annotation.admin.AutoFill;
 import com.yitai.annotation.admin.DataScope;
 import com.yitai.annotation.admin.TableShard;
@@ -7,6 +9,7 @@ import com.yitai.admin.dto.department.DepartmentDTO;
 import com.yitai.admin.dto.department.DepartmentListDTO;
 import com.yitai.admin.dto.department.DepartmentUserDTO;
 import com.yitai.admin.entity.Department;
+import com.yitai.admin.entity.Role;
 import com.yitai.enumeration.OperationType;
 import com.yitai.enumeration.ShardType;
 import com.yitai.admin.vo.DepartmentVO;
@@ -51,4 +54,14 @@ public interface DepartmentMapper {
 
     @TableShard(type = ShardType.TABLE)
     List<UserVO> containsUser(DepartmentDTO deleteDepartmentDTO);
+
+    @TableShard(type = ShardType.TABLE)
+    @AutoFill(value = OperationType.INSERT)
+    void insertScope(@Param("roleDepartment") RoleDepartment roleDepartment,@Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    Role selectSysRole(@Param("tenantId") Long tenantId);
+
+    @TableShard(type = ShardType.TABLE)
+    List<User> selectSysUser(@Param("roleId")Long id, @Param("tenantId") Long tenantId);
 }
